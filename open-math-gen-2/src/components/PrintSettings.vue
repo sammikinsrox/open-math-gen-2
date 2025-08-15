@@ -216,68 +216,6 @@ const problemsPerPageOptions = [
 <template>
   <div class="print-settings space-y-6">
     
-    <!-- Page Setup Section -->
-    <div class="setting-section">
-      <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-        <svg class="w-5 h-5 mr-2 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-        </svg>
-        Page Setup
-      </h3>
-      
-      <!-- Paper Size -->
-      <div class="mb-4">
-        <label class="block text-sm font-medium text-gray-800 mb-2">Paper Size</label>
-        <div class="space-y-2">
-          <label 
-            v-for="option in paperSizeOptions" 
-            :key="option.value"
-            class="flex items-center p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors"
-            :class="settings.paperSize === option.value ? 'bg-orange-50 border-orange-300' : ''"
-          >
-            <input 
-              :value="option.value"
-              :checked="settings.paperSize === option.value"
-              @change="updateSetting('paperSize', option.value)"
-              type="radio" 
-              name="paperSize"
-              class="text-orange-600 focus:ring-orange-500"
-            />
-            <span class="material-icons ml-3 text-lg text-orange-600">{{ option.icon }}</span>
-            <span class="ml-2 text-sm font-medium text-gray-900">{{ option.label }}</span>
-          </label>
-        </div>
-      </div>
-
-
-      <!-- Margins -->
-      <div class="mb-4">
-        <label class="block text-sm font-medium text-gray-800 mb-2">Margins</label>
-        <div class="space-y-2">
-          <label 
-            v-for="option in marginOptions" 
-            :key="option.value"
-            class="flex items-center justify-between p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors"
-            :class="settings.margins === option.value ? 'bg-orange-50 border-orange-300' : ''"
-          >
-            <div class="flex items-center">
-              <input 
-                :value="option.value"
-                :checked="settings.margins === option.value"
-                @change="updateSetting('margins', option.value)"
-                type="radio" 
-                name="margins"
-                class="text-orange-600 focus:ring-orange-500"
-              />
-              <div class="ml-3">
-                <div class="text-sm font-medium text-gray-900">{{ option.label }}</div>
-                <div class="text-xs text-gray-700">{{ option.description }}</div>
-              </div>
-            </div>
-          </label>
-        </div>
-      </div>
-    </div>
 
     <!-- Content Settings Section -->
     <div class="setting-section">
@@ -288,33 +226,6 @@ const problemsPerPageOptions = [
         Content Settings
       </h3>
 
-      <!-- Font Size -->
-      <div class="mb-4">
-        <label class="block text-sm font-medium text-gray-800 mb-2">Font Size</label>
-        <div class="space-y-2">
-          <label 
-            v-for="option in fontSizeOptions" 
-            :key="option.value"
-            class="flex items-center justify-between p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors"
-            :class="settings.fontSize === option.value ? 'bg-orange-50 border-orange-300' : ''"
-          >
-            <div class="flex items-center">
-              <input 
-                :value="option.value"
-                :checked="settings.fontSize === option.value"
-                @change="updateSetting('fontSize', option.value)"
-                type="radio" 
-                name="fontSize"
-                class="text-orange-600 focus:ring-orange-500"
-              />
-              <div class="ml-3">
-                <div class="text-sm font-medium text-gray-900">{{ option.label }}</div>
-                <div class="text-xs text-gray-700">{{ option.description }}</div>
-              </div>
-            </div>
-          </label>
-        </div>
-      </div>
 
 
       <!-- Work Space Toggle -->
