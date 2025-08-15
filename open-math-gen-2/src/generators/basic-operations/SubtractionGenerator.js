@@ -11,6 +11,7 @@ export class SubtractionGenerator extends BaseGenerator {
       description: 'Generate subtraction problems with whole numbers',
       category: 'basic-operations',
       difficulty: 'easy',
+      icon: 'remove',
       
       defaultParameters: {
         problemCount: 10,

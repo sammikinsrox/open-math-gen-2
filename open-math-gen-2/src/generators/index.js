@@ -27,7 +27,7 @@ export const GENERATOR_CATEGORIES = {
   'basic-operations': {
     name: 'Basic Operations',
     description: 'Addition, subtraction, multiplication, division, and order of operations',
-    icon: '🔢',
+    icon: 'calculate',
     generators: {
       'addition': new AdditionGenerator(),
       'subtraction': new SubtractionGenerator(),
@@ -41,7 +41,7 @@ export const GENERATOR_CATEGORIES = {
   'numbers-place-value': {
     name: 'Numbers & Place Value',
     description: 'Place value, rounding, number comparison, patterns, and prime numbers',
-    icon: '🔤',
+    icon: 'pin',
     generators: {
       // TODO: Add generators for this category
       // 'place-value': new PlaceValueGenerator(),
@@ -56,7 +56,7 @@ export const GENERATOR_CATEGORIES = {
   'fractions-decimals': {
     name: 'Fractions & Decimals',
     description: 'Fraction operations, mixed numbers, decimal conversions, and percentages',
-    icon: '➗',
+    icon: 'percent',
     generators: {
       'fraction-addition': new FractionAdditionGenerator()
       // TODO: Add more generators for this category
@@ -73,7 +73,7 @@ export const GENERATOR_CATEGORIES = {
   'measurement-units': {
     name: 'Measurement & Units',
     description: 'Length, weight, volume, time, temperature, and unit conversions',
-    icon: '📏',
+    icon: 'straighten',
     generators: {
       // TODO: Add generators for this category
       // 'length': new LengthGenerator(),
@@ -89,7 +89,7 @@ export const GENERATOR_CATEGORIES = {
   'money-finance': {
     name: 'Money & Finance',
     description: 'Money counting, change making, simple interest, and budgeting',
-    icon: '💰',
+    icon: 'attach_money',
     generators: {
       // TODO: Add generators for this category
       // 'money-counting': new MoneyCountingGenerator(),
@@ -104,7 +104,7 @@ export const GENERATOR_CATEGORIES = {
   'geometry-basic': {
     name: 'Basic Geometry',
     description: 'Shapes, perimeter, area, angles, lines, and coordinate basics',
-    icon: '📐',
+    icon: 'square_foot',
     generators: {
       // TODO: Add generators for this category
       // 'basic-shapes': new BasicShapesGenerator(),
@@ -120,7 +120,7 @@ export const GENERATOR_CATEGORIES = {
   'geometry-advanced': {
     name: 'Advanced Geometry',
     description: 'Complex areas, circles, volume, Pythagorean theorem, and transformations',
-    icon: '📊',
+    icon: 'analytics',
     generators: {
       // TODO: Add generators for this category
       // 'complex-area': new ComplexAreaGenerator(),
@@ -136,7 +136,7 @@ export const GENERATOR_CATEGORIES = {
   'pre-algebra': {
     name: 'Pre-Algebra',
     description: 'Integers, expressions, equations, inequalities, ratios, and proportions',
-    icon: '🧮',
+    icon: 'functions',
     generators: {
       // TODO: Add generators for this category
       // 'integers': new IntegersGenerator(),
@@ -154,7 +154,7 @@ export const GENERATOR_CATEGORIES = {
   'algebra': {
     name: 'Algebra',
     description: 'Linear equations, systems, quadratics, polynomials, and functions',
-    icon: '🔬',
+    icon: 'science',
     generators: {
       'linear-equations': new LinearEquationsGenerator()
       // TODO: Add more generators for this category
@@ -171,7 +171,7 @@ export const GENERATOR_CATEGORIES = {
   'trigonometry': {
     name: 'Trigonometry',
     description: 'Trig ratios, right triangles, unit circle, identities, and equations',
-    icon: '📐',
+    icon: 'architecture',
     generators: {
       // TODO: Add generators for this category
       // 'trigonometric-ratios': new TrigonometricRatiosGenerator(),

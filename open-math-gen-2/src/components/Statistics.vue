@@ -65,19 +65,25 @@ onMounted(() => {
       <!-- Additional highlights -->
       <div class="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8">
         <div class="text-center bg-slate-800/20 backdrop-blur-sm border border-slate-700/30 rounded-xl p-6">
-          <div class="text-orange-400 text-2xl mb-3">🎓</div>
+          <div class="mb-3">
+            <span class="material-icons text-orange-400 text-2xl">school</span>
+          </div>
           <h3 class="text-lg font-semibold text-white mb-2">K-12 Coverage</h3>
           <p class="text-slate-300 text-sm">From kindergarten through advanced high school mathematics</p>
         </div>
         
         <div class="text-center bg-slate-800/20 backdrop-blur-sm border border-slate-700/30 rounded-xl p-6">
-          <div class="text-orange-400 text-2xl mb-3">⚡</div>
+          <div class="mb-3">
+            <span class="material-icons text-orange-400 text-2xl">flash_on</span>
+          </div>
           <h3 class="text-lg font-semibold text-white mb-2">Instant Generation</h3>
           <p class="text-slate-300 text-sm">Create professional worksheets in seconds, not hours</p>
         </div>
         
         <div class="text-center bg-slate-800/20 backdrop-blur-sm border border-slate-700/30 rounded-xl p-6">
-          <div class="text-orange-400 text-2xl mb-3">🎯</div>
+          <div class="mb-3">
+            <span class="material-icons text-orange-400 text-2xl">gps_fixed</span>
+          </div>
           <h3 class="text-lg font-semibold text-white mb-2">100% Accurate</h3>
           <p class="text-slate-300 text-sm">Verified calculations with comprehensive testing</p>
         </div>

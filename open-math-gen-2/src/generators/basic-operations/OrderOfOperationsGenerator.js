@@ -11,6 +11,7 @@ export class OrderOfOperationsGenerator extends BaseGenerator {
       description: 'Generate problems requiring proper order of operations',
       category: 'basic-operations',
       difficulty: 'hard',
+      icon: 'analytics',
       
       defaultParameters: {
         problemCount: 10,

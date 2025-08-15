@@ -35,8 +35,8 @@ const selectGenerator = () => {
     <!-- Header -->
     <div class="flex items-start justify-between mb-4">
       <div class="flex items-center space-x-3">
-        <div class="text-3xl group-hover:scale-110 transition-transform duration-300">
-          {{ generatorInfo.icon }}
+        <div class="group-hover:scale-110 transition-transform duration-300">
+          <span class="material-icons text-3xl text-orange-400">{{ generatorInfo.icon }}</span>
         </div>
         <div>
           <h3 class="text-lg font-semibold text-white group-hover:text-orange-400 transition-colors">

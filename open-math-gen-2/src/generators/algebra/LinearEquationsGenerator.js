@@ -11,7 +11,7 @@ export class LinearEquationsGenerator extends BaseGenerator {
       description: 'Generate linear equations to solve for x (ax + b = c format)',
       category: 'algebra',
       difficulty: 'medium',
-      icon: '📊',
+      icon: 'functions',
       tags: ['algebra', 'equations', 'solving', 'variables'],
       gradeLevel: '8-12',
       estimatedTime: '120 seconds',

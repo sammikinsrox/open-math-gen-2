@@ -39,7 +39,7 @@ const navigateTo = (page) => {
     <main v-if="currentPage === 'home'" class="transition-all duration-1000" :class="loaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'">
       <Hero @navigate="navigateTo" />
       <Statistics />
-      <Features />
+      <Features @navigate="navigateTo" />
     </main>
     
     <!-- Worksheet Builder Page -->

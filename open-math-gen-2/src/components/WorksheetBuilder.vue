@@ -14,6 +14,10 @@ const editingProblemSet = ref(null)
 const problemSets = ref([])
 const worksheetTitle = ref('Math Worksheet')
 
+// Drag and drop state
+const draggedIndex = ref(null)
+const dragOverIndex = ref(null)
+
 const categories = computed(() => GENERATOR_CATEGORIES)
 
 const filteredGenerators = computed(() => {
@@ -49,7 +53,8 @@ onMounted(() => {
         if (generator) {
           return {
             ...savedSet,
-            generator: generator
+            generator: generator,
+            generatorInfo: generator.getInfo() // Use fresh generator info to get updated icons
           }
         }
         return null
@@ -152,6 +157,12 @@ const clearWorksheet = () => {
   }
 }
 
+// Clear old localStorage data that might contain emoji icons
+const clearOldData = () => {
+  // This will force a refresh of all generator info on next save
+  localStorage.removeItem('worksheet-builder-state')
+}
+
 const goBack = () => {
   if (currentView.value === 'configure') {
     editingProblemSet.value = null // Clear editing state when going back
@@ -159,6 +170,152 @@ const goBack = () => {
   } else if (currentView.value === 'preview') {
     currentView.value = 'generators'
   }
+}
+
+// Drag and drop handlers
+const handleDragStart = (event, index) => {
+  draggedIndex.value = index
+  event.dataTransfer.effectAllowed = 'move'
+  event.dataTransfer.setData('text/html', event.target.outerHTML)
+  
+  // Add visual feedback to dragged element
+  event.target.classList.add('opacity-50')
+}
+
+const handleDragEnd = (event) => {
+  event.target.classList.remove('opacity-50')
+  draggedIndex.value = null
+  dragOverIndex.value = null
+}
+
+const handleDragOver = (event, index) => {
+  event.preventDefault()
+  event.dataTransfer.dropEffect = 'move'
+  
+  if (draggedIndex.value === null) return
+  
+  // Calculate drop position based on mouse position within the element
+  const rect = event.currentTarget.getBoundingClientRect()
+  const midpoint = rect.top + rect.height / 2
+  const mouseY = event.clientY
+  
+  // Determine if we're in the top half or bottom half of the element
+  let dropPosition
+  if (mouseY < midpoint) {
+    // Top half - insert before this item
+    dropPosition = index
+  } else {
+    // Bottom half - insert after this item
+    dropPosition = index + 1
+  }
+  
+  // Don't show indicator if dropping in the same position
+  const dragIndex = draggedIndex.value
+  if (dropPosition === dragIndex || dropPosition === dragIndex + 1) {
+    dragOverIndex.value = null
+  } else {
+    dragOverIndex.value = dropPosition
+  }
+}
+
+const handleDragLeave = (event) => {
+  // Only clear if we're actually leaving the drop zone
+  if (!event.currentTarget.contains(event.relatedTarget)) {
+    dragOverIndex.value = null
+  }
+}
+
+const handleDrop = (event, dropIndex) => {
+  event.preventDefault()
+  
+  const dragIndex = draggedIndex.value
+  if (dragIndex === null) {
+    return
+  }
+  
+  // Calculate the actual drop position using the same logic as dragOver
+  const rect = event.currentTarget.getBoundingClientRect()
+  const midpoint = rect.top + rect.height / 2
+  const mouseY = event.clientY
+  
+  let actualDropPosition
+  if (mouseY < midpoint) {
+    actualDropPosition = dropIndex
+  } else {
+    actualDropPosition = dropIndex + 1
+  }
+  
+  // Don't do anything if dropping in the same position
+  if (actualDropPosition === dragIndex || actualDropPosition === dragIndex + 1) {
+    draggedIndex.value = null
+    dragOverIndex.value = null
+    return
+  }
+  
+  // Create a new array with the reordered items
+  const newProblemSets = [...problemSets.value]
+  const draggedItem = newProblemSets[dragIndex]
+  
+  // Remove the dragged item
+  newProblemSets.splice(dragIndex, 1)
+  
+  // Insert the dragged item at the new position
+  // Adjust insert index if we removed an item before the drop position
+  const insertIndex = dragIndex < actualDropPosition ? actualDropPosition - 1 : actualDropPosition
+  newProblemSets.splice(insertIndex, 0, draggedItem)
+  
+  // Update the state
+  problemSets.value = newProblemSets
+  saveState()
+  
+  // Reset drag state
+  draggedIndex.value = null
+  dragOverIndex.value = null
+}
+
+// Handle drag over end zone
+const handleDragOverEnd = (event) => {
+  event.preventDefault()
+  event.dataTransfer.dropEffect = 'move'
+  
+  if (draggedIndex.value !== null) {
+    dragOverIndex.value = problemSets.value.length
+  }
+}
+
+// Handle drop at end
+const handleDropEnd = (event) => {
+  event.preventDefault()
+  
+  const dragIndex = draggedIndex.value
+  if (dragIndex === null) {
+    return
+  }
+  
+  // Don't do anything if dropping at the same position (last item)
+  if (dragIndex === problemSets.value.length - 1) {
+    draggedIndex.value = null
+    dragOverIndex.value = null
+    return
+  }
+  
+  // Create a new array with the reordered items
+  const newProblemSets = [...problemSets.value]
+  const draggedItem = newProblemSets[dragIndex]
+  
+  // Remove the dragged item
+  newProblemSets.splice(dragIndex, 1)
+  
+  // Add the dragged item at the end
+  newProblemSets.push(draggedItem)
+  
+  // Update the state
+  problemSets.value = newProblemSets
+  saveState()
+  
+  // Reset drag state
+  draggedIndex.value = null
+  dragOverIndex.value = null
 }
 </script>
 
@@ -184,7 +341,7 @@ const goBack = () => {
             :class="currentView === 'generators' ? 'bg-orange-500 text-white' : 'text-slate-300 hover:text-white'"
             class="px-6 py-3 rounded-lg font-medium transition-all duration-200"
           >
-            📚 Select Generators
+<span class="material-icons mr-2">auto_stories</span>Select Generators
           </button>
           <button 
             @click="currentView = 'configure'" 
@@ -192,14 +349,14 @@ const goBack = () => {
             class="px-6 py-3 rounded-lg font-medium transition-all duration-200 ml-2"
             :disabled="!selectedGenerator"
           >
-            ⚙️ Configure
+<span class="material-icons mr-2">settings</span>Configure
           </button>
           <button 
             @click="previewWorksheet" 
             :class="currentView === 'preview' ? 'bg-orange-500 text-white' : 'text-slate-300 hover:text-white'"
             class="px-6 py-3 rounded-lg font-medium transition-all duration-200 ml-2"
           >
-            👁️ Preview
+<span class="material-icons mr-2">preview</span>Preview
           </button>
         </div>
       </div>
@@ -255,19 +412,39 @@ const goBack = () => {
 
           <!-- Problem Sets List -->
           <div class="space-y-3">
+            <!-- Drop indicator line before first item -->
             <div 
-              v-for="(set, index) in problemSets" 
-              :key="set.id"
-              :class="[
-                'backdrop-blur-sm rounded-xl p-4 transition-all duration-200',
-                editingProblemSet?.id === set.id && currentView === 'configure'
-                  ? 'bg-orange-500/30 border-2 border-orange-400 shadow-lg shadow-orange-500/20'
-                  : 'bg-white/10 border border-white/20 hover:bg-white/15'
-              ]"
-            >
+              v-if="draggedIndex !== null && dragOverIndex === 0"
+              class="h-0.5 bg-orange-400 shadow-lg shadow-orange-400/50 rounded-full transition-all duration-200 animate-pulse"
+            ></div>
+
+            <template v-for="(set, index) in problemSets" :key="set.id">
+              <div 
+                draggable="true"
+                @dragstart="handleDragStart($event, index)"
+                @dragend="handleDragEnd($event)"
+                @dragover="handleDragOver($event, index)"
+                @dragleave="handleDragLeave($event)"
+                @drop="handleDrop($event, index)"
+                :class="[
+                  'backdrop-blur-sm rounded-xl p-4 transition-all duration-200 cursor-grab active:cursor-grabbing',
+                  editingProblemSet?.id === set.id && currentView === 'configure'
+                    ? 'bg-orange-500/30 border-2 border-orange-400 shadow-lg shadow-orange-500/20'
+                    : 'bg-white/10 border border-white/20 hover:bg-white/15',
+                  draggedIndex === index
+                    ? 'opacity-50 transform scale-95'
+                    : ''
+                ]"
+              >
               <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-4">
-                  <div class="text-2xl">{{ set.generatorInfo.icon }}</div>
+                  <!-- Drag Handle -->
+                  <div class="cursor-grab active:cursor-grabbing text-white/50 hover:text-white/80 transition-colors">
+                    <span class="material-icons">drag_indicator</span>
+                  </div>
+                  <div>
+                    <span class="material-icons text-2xl text-orange-400">{{ set.generatorInfo.icon }}</span>
+                  </div>
                   <div>
                     <h4 class="text-white font-semibold">{{ set.generatorInfo.name }}</h4>
                     <div class="flex items-center space-x-3 text-sm text-orange-200">
@@ -294,6 +471,28 @@ const goBack = () => {
                   </button>
                 </div>
               </div>
+              </div>
+
+              <!-- Drop indicator line after each item -->
+              <div 
+                v-if="draggedIndex !== null && dragOverIndex === index + 1"
+                class="h-0.5 bg-orange-400 shadow-lg shadow-orange-400/50 rounded-full transition-all duration-200 animate-pulse"
+              ></div>
+            </template>
+
+            <!-- Drop zone at the end -->
+            <div 
+              v-if="draggedIndex !== null"
+              @dragover="handleDragOverEnd($event)"
+              @dragleave="handleDragLeave($event)"
+              @drop="handleDropEnd($event)"
+              class="h-8 transition-all duration-200"
+            >
+              <!-- Drop indicator line at the end -->
+              <div 
+                v-if="dragOverIndex === problemSets.length"
+                class="h-0.5 bg-orange-400 shadow-lg shadow-orange-400/50 rounded-full transition-all duration-200 animate-pulse"
+              ></div>
             </div>
           </div>
         </div>
@@ -311,7 +510,9 @@ const goBack = () => {
               :class="selectedCategory === categoryId ? 'bg-orange-500 text-white' : 'bg-slate-800/50 text-slate-300 hover:bg-slate-700/50'"
               class="p-4 rounded-xl border border-slate-700/50 backdrop-blur-sm transition-all duration-200 text-center"
             >
-              <div class="text-2xl mb-2">{{ category.icon }}</div>
+              <div class="mb-2">
+                <span class="material-icons text-2xl text-orange-400">{{ category.icon }}</span>
+              </div>
               <div class="font-medium text-sm">{{ category.name }}</div>
             </button>
           </div>
@@ -341,7 +542,9 @@ const goBack = () => {
 
         <!-- Empty State -->
         <div v-if="filteredGenerators.length === 0" class="text-center py-12">
-          <div class="text-6xl mb-4">🔍</div>
+          <div class="w-20 h-20 border-2 border-dashed border-slate-400 rounded-lg mx-auto mb-4 flex items-center justify-center">
+            <span class="material-icons text-slate-400 text-4xl">search_off</span>
+          </div>
           <h3 class="text-xl font-semibold text-white mb-2">No generators found</h3>
           <p class="text-slate-300">Try adjusting your search or selecting a different category.</p>
         </div>

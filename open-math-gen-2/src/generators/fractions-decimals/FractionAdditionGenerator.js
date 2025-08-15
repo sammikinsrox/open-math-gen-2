@@ -11,6 +11,7 @@ export class FractionAdditionGenerator extends BaseGenerator {
       description: 'Generate fraction addition problems with common and uncommon denominators',
       category: 'fractions-decimals',
       difficulty: 'medium',
+      icon: 'add',
       
       defaultParameters: {
         problemCount: 10,

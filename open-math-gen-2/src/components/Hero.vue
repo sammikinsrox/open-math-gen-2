@@ -46,15 +46,15 @@ onMounted(() => {
         <!-- Feature highlights -->
         <div class="flex flex-wrap justify-center gap-4 mb-12">
           <div class="bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 rounded-full px-4 py-2">
-            <span class="text-orange-400 font-semibold">✨</span>
+<span class="material-icons text-orange-400 text-lg">auto_awesome</span>
             <span class="text-slate-200 ml-2">70+ Problem Types</span>
           </div>
           <div class="bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 rounded-full px-4 py-2">
-            <span class="text-orange-400 font-semibold">🎯</span>
+<span class="material-icons text-orange-400 text-lg">gps_fixed</span>
             <span class="text-slate-200 ml-2">LaTeX Rendering</span>
           </div>
           <div class="bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 rounded-full px-4 py-2">
-            <span class="text-orange-400 font-semibold">📱</span>
+<span class="material-icons text-orange-400 text-lg">smartphone</span>
             <span class="text-slate-200 ml-2">Mobile Responsive</span>
           </div>
         </div>

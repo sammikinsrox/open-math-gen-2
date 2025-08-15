@@ -11,7 +11,7 @@ export class AdditionGenerator extends BaseGenerator {
       description: 'Generate addition problems with whole numbers',
       category: 'basic-operations',
       difficulty: 'easy',
-      icon: '➕',
+      icon: 'add',
       tags: ['arithmetic', 'whole-numbers', 'basic-math'],
       gradeLevel: 'K-5',
       estimatedTime: '30 seconds',

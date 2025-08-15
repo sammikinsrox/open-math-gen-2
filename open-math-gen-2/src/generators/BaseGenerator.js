@@ -10,7 +10,7 @@ export class BaseGenerator {
     this.description = config.description || ''
     this.category = config.category || 'general'
     this.difficulty = config.difficulty || 'medium'
-    this.icon = config.icon || '📝'
+    this.icon = config.icon || 'calculate'
     this.tags = config.tags || []
     this.gradeLevel = config.gradeLevel || 'K-12'
     this.estimatedTime = config.estimatedTime || '60 seconds'

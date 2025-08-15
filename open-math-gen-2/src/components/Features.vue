@@ -2,72 +2,74 @@
 import { ref } from 'vue'
 import MathExpression from './MathExpression.vue'
 
+const emit = defineEmits(['navigate'])
+
 const categories = ref([
   {
-    icon: '🔢',
+    icon: 'calculate',
     title: 'Basic Operations',
     description: 'Addition, subtraction, multiplication, division, and order of operations',
     count: '6 generators',
     color: 'from-orange-400 to-red-500'
   },
   {
-    icon: '🔤',
+    icon: 'pin',
     title: 'Numbers & Place Value',
     description: 'Place value, rounding, comparisons, patterns, and prime numbers',
     count: '6 generators',
     color: 'from-blue-400 to-blue-600'
   },
   {
-    icon: '➗',
+    icon: 'percent',
     title: 'Fractions & Decimals',
     description: 'Fraction operations, mixed numbers, decimal conversions, percentages',
     count: '8 generators',
     color: 'from-green-400 to-green-600'
   },
   {
-    icon: '📏',
+    icon: 'straighten',
     title: 'Measurement & Units',
     description: 'Length, weight, volume, time, temperature, and unit conversions',
     count: '7 generators',
     color: 'from-purple-400 to-purple-600'
   },
   {
-    icon: '💰',
+    icon: 'attach_money',
     title: 'Money & Finance',
     description: 'Money counting, change making, simple interest, and budgeting',
     count: '6 generators',
     color: 'from-yellow-400 to-orange-500'
   },
   {
-    icon: '📐',
+    icon: 'square_foot',
     title: 'Basic Geometry',
     description: 'Shapes, perimeter, area, angles, lines, and coordinate basics',
     count: '8 generators',
     color: 'from-teal-400 to-cyan-500'
   },
   {
-    icon: '📊',
+    icon: 'analytics',
     title: 'Advanced Geometry',
     description: 'Complex areas, circles, volume, Pythagorean theorem, transformations',
     count: '7 generators',
     color: 'from-indigo-400 to-purple-500'
   },
   {
-    icon: '🧮',
+    icon: 'functions',
     title: 'Pre-Algebra',
     description: 'Integers, expressions, equations, inequalities, ratios, proportions',
     count: '9 generators',
     color: 'from-pink-400 to-rose-500'
   },
   {
-    icon: '🔬',
+    icon: 'science',
     title: 'Algebra',
     description: 'Linear equations, systems, quadratics, polynomials, functions',
     count: '8 generators',
     color: 'from-emerald-400 to-green-500'
   },
   {
-    icon: '📐',
+    icon: 'architecture',
     title: 'Trigonometry',
     description: 'Trig ratios, right triangles, unit circle, identities, equations',
     count: '6 generators',
@@ -77,32 +79,32 @@ const categories = ref([
 
 const features = ref([
   {
-    icon: '⚡',
+    icon: 'flash_on',
     title: 'Lightning Fast',
     description: 'Generate comprehensive worksheets in seconds with optimized algorithms'
   },
   {
-    icon: '🎨',
+    icon: 'palette',
     title: 'Beautiful Design',
     description: 'Professional layouts with LaTeX rendering for perfect mathematical notation'
   },
   {
-    icon: '📱',
+    icon: 'devices',
     title: 'Responsive',
     description: 'Works perfectly on desktop, tablet, and mobile devices'
   },
   {
-    icon: '🎯',
+    icon: 'tune',
     title: 'Customizable',
     description: '100+ parameters to fine-tune every aspect of your worksheets'
   },
   {
-    icon: '📋',
+    icon: 'assignment',
     title: 'Answer Keys',
     description: 'Automatic answer sheet generation with step-by-step solutions'
   },
   {
-    icon: '🧪',
+    icon: 'verified',
     title: 'Tested',
     description: 'Over 1000 test cases ensure mathematical accuracy and reliability'
   }
@@ -131,7 +133,9 @@ const features = ref([
           :key="index"
           class="bg-slate-800/30 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-8 hover:bg-slate-800/50 transition-all duration-300 hover:transform hover:scale-105"
         >
-          <div class="text-3xl mb-4">{{ feature.icon }}</div>
+          <div class="mb-4">
+            <span class="material-icons text-3xl text-orange-400">{{ feature.icon }}</span>
+          </div>
           <h3 class="text-xl font-semibold text-white mb-3">{{ feature.title }}</h3>
           <p class="text-slate-300">{{ feature.description }}</p>
         </div>
@@ -154,8 +158,8 @@ const features = ref([
           class="group bg-slate-800/30 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-6 hover:bg-slate-800/50 transition-all duration-300 cursor-pointer"
         >
           <div class="text-center">
-            <div class="text-4xl mb-4 group-hover:scale-110 transition-transform duration-300">
-              {{ category.icon }}
+            <div class="mb-4 group-hover:scale-110 transition-transform duration-300">
+              <span class="material-icons text-4xl text-orange-400">{{ category.icon }}</span>
             </div>
             <h3 class="text-lg font-semibold text-white mb-2">{{ category.title }}</h3>
             <p class="text-slate-300 text-sm mb-3">{{ category.description }}</p>
@@ -221,7 +225,7 @@ const features = ref([
             Join thousands of educators who trust Open Math Gen for their classroom needs
           </p>
           <div class="flex flex-col sm:flex-row gap-4 justify-center">
-            <button class="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white px-8 py-4 rounded-xl font-semibold text-lg shadow-2xl hover:shadow-orange-500/25 transition-all duration-300 transform hover:scale-105">
+            <button @click="emit('navigate', 'worksheet-builder')" class="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white px-8 py-4 rounded-xl font-semibold text-lg shadow-2xl hover:shadow-orange-500/25 transition-all duration-300 transform hover:scale-105">
               Start Creating Now
             </button>
             <button class="border border-slate-600 text-slate-200 hover:text-white hover:border-slate-500 px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-300">

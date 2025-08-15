@@ -11,6 +11,7 @@ export class MultiplicationGenerator extends BaseGenerator {
       description: 'Generate multiplication problems with whole numbers',
       category: 'basic-operations',
       difficulty: 'medium',
+      icon: 'close',
       
       defaultParameters: {
         problemCount: 10,

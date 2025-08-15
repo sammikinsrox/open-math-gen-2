@@ -38,6 +38,29 @@ const estimatedTime = computed(() => {
   return `${minutes} minute${minutes !== 1 ? 's' : ''}`
 })
 
+// Group generated problems by their problem set
+const groupedProblems = computed(() => {
+  const groups = []
+  let currentSetIndex = -1
+  let currentGroup = null
+  
+  generatedProblems.value.forEach(problem => {
+    if (problem.setIndex !== currentSetIndex) {
+      // New problem set, create new group
+      currentSetIndex = problem.setIndex
+      const problemSet = props.problemSets[currentSetIndex]
+      currentGroup = {
+        setInfo: problemSet.generatorInfo,
+        problems: []
+      }
+      groups.push(currentGroup)
+    }
+    currentGroup.problems.push(problem)
+  })
+  
+  return groups
+})
+
 onMounted(() => {
   generateAllProblems()
 })
@@ -180,7 +203,7 @@ const toggleAnswers = () => {
           @click="exportToPDF"
           class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
         >
-          🖨️ Print/Export
+<span class="material-icons mr-2">print</span>Print/Export
         </button>
       </div>
     </div>
@@ -197,7 +220,7 @@ const toggleAnswers = () => {
           >
             <div class="flex items-center justify-between mb-2">
               <div class="flex items-center space-x-2">
-                <span class="text-lg">{{ set.generator.icon }}</span>
+<span class="material-icons text-lg text-orange-400">{{ set.generator.icon }}</span>
                 <span class="font-medium text-white">{{ set.generator.name }}</span>
               </div>
               <div class="flex space-x-1">
@@ -261,69 +284,80 @@ const toggleAnswers = () => {
 
       <!-- Loading State -->
       <div v-if="isGenerating" class="text-center py-12">
-        <div class="text-4xl mb-4">⏳</div>
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-slate-600 mx-auto mb-4"></div>
         <p class="text-slate-600">Generating worksheet problems...</p>
       </div>
 
-      <!-- Problems -->
-      <div v-else-if="generatedProblems.length > 0" class="space-y-8">
+      <!-- Problems grouped by problem set -->
+      <div v-else-if="groupedProblems.length > 0" class="space-y-10">
         <div 
-          v-for="(problem, index) in generatedProblems" 
-          :key="problem.id"
-          class="border-b border-slate-100 pb-6 last:border-b-0"
+          v-for="(group, groupIndex) in groupedProblems" 
+          :key="`group-${groupIndex}`"
+          class="problem-set-section"
         >
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-            
-            <!-- Problem -->
-            <div>
-              <div class="flex items-start space-x-3">
-                <span class="font-bold text-slate-800 text-lg min-w-[2rem]">
-                  {{ problem.problemNumber }}.
-                </span>
-                <div class="flex-1">
-                  <div class="text-lg text-slate-800 mb-4">
-                    <MathExpression 
-                      v-if="problem.questionLaTeX" 
-                      :expression="problem.questionLaTeX" 
-                    />
-                    <span v-else>{{ problem.question }}</span>
-                  </div>
-                  
-                  <!-- Work Space -->
-                  <div v-if="problem.workSpace" class="min-h-[100px] border border-slate-200 rounded p-3">
-                    <div class="text-xs text-slate-400 mb-2">Work Space:</div>
-                    <div class="space-y-3">
-                      <div class="border-b border-slate-100"></div>
-                      <div class="border-b border-slate-100"></div>
-                      <div class="border-b border-slate-100"></div>
+          <!-- Section Header -->
+          <div class="mb-6 pb-3 border-b-2 border-slate-300">
+            <h3 class="text-xl font-bold text-slate-800">{{ group.setInfo.name }}</h3>
+            <p class="text-sm text-slate-600">{{ group.problems.length }} problem{{ group.problems.length !== 1 ? 's' : '' }}</p>
+          </div>
+
+          <!-- Problems in this set -->
+          <div class="space-y-8">
+            <div 
+              v-for="(problem, index) in group.problems" 
+              :key="problem.id"
+              class="border-b border-slate-100 pb-6 last:border-b-0"
+            >
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                
+                <!-- Problem -->
+                <div>
+                  <div class="flex items-start space-x-3">
+                    <span class="font-bold text-slate-800 text-lg min-w-[2rem]">
+                      {{ problem.problemNumber }}.
+                    </span>
+                    <div class="flex-1">
+                      <div class="text-lg text-slate-800 mb-4">
+                        <MathExpression 
+                          v-if="problem.questionLaTeX" 
+                          :expression="problem.questionLaTeX" 
+                        />
+                        <span v-else>{{ problem.question }}</span>
+                      </div>
+                      
+                      <!-- Work Space -->
+                      <div v-if="problem.workSpace" class="min-h-[100px] border border-slate-200 rounded p-3">
+                        <div class="text-xs text-slate-400 mb-2">Work Space:</div>
+                        <div class="space-y-3">
+                          <div class="border-b border-slate-100"></div>
+                          <div class="border-b border-slate-100"></div>
+                          <div class="border-b border-slate-100"></div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
+
+                <!-- Answer Section -->
+                <div class="flex flex-col justify-center">
+                  <!-- Answer Blank (always show blank for student worksheet) -->
+                  <div class="mb-4">
+                    <div class="text-sm text-slate-600 mb-2">Answer:</div>
+                    <div class="border-b-2 border-slate-300 min-h-[2rem] w-full"></div>
+                  </div>
+                </div>
+
               </div>
             </div>
-
-            <!-- Answer Section -->
-            <div class="flex flex-col justify-center">
-              <!-- Answer Blank (always show blank for student worksheet) -->
-              <div class="mb-4">
-                <div class="text-sm text-slate-600 mb-2">Answer:</div>
-                <div class="border-b-2 border-slate-300 min-h-[2rem] w-full"></div>
-              </div>
-
-              <!-- Problem Info Badge -->
-              <div class="text-xs text-slate-500 flex items-center space-x-2">
-                <span>{{ problem.setInfo.icon }}</span>
-                <span>{{ problem.setInfo.name }}</span>
-              </div>
-            </div>
-
           </div>
         </div>
       </div>
 
       <!-- Empty State -->
       <div v-else class="text-center py-12">
-        <div class="text-4xl mb-4">📝</div>
+        <div class="w-16 h-16 border-2 border-dashed border-slate-400 rounded-lg mx-auto mb-4 flex items-center justify-center">
+          <span class="material-icons text-slate-400 text-2xl">description</span>
+        </div>
         <p class="text-slate-600">No problems generated. Please check your configurations.</p>
       </div>
 
@@ -356,28 +390,37 @@ const toggleAnswers = () => {
         </div>
       </div>
 
-      <!-- Answer Grid -->
-      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+      <!-- Answer Grid grouped by problem set -->
+      <div class="space-y-8">
         <div 
-          v-for="(problem, index) in generatedProblems" 
-          :key="`answer-${problem.id}`"
-          class="bg-slate-50 border border-slate-200 rounded-lg p-4"
+          v-for="(group, groupIndex) in groupedProblems" 
+          :key="`answer-group-${groupIndex}`"
         >
-          <div class="flex items-start space-x-2">
-            <span class="font-bold text-slate-800 text-sm min-w-[1.5rem]">
-              {{ problem.problemNumber }}.
-            </span>
-            <div class="flex-1">
-              <div class="text-lg font-semibold text-slate-800">
-                <MathExpression 
-                  v-if="problem.answerLaTeX" 
-                  :expression="problem.answerLaTeX" 
-                />
-                <span v-else>{{ problem.answer }}</span>
-              </div>
-              <div class="text-xs text-slate-500 mt-1 flex items-center space-x-1">
-                <span>{{ problem.setInfo.icon }}</span>
-                <span>{{ problem.setInfo.name }}</span>
+          <!-- Answer Section Header -->
+          <div class="mb-4 pb-2 border-b border-slate-300">
+            <h4 class="text-lg font-semibold text-slate-800">{{ group.setInfo.name }} Answers</h4>
+          </div>
+
+          <!-- Answers for this set -->
+          <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            <div 
+              v-for="(problem, index) in group.problems" 
+              :key="`answer-${problem.id}`"
+              class="bg-slate-50 border border-slate-200 rounded-lg p-4"
+            >
+              <div class="flex items-start space-x-2">
+                <span class="font-bold text-slate-800 text-sm min-w-[1.5rem]">
+                  {{ problem.problemNumber }}.
+                </span>
+                <div class="flex-1">
+                  <div class="text-lg font-semibold text-slate-800">
+                    <MathExpression 
+                      v-if="problem.answerLaTeX" 
+                      :expression="problem.answerLaTeX" 
+                    />
+                    <span v-else>{{ problem.answer }}</span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

@@ -11,6 +11,7 @@ export class MixedOperationsGenerator extends BaseGenerator {
       description: 'Generate problems with mixed mathematical operations',
       category: 'basic-operations',
       difficulty: 'medium',
+      icon: 'calculate',
       
       defaultParameters: {
         problemCount: 10,

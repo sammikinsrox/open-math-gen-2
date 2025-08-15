@@ -102,7 +102,9 @@ const getStepValue = (param) => {
             </svg>
           </button>
           <div class="flex items-center space-x-3">
-            <div class="text-3xl">{{ generatorInfo.icon }}</div>
+            <div>
+              <span class="material-icons text-3xl text-orange-400">{{ generatorInfo.icon }}</span>
+            </div>
             <div>
               <h2 class="text-2xl font-bold text-white">
                 {{ editingProblemSet ? 'Edit' : 'Configure' }} {{ generatorInfo.name }}
@@ -278,13 +280,15 @@ const getStepValue = (param) => {
           
           <!-- Empty State -->
           <div v-else-if="!isGeneratingPreview" class="text-center py-8">
-            <div class="text-4xl mb-3">⚠️</div>
+            <div class="w-16 h-16 border-2 border-dashed border-slate-400 rounded-lg mx-auto mb-3 flex items-center justify-center">
+              <span class="material-icons text-slate-400 text-2xl">warning</span>
+            </div>
             <p class="text-slate-300">Unable to generate preview with current parameters</p>
           </div>
           
           <!-- Loading State -->
           <div v-else class="text-center py-8">
-            <div class="text-4xl mb-3">⏳</div>
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-slate-300 mx-auto mb-3"></div>
             <p class="text-slate-300">Generating preview...</p>
           </div>
         </div>
@@ -297,19 +301,19 @@ const getStepValue = (param) => {
               @click="parameters.problemCount = 5"
               class="w-full text-left text-sm text-slate-300 hover:text-white p-2 rounded hover:bg-slate-700/30 transition-colors"
             >
-              📝 Quick Set: 5 problems
+<span class="material-icons mr-2">edit</span>Quick Set: 5 problems
             </button>
             <button 
               @click="parameters.problemCount = 10"
               class="w-full text-left text-sm text-slate-300 hover:text-white p-2 rounded hover:bg-slate-700/30 transition-colors"
             >
-              📄 Standard Set: 10 problems
+<span class="material-icons mr-2">description</span>Standard Set: 10 problems
             </button>
             <button 
               @click="parameters.problemCount = 20"
               class="w-full text-left text-sm text-slate-300 hover:text-white p-2 rounded hover:bg-slate-700/30 transition-colors"
             >
-              📚 Extended Set: 20 problems
+<span class="material-icons mr-2">auto_stories</span>Extended Set: 20 problems
             </button>
           </div>
         </div>

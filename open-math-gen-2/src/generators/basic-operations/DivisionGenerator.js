@@ -11,6 +11,7 @@ export class DivisionGenerator extends BaseGenerator {
       description: 'Generate division problems with whole numbers',
       category: 'basic-operations',
       difficulty: 'medium',
+      icon: 'percent',
       
       defaultParameters: {
         problemCount: 10,

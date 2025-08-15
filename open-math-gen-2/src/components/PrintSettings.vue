@@ -34,9 +34,9 @@ const estimatedPages = computed(() => {
 
 // Settings groups
 const paperSizeOptions = [
-  { value: 'letter', label: 'Letter (8.5" × 11")', icon: '📄' },
-  { value: 'a4', label: 'A4 (210mm × 297mm)', icon: '📄' },
-  { value: 'legal', label: 'Legal (8.5" × 14")', icon: '📜' }
+  { value: 'letter', label: 'Letter (8.5" × 11")', icon: 'description' },
+  { value: 'a4', label: 'A4 (210mm × 297mm)', icon: 'description' },
+  { value: 'legal', label: 'Legal (8.5" × 14")', icon: 'description' }
 ]
 
 
@@ -91,7 +91,7 @@ const problemsPerPageOptions = [
               name="paperSize"
               class="text-orange-600 focus:ring-orange-500"
             />
-            <span class="ml-3 text-lg">{{ option.icon }}</span>
+            <span class="material-icons ml-3 text-lg text-orange-600">{{ option.icon }}</span>
             <span class="ml-2 text-sm font-medium text-gray-900">{{ option.label }}</span>
           </label>
         </div>
@@ -386,10 +386,10 @@ const problemsPerPageOptions = [
       <div class="bg-gradient-to-r from-orange-50 to-orange-100 border border-orange-200 rounded-lg p-4">
         <h4 class="text-sm font-semibold text-orange-800 mb-2">Print Summary</h4>
         <div class="text-xs text-orange-700 space-y-1">
-          <div>📄 Paper: {{ settings.paperSize.toUpperCase() }} {{ settings.orientation }}</div>
-          <div>📝 Problems: {{ problemCount }} total</div>
-          <div>📑 Pages: ~{{ estimatedPages }} page{{ estimatedPages !== 1 ? 's' : '' }}</div>
-          <div v-if="settings.includeAnswerKey">✅ Answer key: {{ settings.answerKeyLocation }}</div>
+          <div>Paper: {{ settings.paperSize.toUpperCase() }} {{ settings.orientation }}</div>
+          <div>Problems: {{ problemCount }} total</div>
+          <div>Pages: ~{{ estimatedPages }} page{{ estimatedPages !== 1 ? 's' : '' }}</div>
+          <div v-if="settings.includeAnswerKey">Answer key: {{ settings.answerKeyLocation }}</div>
         </div>
       </div>
     </div>
