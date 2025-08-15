@@ -192,47 +192,6 @@ const toggleAnswers = () => {
       </div>
     </div>
 
-    <!-- Problem Set Summary -->
-    <div class="mb-8 no-print">
-      <div class="bg-slate-800/30 backdrop-blur-sm border border-slate-700/50 rounded-xl p-6">
-        <h3 class="text-lg font-semibold text-white mb-4">Problem Sets</h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <div 
-            v-for="(set, index) in problemSets" 
-            :key="set.id"
-            class="bg-slate-700/30 rounded-lg p-4"
-          >
-            <div class="flex items-center justify-between mb-2">
-              <div class="flex items-center space-x-2">
-<span class="material-icons text-lg text-orange-400">{{ set.generator.icon }}</span>
-                <span class="font-medium text-white">{{ set.generator.name }}</span>
-              </div>
-              <div class="flex space-x-1">
-                <button 
-                  @click="editSet(index)"
-                  class="text-blue-400 hover:text-blue-300 p-1 rounded transition-colors"
-                  title="Edit"
-                >
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                  </svg>
-                </button>
-                <button 
-                  @click="removeSet(index)"
-                  class="text-red-400 hover:text-red-300 p-1 rounded transition-colors"
-                  title="Remove"
-                >
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                  </svg>
-                </button>
-              </div>
-            </div>
-            <p class="text-slate-300 text-sm">{{ set.problemCount }} problems</p>
-          </div>
-        </div>
-      </div>
-    </div>
 
     <!-- Worksheet Content -->
     <div class="bg-white rounded-lg shadow-2xl p-8 print:shadow-none print:rounded-none">

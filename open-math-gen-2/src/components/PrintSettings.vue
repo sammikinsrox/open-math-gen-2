@@ -20,11 +20,24 @@ const updateSetting = (key, value) => {
 
 // Computed for estimated pages
 const estimatedPages = computed(() => {
-  const problemsPerPage = props.settings.problemsPerPage === 'auto' 
-    ? (props.settings.paperSize === 'legal' ? 20 : 15)
-    : parseInt(props.settings.problemsPerPage)
+  let worksheetPages = 0
   
-  const worksheetPages = Math.ceil(props.problemCount / problemsPerPage)
+  if (props.settings.problemsPerPage === 'auto') {
+    // Calculate with new logic: 2 problems on first page (if header), 3 on subsequent pages
+    const firstPageProblems = props.settings.includeHeader ? 2 : 3
+    const subsequentPageProblems = 3
+    
+    if (props.problemCount <= firstPageProblems) {
+      worksheetPages = 1
+    } else {
+      const remainingProblems = props.problemCount - firstPageProblems
+      worksheetPages = 1 + Math.ceil(remainingProblems / subsequentPageProblems)
+    }
+  } else {
+    const problemsPerPage = parseInt(props.settings.problemsPerPage)
+    worksheetPages = Math.ceil(props.problemCount / problemsPerPage)
+  }
+  
   const answerKeyPages = props.settings.includeAnswerKey && props.settings.answerKeyLocation === 'separate' 
     ? Math.ceil(props.problemCount / 36) // 36 answers per page
     : 0

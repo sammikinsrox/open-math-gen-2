@@ -174,6 +174,12 @@ const handlePrint = async () => {
         transform: none !important;
         width: 100% !important;
         max-width: none !important;
+        height: 100vh !important;
+        min-height: 100vh !important;
+        max-height: 100vh !important;
+        overflow: hidden !important;
+        display: flex !important;
+        flex-direction: column !important;
       }
       
       .print-page:last-child {
@@ -182,6 +188,24 @@ const handlePrint = async () => {
       
       .page-break-before {
         page-break-before: always;
+      }
+      
+      .print-content {
+        height: 100% !important;
+        flex: 1 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        overflow: hidden !important;
+      }
+      
+      .print-problems {
+        flex: 1 !important;
+        overflow: hidden !important;
+      }
+      
+      .print-footer {
+        margin-top: auto !important;
+        flex-shrink: 0 !important;
       }
 
       /* Ensure proper sizing */
@@ -192,10 +216,35 @@ const handlePrint = async () => {
       .min-h-\\[11in\\] {
         min-height: auto !important;
       }
+      
+      .h-\\[11in\\] {
+        height: 100vh !important;
+      }
 
       /* Remove hover effects */
       .print-page:hover {
         transform: none !important;
+      }
+      
+      /* Ensure high contrast for B&W printing */
+      .text-gray-700 {
+        color: #374151 !important;
+      }
+      
+      .text-gray-800 {
+        color: #1f2937 !important;
+      }
+      
+      .bg-gray-100 {
+        background-color: #f3f4f6 !important;
+      }
+      
+      .border-black {
+        border-color: #000000 !important;
+      }
+      
+      .border-gray-300 {
+        border-color: #d1d5db !important;
       }
     }
 

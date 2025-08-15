@@ -25,18 +25,22 @@ const currentDate = new Date().toLocaleDateString()
 
 // Computed properties for styling
 const paperClasses = computed(() => {
-  const baseClasses = 'bg-white shadow-lg mx-auto mb-1 print:shadow-none print:mb-0'
+  const baseClasses = 'bg-white shadow-lg mx-auto mb-1 print:shadow-none print:mb-0 overflow-hidden'
+  
+  // Use exact height constraints to match real paper sizes
   const sizeClasses = {
-    letter: 'w-[8.5in] min-h-[11in]',
-    a4: 'w-[210mm] min-h-[297mm]', 
-    legal: 'w-[8.5in] min-h-[14in]'
-  }
-  const orientationClasses = {
-    portrait: '',
-    landscape: 'transform rotate-90 origin-center'
+    letter: props.settings.orientation === 'landscape' 
+      ? 'w-[11in] h-[8.5in]' 
+      : 'w-[8.5in] h-[11in]',
+    a4: props.settings.orientation === 'landscape' 
+      ? 'w-[297mm] h-[210mm]' 
+      : 'w-[210mm] h-[297mm]',
+    legal: props.settings.orientation === 'landscape' 
+      ? 'w-[14in] h-[8.5in]' 
+      : 'w-[8.5in] h-[14in]'
   }
   
-  return `${baseClasses} ${sizeClasses[props.settings.paperSize]} ${orientationClasses[props.settings.orientation]}`
+  return `${baseClasses} ${sizeClasses[props.settings.paperSize]}`
 })
 
 const marginClasses = computed(() => {
@@ -57,28 +61,49 @@ const fontSizeClasses = computed(() => {
   return sizes[props.settings.fontSize]
 })
 
-// Problem organization
+// Problem organization with different logic for first page vs subsequent pages
+const getProblemsForPage = (pageNumber) => {
+  if (props.settings.problemsPerPage !== 'auto') {
+    return parseInt(props.settings.problemsPerPage)
+  }
+  
+  // Auto mode: Different calculations for first page vs subsequent pages
+  const isFirstPage = pageNumber === 1
+  
+  if (isFirstPage && props.settings.includeHeader) {
+    // First page with header and instructions: 2 problems (less space due to header)
+    return 2
+  } else {
+    // Subsequent pages or first page without header: 3 problems (more space available)
+    return 3
+  }
+}
+
 const problemsPerPage = computed(() => {
+  // For the computed property, return the default (which is used for calculations)
+  // We'll use the getProblemsForPage function in the pages computation
   if (props.settings.problemsPerPage === 'auto') {
-    // Calculate based on page size and problem complexity
-    const baseSize = props.settings.paperSize === 'legal' ? 20 : 15
-    return props.settings.fontSize === 'large' ? Math.floor(baseSize * 0.8) : baseSize
+    return 3 // Default for calculations
   }
   return parseInt(props.settings.problemsPerPage)
 })
 
 const pages = computed(() => {
-  const pageSize = problemsPerPage.value
-  const pageCount = Math.ceil(props.problems.length / pageSize)
   const result = []
+  let currentProblemIndex = 0
+  let pageNumber = 1
   
-  for (let i = 0; i < pageCount; i++) {
-    const startIndex = i * pageSize
-    const endIndex = Math.min(startIndex + pageSize, props.problems.length)
+  while (currentProblemIndex < props.problems.length) {
+    const problemsForThisPage = getProblemsForPage(pageNumber)
+    const endIndex = Math.min(currentProblemIndex + problemsForThisPage, props.problems.length)
+    
     result.push({
-      pageNumber: i + 1,
-      problems: props.problems.slice(startIndex, endIndex)
+      pageNumber: pageNumber,
+      problems: props.problems.slice(currentProblemIndex, endIndex)
     })
+    
+    currentProblemIndex = endIndex
+    pageNumber++
   }
   
   return result
@@ -111,7 +136,7 @@ const answerKeyPages = computed(() => {
       :class="paperClasses"
       class="print-page"
     >
-      <div :class="[marginClasses, fontSizeClasses]" class="print-content">
+      <div :class="[marginClasses, fontSizeClasses]" class="print-content h-full flex flex-col">
         
         <!-- Page Header (only on first page) -->
         <div v-if="settings.includeHeader && page.pageNumber === 1" class="print-header border-b-2 border-black pb-4 mb-6">
@@ -171,7 +196,7 @@ const answerKeyPages = computed(() => {
         </div>
 
         <!-- Problems -->
-        <div class="print-problems space-y-6">
+        <div class="print-problems space-y-6 flex-1 overflow-hidden">
           <div 
             v-for="(problem, index) in page.problems" 
             :key="problem.id"
@@ -237,7 +262,7 @@ const answerKeyPages = computed(() => {
         </div>
 
         <!-- Page Footer -->
-        <div v-if="settings.includeFooter" class="print-footer border-t border-gray-300 pt-3 mt-6">
+        <div v-if="settings.includeFooter" class="print-footer border-t border-gray-300 pt-3 mt-auto">
           <div class="flex justify-between items-center text-xs text-gray-700">
             <div v-if="settings.schoolName">{{ settings.schoolName }}</div>
             <div class="text-center">{{ settings.footerText || 'Generated with Open Math Gen' }}</div>
@@ -258,7 +283,7 @@ const answerKeyPages = computed(() => {
       :class="paperClasses"
       class="print-page page-break-before"
     >
-      <div :class="[marginClasses, fontSizeClasses]" class="print-content">
+      <div :class="[marginClasses, fontSizeClasses]" class="print-content h-full flex flex-col">
         
         <!-- Answer Key Header -->
         <div class="print-header border-b-2 border-black pb-4 mb-6">
@@ -272,7 +297,7 @@ const answerKeyPages = computed(() => {
         </div>
 
         <!-- Answer Grid -->
-        <div class="answer-grid grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
+        <div class="answer-grid grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2 flex-1 overflow-hidden">
           <div 
             v-for="answer in answerPage.answers" 
             :key="answer.problemNumber"
@@ -292,7 +317,7 @@ const answerKeyPages = computed(() => {
         </div>
 
         <!-- Answer Key Footer -->
-        <div v-if="settings.includeFooter" class="print-footer border-t border-gray-300 pt-3 mt-6">
+        <div v-if="settings.includeFooter" class="print-footer border-t border-gray-300 pt-3 mt-auto">
           <div class="flex justify-between items-center text-xs text-gray-700">
             <div v-if="settings.schoolName">{{ settings.schoolName }}</div>
             <div class="text-center">Answer Key - {{ settings.footerText || 'Generated with Open Math Gen' }}</div>
@@ -319,6 +344,12 @@ const answerKeyPages = computed(() => {
     page-break-after: always;
     box-shadow: none !important;
     margin: 0 !important;
+    height: 100vh !important;
+    min-height: 100vh !important;
+    max-height: 100vh !important;
+    overflow: hidden !important;
+    display: flex !important;
+    flex-direction: column !important;
   }
   
   .print-page:last-child {
@@ -332,6 +363,24 @@ const answerKeyPages = computed(() => {
   .print-preview-container {
     margin: 0;
     padding: 0;
+  }
+  
+  .print-content {
+    height: 100% !important;
+    flex: 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+  }
+  
+  .print-problems {
+    flex: 1 !important;
+    overflow: hidden !important;
+  }
+  
+  .print-footer {
+    margin-top: auto !important;
+    flex-shrink: 0 !important;
   }
   
   /* Ensure high contrast for B&W printing */
@@ -418,6 +467,26 @@ const answerKeyPages = computed(() => {
 
 @page :first {
   margin-top: 1in;
+}
+
+/* Ensure pages maintain proper dimensions */
+.print-page {
+  display: flex;
+  flex-direction: column;
+}
+
+.print-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Screen styles to show proper page dimensions */
+@media screen {
+  .print-page {
+    border: 1px solid #e5e7eb;
+    box-sizing: border-box;
+  }
 }
 
 /* Answer grid responsiveness */

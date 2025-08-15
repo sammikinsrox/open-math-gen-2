@@ -6,6 +6,8 @@ import Navigation from './components/Navigation.vue'
 import Statistics from './components/Statistics.vue'
 import Footer from './components/Footer.vue'
 import WorksheetBuilder from './components/WorksheetBuilder.vue'
+import ContactUs from './components/ContactUs.vue'
+import PrivacyPolicy from './components/PrivacyPolicy.vue'
 
 const loaded = ref(false)
 const currentPage = ref('home')
@@ -47,6 +49,16 @@ const navigateTo = (page) => {
       <WorksheetBuilder />
     </div>
     
-    <Footer />
+    <!-- Contact Us Page -->
+    <div v-else-if="currentPage === 'contact'">
+      <ContactUs @navigate="navigateTo" />
+    </div>
+    
+    <!-- Privacy Policy Page -->
+    <div v-else-if="currentPage === 'privacy'">
+      <PrivacyPolicy @navigate="navigateTo" />
+    </div>
+    
+    <Footer v-if="currentPage === 'home'" @navigate="navigateTo" />
   </div>
 </template>

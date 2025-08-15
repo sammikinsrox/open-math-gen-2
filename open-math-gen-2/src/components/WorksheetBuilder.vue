@@ -459,13 +459,13 @@ const handleDropEnd = (event) => {
                 <div class="flex space-x-2">
                   <button 
                     @click="editProblemSet(set)"
-                    class="text-blue-300 hover:text-blue-200 px-3 py-1 rounded-lg bg-blue-500/20 hover:bg-blue-500/30 transition-colors text-sm font-medium"
+                    class="text-blue-400 hover:text-blue-100 px-3 py-1 rounded-lg bg-blue-500/30 hover:bg-blue-500/50 transition-all duration-200 text-sm font-medium hover:shadow-md hover:scale-105"
                   >
                     Edit
                   </button>
                   <button 
                     @click="removeProblemSet(set.id)"
-                    class="text-red-300 hover:text-red-200 px-3 py-1 rounded-lg bg-red-500/20 hover:bg-red-500/30 transition-colors text-sm font-medium"
+                    class="text-red-400 hover:text-red-100 px-3 py-1 rounded-lg bg-red-500/30 hover:bg-red-500/50 transition-all duration-200 text-sm font-medium hover:shadow-md hover:scale-105"
                   >
                     Remove
                   </button>
