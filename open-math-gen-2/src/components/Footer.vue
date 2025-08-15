@@ -37,9 +37,8 @@
           <h4 class="text-white font-semibold mb-4">Product</h4>
           <ul class="space-y-2">
             <li><a href="#" class="text-slate-300 hover:text-orange-400 transition-colors text-sm">Features</a></li>
-            <li><a href="#" class="text-slate-300 hover:text-orange-400 transition-colors text-sm">Generators</a></li>
+            <li><a href="#" class="text-slate-300 hover:text-orange-400 transition-colors text-sm">Worksheet Builder</a></li>
             <li><a href="#" class="text-slate-300 hover:text-orange-400 transition-colors text-sm">Templates</a></li>
-            <li><a href="#" class="text-slate-300 hover:text-orange-400 transition-colors text-sm">Pricing</a></li>
             <li><a href="#" class="text-slate-300 hover:text-orange-400 transition-colors text-sm">Changelog</a></li>
           </ul>
         </div>

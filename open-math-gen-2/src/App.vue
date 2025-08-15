@@ -5,26 +5,38 @@ import Features from './components/Features.vue'
 import Navigation from './components/Navigation.vue'
 import Statistics from './components/Statistics.vue'
 import Footer from './components/Footer.vue'
+import WorksheetBuilder from './components/WorksheetBuilder.vue'
 
 const loaded = ref(false)
+const currentPage = ref('home')
 
 onMounted(() => {
   setTimeout(() => {
     loaded.value = true
   }, 100)
 })
+
+const navigateTo = (page) => {
+  currentPage.value = page
+}
 </script>
 
 <template>
   <div class="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900">
-    <Navigation />
+    <Navigation @navigate="navigateTo" :current-page="currentPage" />
     
-    <main class="transition-all duration-1000" :class="loaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'">
-      <Hero />
+    <!-- Home Page -->
+    <main v-if="currentPage === 'home'" class="transition-all duration-1000" :class="loaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'">
+      <Hero @navigate="navigateTo" />
       <Statistics />
       <Features />
     </main>
     
-    <Footer />
+    <!-- Worksheet Builder Page -->
+    <div v-else-if="currentPage === 'worksheet-builder'">
+      <WorksheetBuilder />
+    </div>
+    
+    <Footer v-if="currentPage === 'home'" />
   </div>
 </template>

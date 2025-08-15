@@ -1,7 +1,21 @@
 <script setup>
 import { ref } from 'vue'
 
+const props = defineProps({
+  currentPage: {
+    type: String,
+    default: 'home'
+  }
+})
+
+const emit = defineEmits(['navigate'])
+
 const mobileMenuOpen = ref(false)
+
+const navigateTo = (page) => {
+  emit('navigate', page)
+  mobileMenuOpen.value = false
+}
 </script>
 
 <template>
@@ -10,7 +24,7 @@ const mobileMenuOpen = ref(false)
       <div class="flex justify-between items-center h-16">
         <!-- Logo -->
         <div class="flex items-center">
-          <div class="flex-shrink-0">
+          <div class="flex-shrink-0 cursor-pointer" @click="navigateTo('home')">
             <h1 class="text-xl font-bold text-white">
               <span class="text-orange-400">Open</span> Math Gen
             </h1>
@@ -21,7 +35,7 @@ const mobileMenuOpen = ref(false)
         <div class="hidden md:block">
           <div class="ml-10 flex items-baseline space-x-8">
             <a href="#features" class="text-slate-300 hover:text-orange-400 px-3 py-2 text-sm font-medium transition-colors">Features</a>
-            <a href="#generators" class="text-slate-300 hover:text-orange-400 px-3 py-2 text-sm font-medium transition-colors">Generators</a>
+            <button @click="navigateTo('worksheet-builder')" :class="currentPage === 'worksheet-builder' ? 'text-orange-400' : 'text-slate-300 hover:text-orange-400'" class="px-3 py-2 text-sm font-medium transition-colors">Worksheet Builder</button>
             <a href="#templates" class="text-slate-300 hover:text-orange-400 px-3 py-2 text-sm font-medium transition-colors">Templates</a>
             <a href="#docs" class="text-slate-300 hover:text-orange-400 px-3 py-2 text-sm font-medium transition-colors">Docs</a>
           </div>
@@ -29,7 +43,7 @@ const mobileMenuOpen = ref(false)
 
         <!-- CTA Button -->
         <div class="hidden md:block">
-          <button class="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-lg font-medium transition-colors shadow-lg hover:shadow-orange-500/25">
+          <button @click="navigateTo('worksheet-builder')" class="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-lg font-medium transition-colors shadow-lg hover:shadow-orange-500/25">
             Get Started
           </button>
         </div>
@@ -53,10 +67,10 @@ const mobileMenuOpen = ref(false)
     <div v-if="mobileMenuOpen" class="md:hidden bg-slate-800/95 backdrop-blur-md border-t border-slate-700/50">
       <div class="px-2 pt-2 pb-3 space-y-1">
         <a href="#features" class="text-slate-300 hover:text-orange-400 block px-3 py-2 text-base font-medium">Features</a>
-        <a href="#generators" class="text-slate-300 hover:text-orange-400 block px-3 py-2 text-base font-medium">Generators</a>
+        <button @click="navigateTo('worksheet-builder')" :class="currentPage === 'worksheet-builder' ? 'text-orange-400' : 'text-slate-300 hover:text-orange-400'" class="block px-3 py-2 text-base font-medium text-left w-full">Worksheet Builder</button>
         <a href="#templates" class="text-slate-300 hover:text-orange-400 block px-3 py-2 text-base font-medium">Templates</a>
         <a href="#docs" class="text-slate-300 hover:text-orange-400 block px-3 py-2 text-base font-medium">Docs</a>
-        <button class="w-full mt-4 bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-lg font-medium transition-colors">
+        <button @click="navigateTo('worksheet-builder')" class="w-full mt-4 bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-lg font-medium transition-colors">
           Get Started
         </button>
       </div>

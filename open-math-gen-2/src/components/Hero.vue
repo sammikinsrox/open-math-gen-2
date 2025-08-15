@@ -2,6 +2,8 @@
 import { ref, onMounted } from 'vue'
 import MathExpression from './MathExpression.vue'
 
+const emit = defineEmits(['navigate'])
+
 const animateNumbers = ref(false)
 
 const sampleProblems = ref([
@@ -59,10 +61,10 @@ onMounted(() => {
 
         <!-- Action buttons -->
         <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
-          <button class="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white px-8 py-4 rounded-xl font-semibold text-lg shadow-2xl hover:shadow-orange-500/25 transition-all duration-300 transform hover:scale-105">
+          <button @click="emit('navigate', 'worksheet-builder')" class="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white px-8 py-4 rounded-xl font-semibold text-lg shadow-2xl hover:shadow-orange-500/25 transition-all duration-300 transform hover:scale-105">
             Start Generating
           </button>
-          <button class="border border-slate-600 text-slate-200 hover:text-white hover:border-slate-500 px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-300 backdrop-blur-sm">
+          <button @click="emit('navigate', 'worksheet-builder')" class="border border-slate-600 text-slate-200 hover:text-white hover:border-slate-500 px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-300 backdrop-blur-sm">
             View Examples
           </button>
         </div>
@@ -86,51 +88,51 @@ onMounted(() => {
                   <p class="text-center text-slate-600">Grade 9 • Linear Equations & Radicals</p>
                 </div>
                 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div class="space-y-5">
-                    <div class="flex justify-between items-center">
-                      <div class="flex items-center">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  <div class="space-y-6">
+                    <div>
+                      <div class="flex items-center mb-10">
                         <span class="mr-2">1. Solve for x:</span>
                         <MathExpression :expression="sampleProblems[0].expression" />
                       </div>
-                      <span class="w-16 border-b border-slate-300"></span>
+                      <div class="w-full border-b-2 border-slate-300"></div>
                     </div>
-                    <div class="flex justify-between items-center">
-                      <div class="flex items-center">
+                    <div>
+                      <div class="flex items-center mb-10">
                         <span class="mr-2">2. Solve for y:</span>
                         <MathExpression :expression="sampleProblems[1].expression" />
                       </div>
-                      <span class="w-16 border-b border-slate-300"></span>
+                      <div class="w-full border-b-2 border-slate-300"></div>
                     </div>
-                    <div class="flex justify-between items-center">
-                      <div class="flex items-center">
+                    <div>
+                      <div class="flex items-center mb-10">
                         <span class="mr-2">3. Solve for a:</span>
                         <MathExpression :expression="sampleProblems[2].expression" />
                       </div>
-                      <span class="w-16 border-b border-slate-300"></span>
+                      <div class="w-full border-b-2 border-slate-300"></div>
                     </div>
                   </div>
-                  <div class="space-y-5">
-                    <div class="flex justify-between items-center">
-                      <div class="flex items-center">
+                  <div class="space-y-6">
+                    <div>
+                      <div class="flex items-center mb-10">
                         <span class="mr-2">4. Solve for b:</span>
                         <MathExpression :expression="sampleProblems[3].expression" />
                       </div>
-                      <span class="w-16 border-b border-slate-300"></span>
+                      <div class="w-full border-b-2 border-slate-300"></div>
                     </div>
-                    <div class="flex justify-between items-center">
-                      <div class="flex items-center">
+                    <div>
+                      <div class="flex items-center mb-10">
                         <span class="mr-2">5. Solve for x:</span>
                         <MathExpression :expression="sampleProblems[4].expression" />
                       </div>
-                      <span class="w-16 border-b border-slate-300"></span>
+                      <div class="w-full border-b-2 border-slate-300"></div>
                     </div>
-                    <div class="flex justify-between items-center">
-                      <div class="flex items-center">
+                    <div>
+                      <div class="flex items-center mb-10">
                         <span class="mr-2">6. Solve for x:</span>
                         <MathExpression :expression="sampleProblems[5].expression" />
                       </div>
-                      <span class="w-16 border-b border-slate-300"></span>
+                      <div class="w-full border-b-2 border-slate-300"></div>
                     </div>
                   </div>
                 </div>
