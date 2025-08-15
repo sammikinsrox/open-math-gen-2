@@ -71,9 +71,18 @@ const marginSizes = computed(() => {
   return margins[printSettings.value.margins]
 })
 
+// Reference to PrintPreview component
+const printPreviewRef = ref(null)
+
 // Zoom control methods
 const setZoom = (percentage) => {
   zoomLevel.value = percentage
+  // Trigger page break detection after zoom change
+  setTimeout(() => {
+    if (printPreviewRef.value && printPreviewRef.value.detectPageBreaks) {
+      printPreviewRef.value.detectPageBreaks()
+    }
+  }, 100)
 }
 
 const previewStyle = computed(() => {
@@ -472,6 +481,7 @@ watch(() => props.isOpen, (isOpen) => {
                 <div class="flex justify-center">
                   <div :style="previewStyle" class="transition-transform duration-200">
                     <PrintPreview
+                      ref="printPreviewRef"
                       :problems="generatedProblems"
                       :worksheet-title="worksheetTitle"
                       :settings="printSettings"

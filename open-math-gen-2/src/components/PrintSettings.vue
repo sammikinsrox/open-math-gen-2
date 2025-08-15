@@ -18,20 +18,159 @@ const updateSetting = (key, value) => {
   emit('update:settings', { ...props.settings, [key]: value })
 }
 
-// Computed for estimated pages
+// Dynamic page calculation that matches PrintPreview logic
+const calculateDynamicProblemsPerPage = (pageNumber) => {
+  if (props.settings.problemsPerPage !== 'auto') {
+    return parseInt(props.settings.problemsPerPage)
+  }
+  
+  // Calculate available space based on paper size and settings
+  const isFirstPage = pageNumber === 1
+  const hasHeader = isFirstPage && props.settings.includeHeader
+  const hasFooter = props.settings.includeFooter
+  const hasWorkSpace = props.settings.showWorkSpace
+  
+  // Base dimensions in pixels (approximate conversion for calculation)
+  const paperSizes = {
+    letter: { width: 816, height: 1056 }, // 8.5" x 11" at 96 DPI
+    a4: { width: 794, height: 1123 },     // 210mm x 297mm
+    legal: { width: 816, height: 1344 }   // 8.5" x 14"
+  }
+  
+  const margins = {
+    narrow: 48,   // 0.5" = 48px
+    normal: 96,   // 1" = 96px  
+    wide: 144     // 1.5" = 144px
+  }
+  
+  const paperSize = paperSizes[props.settings.paperSize] || paperSizes.letter
+  const marginSize = margins[props.settings.margins] || margins.normal
+  
+  // Calculate available content height
+  let availableHeight = paperSize.height - (marginSize * 2)
+  
+  // Subtract header space (if present on this page)
+  if (hasHeader) {
+    availableHeight -= 180 // Header + instructions space
+  }
+  
+  // Subtract footer space (if present)
+  if (hasFooter) {
+    availableHeight -= 40 // Footer space
+  }
+  
+  // Calculate problem height based on settings
+  let problemHeight = 60 // Base problem height (question + answer)
+  
+  // Add workspace height if enabled
+  if (hasWorkSpace) {
+    problemHeight += 100 // Workspace adds significant height
+  }
+  
+  // Add spacing between problems
+  problemHeight += 24 // Spacing between problems
+  
+  // Font size adjustments
+  const fontSizeMultipliers = {
+    small: 0.85,
+    normal: 1.0,
+    large: 1.2
+  }
+  problemHeight *= fontSizeMultipliers[props.settings.fontSize] || 1.0
+  
+  // Calculate how many problems fit
+  const maxProblems = Math.floor(availableHeight / problemHeight)
+  
+  // Apply reasonable bounds
+  const minProblems = 1
+  const maxBounds = hasWorkSpace ? 8 : 15 // More problems when no workspace
+  
+  return Math.max(minProblems, Math.min(maxProblems, maxBounds))
+}
+
+// Calculate actual available content height for a page
+const getAvailableContentHeight = (pageNumber, totalPages) => {
+  const isFirstPage = pageNumber === 1
+  const hasHeader = isFirstPage && props.settings.includeHeader
+  // Footer only appears on the very last page of the document
+  const hasFooter = props.settings.includeFooter && pageNumber === totalPages
+  
+  // Base dimensions in pixels (approximate conversion for calculation)
+  const paperSizes = {
+    letter: { width: 816, height: 1056 }, // 8.5" x 11" at 96 DPI
+    a4: { width: 794, height: 1123 },     // 210mm x 297mm
+    legal: { width: 816, height: 1344 }   // 8.5" x 14"
+  }
+  
+  const margins = {
+    narrow: 48,   // 0.5" = 48px
+    normal: 96,   // 1" = 96px  
+    wide: 144     // 1.5" = 144px
+  }
+  
+  const paperSize = paperSizes[props.settings.paperSize] || paperSizes.letter
+  const marginSize = margins[props.settings.margins] || margins.normal
+  
+  // Start with full page height minus margins
+  let availableHeight = paperSize.height - (marginSize * 2)
+  
+  // Subtract header space (if present on this page)
+  if (hasHeader) {
+    availableHeight -= 180 // Header + instructions space
+  }
+  
+  // Subtract footer space (if present)
+  if (hasFooter) {
+    availableHeight -= 40 // Footer space
+  }
+  
+  return availableHeight
+}
+
+// Calculate height of a single problem
+const getProblemHeight = () => {
+  const hasWorkSpace = props.settings.showWorkSpace
+  
+  // Base problem height (question + answer section)
+  let problemHeight = 60
+  
+  // Add workspace height if enabled
+  if (hasWorkSpace) {
+    problemHeight += 100 // Workspace adds significant height
+  }
+  
+  // Add spacing between problems
+  problemHeight += 24 // Spacing between problems
+  
+  // Font size adjustments
+  const fontSizeMultipliers = {
+    small: 0.85,
+    normal: 1.0,
+    large: 1.2
+  }
+  problemHeight *= fontSizeMultipliers[props.settings.fontSize] || 1.0
+  
+  return problemHeight
+}
+
+// Computed for estimated pages using height-based calculation
 const estimatedPages = computed(() => {
   let worksheetPages = 0
   
   if (props.settings.problemsPerPage === 'auto') {
-    // Calculate with new logic: 2 problems on first page (if header), 3 on subsequent pages
-    const firstPageProblems = props.settings.includeHeader ? 2 : 3
-    const subsequentPageProblems = 3
+    // First pass: calculate without footer consideration
+    let remainingProblems = props.problemCount
+    let currentPage = 1
     
-    if (props.problemCount <= firstPageProblems) {
-      worksheetPages = 1
-    } else {
-      const remainingProblems = props.problemCount - firstPageProblems
-      worksheetPages = 1 + Math.ceil(remainingProblems / subsequentPageProblems)
+    while (remainingProblems > 0) {
+      // Use large total for first pass calculation
+      const availableHeight = getAvailableContentHeight(currentPage, 9999)
+      const problemHeight = getProblemHeight()
+      const problemsOnThisPage = Math.max(1, Math.floor(availableHeight / problemHeight))
+      
+      remainingProblems -= problemsOnThisPage
+      worksheetPages++
+      currentPage++
     }
   } else {
     const problemsPerPage = parseInt(props.settings.problemsPerPage)
@@ -66,7 +205,7 @@ const fontSizeOptions = [
 ]
 
 const problemsPerPageOptions = [
-  { value: 'auto', label: 'Auto', description: 'Optimal spacing' },
+  { value: 'auto', label: 'Auto', description: 'Dynamic fitting based on settings' },
   { value: '5', label: '5 problems', description: 'Lots of work space' },
   { value: '10', label: '10 problems', description: 'Standard amount' },
   { value: '15', label: '15 problems', description: 'Compact layout' },
@@ -177,33 +316,6 @@ const problemsPerPageOptions = [
         </div>
       </div>
 
-      <!-- Problems Per Page -->
-      <div class="mb-4">
-        <label class="block text-sm font-medium text-gray-800 mb-2">Problems Per Page</label>
-        <div class="space-y-2">
-          <label 
-            v-for="option in problemsPerPageOptions" 
-            :key="option.value"
-            class="flex items-center justify-between p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors"
-            :class="settings.problemsPerPage === option.value ? 'bg-orange-50 border-orange-300' : ''"
-          >
-            <div class="flex items-center">
-              <input 
-                :value="option.value"
-                :checked="settings.problemsPerPage === option.value"
-                @change="updateSetting('problemsPerPage', option.value)"
-                type="radio" 
-                name="problemsPerPage"
-                class="text-orange-600 focus:ring-orange-500"
-              />
-              <div class="ml-3">
-                <div class="text-sm font-medium text-gray-900">{{ option.label }}</div>
-                <div class="text-xs text-gray-700">{{ option.description }}</div>
-              </div>
-            </div>
-          </label>
-        </div>
-      </div>
 
       <!-- Work Space Toggle -->
       <div class="mb-4">

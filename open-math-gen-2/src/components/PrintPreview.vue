@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, watch, nextTick, onMounted } from 'vue'
 import MathExpression from './MathExpression.vue'
 
 const props = defineProps({
@@ -61,22 +61,79 @@ const fontSizeClasses = computed(() => {
   return sizes[props.settings.fontSize]
 })
 
-// Problem organization with different logic for first page vs subsequent pages
-const getProblemsForPage = (pageNumber) => {
+// Dynamic problem fitting based on paper size, settings, and content
+const calculateDynamicProblemsPerPage = (pageNumber) => {
   if (props.settings.problemsPerPage !== 'auto') {
     return parseInt(props.settings.problemsPerPage)
   }
   
-  // Auto mode: Different calculations for first page vs subsequent pages
+  // Calculate available space based on paper size and settings
   const isFirstPage = pageNumber === 1
+  const hasHeader = isFirstPage && props.settings.includeHeader
+  const hasFooter = props.settings.includeFooter
+  const hasWorkSpace = props.settings.showWorkSpace
   
-  if (isFirstPage && props.settings.includeHeader) {
-    // First page with header and instructions: 2 problems (less space due to header)
-    return 2
-  } else {
-    // Subsequent pages or first page without header: 3 problems (more space available)
-    return 3
+  // Base dimensions in pixels (approximate conversion for calculation)
+  const paperSizes = {
+    letter: { width: 816, height: 1056 }, // 8.5" x 11" at 96 DPI
+    a4: { width: 794, height: 1123 },     // 210mm x 297mm
+    legal: { width: 816, height: 1344 }   // 8.5" x 14"
   }
+  
+  const margins = {
+    narrow: 48,   // 0.5" = 48px
+    normal: 96,   // 1" = 96px  
+    wide: 144     // 1.5" = 144px
+  }
+  
+  const paperSize = paperSizes[props.settings.paperSize] || paperSizes.letter
+  const marginSize = margins[props.settings.margins] || margins.normal
+  
+  // Calculate available content height
+  let availableHeight = paperSize.height - (marginSize * 2) // Top and bottom margins
+  
+  // Subtract header space (if present on this page)
+  if (hasHeader) {
+    availableHeight -= 180 // Header + instructions space
+  }
+  
+  // Subtract footer space (if present)
+  if (hasFooter) {
+    availableHeight -= 40 // Footer space
+  }
+  
+  // Calculate problem height based on settings
+  let problemHeight = 60 // Base problem height (question + answer)
+  
+  // Add workspace height if enabled
+  if (hasWorkSpace) {
+    problemHeight += 100 // Workspace adds significant height
+  }
+  
+  // Add spacing between problems
+  problemHeight += 24 // Spacing between problems
+  
+  // Font size adjustments
+  const fontSizeMultipliers = {
+    small: 0.85,
+    normal: 1.0,
+    large: 1.2
+  }
+  problemHeight *= fontSizeMultipliers[props.settings.fontSize] || 1.0
+  
+  // Calculate how many problems fit
+  const maxProblems = Math.floor(availableHeight / problemHeight)
+  
+  // Apply reasonable bounds
+  const minProblems = 1
+  const maxBounds = hasWorkSpace ? 8 : 15 // More problems when no workspace
+  
+  return Math.max(minProblems, Math.min(maxProblems, maxBounds))
+}
+
+// Legacy function for backwards compatibility
+const getProblemsForPage = (pageNumber) => {
+  return calculateDynamicProblemsPerPage(pageNumber)
 }
 
 const problemsPerPage = computed(() => {
@@ -88,23 +145,124 @@ const problemsPerPage = computed(() => {
   return parseInt(props.settings.problemsPerPage)
 })
 
+// Calculate actual available content height for a page
+const getAvailableContentHeight = (pageNumber, totalPages) => {
+  const isFirstPage = pageNumber === 1
+  const hasHeader = isFirstPage && props.settings.includeHeader
+  // Footer only appears on the very last page of the document
+  const hasFooter = props.settings.includeFooter && pageNumber === totalPages
+  
+  // Base dimensions in pixels (approximate conversion for calculation)
+  const paperSizes = {
+    letter: { width: 816, height: 1056 }, // 8.5" x 11" at 96 DPI
+    a4: { width: 794, height: 1123 },     // 210mm x 297mm
+    legal: { width: 816, height: 1344 }   // 8.5" x 14"
+  }
+  
+  const margins = {
+    narrow: 48,   // 0.5" = 48px
+    normal: 96,   // 1" = 96px  
+    wide: 144     // 1.5" = 144px
+  }
+  
+  const paperSize = paperSizes[props.settings.paperSize] || paperSizes.letter
+  const marginSize = margins[props.settings.margins] || margins.normal
+  
+  // Start with full page height minus margins
+  let availableHeight = paperSize.height - (marginSize * 2)
+  
+  // Subtract header space (if present on this page)
+  if (hasHeader) {
+    availableHeight -= 180 // Header + instructions space
+  }
+  
+  // Subtract footer space (if present)
+  if (hasFooter) {
+    availableHeight -= 40 // Footer space
+  }
+  
+  return availableHeight
+}
+
+// Calculate height of a single problem
+const getProblemHeight = () => {
+  const hasWorkSpace = props.settings.showWorkSpace
+  
+  // Base problem height (question + answer section)
+  let problemHeight = 60
+  
+  // Add workspace height if enabled
+  if (hasWorkSpace) {
+    problemHeight += 100 // Workspace adds significant height
+  }
+  
+  // Add spacing between problems
+  problemHeight += 24 // Spacing between problems
+  
+  // Font size adjustments
+  const fontSizeMultipliers = {
+    small: 0.85,
+    normal: 1.0,
+    large: 1.2
+  }
+  problemHeight *= fontSizeMultipliers[props.settings.fontSize] || 1.0
+  
+  return problemHeight
+}
+
 const pages = computed(() => {
-  const result = []
+  // First pass: calculate pages without considering footer space
+  let firstPassResult = []
   let currentProblemIndex = 0
   let pageNumber = 1
   
   while (currentProblemIndex < props.problems.length) {
-    const problemsForThisPage = getProblemsForPage(pageNumber)
-    const endIndex = Math.min(currentProblemIndex + problemsForThisPage, props.problems.length)
+    // Use a large total for first pass (footer won't appear)
+    const availableHeight = getAvailableContentHeight(pageNumber, 9999)
+    const problemHeight = getProblemHeight()
+    const pageProblems = []
+    let usedHeight = 0
     
-    result.push({
-      pageNumber: pageNumber,
-      problems: props.problems.slice(currentProblemIndex, endIndex)
-    })
+    // Add problems to this page while they fit within the available height
+    while (currentProblemIndex < props.problems.length) {
+      const heightNeeded = usedHeight + problemHeight
+      
+      // Check if this problem fits on the current page
+      if (heightNeeded <= availableHeight || pageProblems.length === 0) {
+        // Add the problem (always add at least one problem per page)
+        pageProblems.push(props.problems[currentProblemIndex])
+        currentProblemIndex++
+        usedHeight = heightNeeded
+      } else {
+        // Problem doesn't fit, move to next page
+        break
+      }
+    }
     
-    currentProblemIndex = endIndex
-    pageNumber++
+    // Create the page with the problems that fit
+    if (pageProblems.length > 0) {
+      firstPassResult.push({
+        pageNumber: pageNumber,
+        problems: pageProblems,
+        usedHeight: usedHeight
+      })
+      pageNumber++
+    } else {
+      // Safety break to prevent infinite loop
+      break
+    }
   }
+  
+  // Calculate total pages (including answer key)
+  const answerKeyPageCount = (props.settings.includeAnswerKey && props.settings.answerKeyLocation === 'separate') 
+    ? Math.ceil(props.problems.length / 36) : 0
+  const totalDocumentPages = firstPassResult.length + answerKeyPageCount
+  
+  // Second pass: recalculate the last page with proper footer space consideration
+  const result = firstPassResult.map((page, index) => ({
+    ...page,
+    availableHeight: getAvailableContentHeight(page.pageNumber, totalDocumentPages)
+  }))
   
   return result
 })
@@ -124,6 +282,72 @@ const answerKeyPages = computed(() => {
       answerLaTeX: problem.answerLaTeX
     }))
   }))
+})
+
+// Helper functions for footer positioning
+const getTotalPages = () => {
+  return pages.value.length + answerKeyPages.value.length
+}
+
+const isLastPageOfDocument = (pageNumber) => {
+  // If there are answer key pages, this is not the last page
+  if (answerKeyPages.value.length > 0) {
+    return false
+  }
+  // If no answer key, check if this is the last worksheet page
+  return pageNumber === pages.value.length
+}
+
+const isLastAnswerPage = (answerPageNumber) => {
+  // This is only called for answer pages, so check if it's the last answer page
+  return answerPageNumber === answerKeyPages.value.length
+}
+
+// JavaScript-based page break detection
+const detectAndFixPageBreaks = () => {
+  // Wait for next tick to ensure DOM is fully rendered
+  nextTick(() => {
+    const printPages = document.querySelectorAll('.print-page')
+    
+    printPages.forEach((page) => {
+      const pageRect = page.getBoundingClientRect()
+      const problems = page.querySelectorAll('.print-problem')
+      const tolerance = 10 // Allow small overlap before forcing page break
+      
+      problems.forEach((problem, index) => {
+        const problemRect = problem.getBoundingClientRect()
+        
+        // Check if problem extends significantly beyond the page boundary
+        const overflowAmount = problemRect.bottom - pageRect.bottom
+        const isSignificantOverflow = overflowAmount > tolerance
+        
+        // Only apply page break if there's significant overflow AND this isn't the first problem
+        if (isSignificantOverflow && index > 0) {
+          // Add CSS class to force page break before this problem
+          problem.classList.add('force-page-break')
+          console.log(`Applied page break to problem ${index + 1} (overflow: ${overflowAmount}px)`)
+        } else {
+          // Remove the class if it was previously added
+          problem.classList.remove('force-page-break')
+        }
+      })
+    })
+  })
+}
+
+// Watch for changes that require re-detection
+watch(() => props.settings, detectAndFixPageBreaks, { deep: true })
+watch(() => props.problems, detectAndFixPageBreaks, { deep: true })
+
+// Run detection after component mounts and pages are rendered
+onMounted(() => {
+  // Run after a short delay to ensure all content is rendered
+  setTimeout(detectAndFixPageBreaks, 100)
+})
+
+// Expose function for parent components to trigger re-detection
+defineExpose({
+  detectPageBreaks: detectAndFixPageBreaks
 })
 </script>
 
@@ -196,11 +420,15 @@ const answerKeyPages = computed(() => {
         </div>
 
         <!-- Problems -->
-        <div class="print-problems space-y-6 flex-1 overflow-hidden">
+        <div 
+          class="print-problems space-y-6 flex-1 overflow-hidden"
+          :style="{ maxHeight: page.availableHeight + 'px' }"
+        >
           <div 
             v-for="(problem, index) in page.problems" 
             :key="problem.id"
             class="print-problem border-b border-gray-300 pb-4 last:border-b-0"
+            :style="{ minHeight: settings.showWorkSpace ? '160px' : '80px' }"
           >
             <div class="grid grid-cols-1 gap-4">
               
@@ -261,13 +489,13 @@ const answerKeyPages = computed(() => {
           </div>
         </div>
 
-        <!-- Page Footer -->
-        <div v-if="settings.includeFooter" class="print-footer border-t border-gray-300 pt-3 mt-auto">
+        <!-- Page Footer (only on last page of entire document) -->
+        <div v-if="settings.includeFooter && isLastPageOfDocument(page.pageNumber)" class="print-footer border-t border-gray-300 pt-3 mt-auto">
           <div class="flex justify-between items-center text-xs text-gray-700">
             <div v-if="settings.schoolName">{{ settings.schoolName }}</div>
             <div class="text-center">{{ settings.footerText || 'Generated with Open Math Gen' }}</div>
-            <div v-if="settings.includePageNumbers && settings.includeFooter">
-              Page {{ page.pageNumber }} of {{ pages.length }}
+            <div v-if="settings.includePageNumbers">
+              Page {{ page.pageNumber }} of {{ getTotalPages() }}
             </div>
           </div>
         </div>
@@ -316,13 +544,13 @@ const answerKeyPages = computed(() => {
           </div>
         </div>
 
-        <!-- Answer Key Footer -->
-        <div v-if="settings.includeFooter" class="print-footer border-t border-gray-300 pt-3 mt-auto">
+        <!-- Answer Key Footer (only on last answer page) -->
+        <div v-if="settings.includeFooter && isLastAnswerPage(answerPage.pageNumber)" class="print-footer border-t border-gray-300 pt-3 mt-auto">
           <div class="flex justify-between items-center text-xs text-gray-700">
             <div v-if="settings.schoolName">{{ settings.schoolName }}</div>
             <div class="text-center">Answer Key - {{ settings.footerText || 'Generated with Open Math Gen' }}</div>
-            <div v-if="settings.includePageNumbers && settings.includeFooter">
-              Answer Page {{ answerPage.pageNumber }}
+            <div v-if="settings.includePageNumbers">
+              Answer Page {{ answerPage.pageNumber }} of {{ answerKeyPages.length }}
             </div>
           </div>
         </div>
@@ -376,6 +604,16 @@ const answerKeyPages = computed(() => {
   .print-problems {
     flex: 1 !important;
     overflow: hidden !important;
+    display: flex !important;
+    flex-direction: column !important;
+    max-height: inherit !important;
+  }
+  
+  .print-problem {
+    flex-shrink: 0 !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+    overflow: visible !important;
   }
   
   .print-footer {
@@ -423,10 +661,40 @@ const answerKeyPages = computed(() => {
     transform: scale(0.8);
     transform-origin: top center;
     transition: transform 0.2s ease;
+    display: flex;
+    flex-direction: column;
   }
   
   .print-page:hover {
     transform: scale(0.82);
+  }
+  
+  .print-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  
+  .print-problems {
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    max-height: inherit;
+  }
+  
+  .print-problem {
+    flex-shrink: 0;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  
+  /* Simulate page break in screen preview */
+  .force-page-break {
+    margin-top: 2rem;
+    border-top: 2px dashed #f97316;
+    padding-top: 1rem;
   }
 }
 
@@ -453,10 +721,23 @@ const answerKeyPages = computed(() => {
   margin-bottom: 0.75rem;
 }
 
-/* Ensure proper spacing for print */
+/* Ensure proper spacing for print and prevent page breaks within problems */
 .print-problem {
-  min-height: 120px;
-  break-inside: avoid;
+  break-inside: avoid; /* Prevent splitting problems across pages */
+  page-break-inside: avoid; /* Fallback for older browsers */
+  flex-shrink: 0; /* Prevent compression in flex container */
+  overflow: visible; /* Allow content to be visible */
+}
+
+/* Dynamic min-height based on workspace setting */
+.print-problem {
+  min-height: var(--problem-min-height, 80px);
+}
+
+/* Force page break when problem is detected as overflowing */
+.force-page-break {
+  page-break-before: always !important;
+  break-before: page !important;
 }
 
 /* Grid responsiveness for different paper sizes */
