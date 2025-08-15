@@ -91,36 +91,179 @@ const closeModal = () => {
 const handlePrint = async () => {
   isPrinting.value = true
   try {
-    // Close modal and print normally
-    emit('close')
-    
-    // Small delay to let modal close, then print
-    setTimeout(() => {
-      window.print()
+    // Get the exact print preview content
+    const printPreviewElement = document.querySelector('.print-preview-container')
+    if (!printPreviewElement) {
+      alert('Print preview not found')
       isPrinting.value = false
-    }, 300)
+      return
+    }
+
+    // Create a new window for printing
+    const printWindow = window.open('', '_blank', 'width=1200,height=800')
+    if (!printWindow) {
+      alert('Please allow pop-ups to enable printing')
+      isPrinting.value = false
+      return
+    }
+
+    // Get all stylesheets from the current page
+    const stylesheets = Array.from(document.styleSheets)
+    let allCSS = ''
     
+    stylesheets.forEach(sheet => {
+      try {
+        if (sheet.cssRules) {
+          Array.from(sheet.cssRules).forEach(rule => {
+            allCSS += rule.cssText + '\n'
+          })
+        }
+      } catch (e) {
+        // Skip stylesheets that can't be accessed (CORS)
+        console.log('Skipping stylesheet due to CORS:', e)
+      }
+    })
+
+    // Create the print HTML with all styles
+    const printHTML = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Print - ${props.worksheetTitle}</title>
+  <style>
+    /* Reset and base styles */
+    * {
+      box-sizing: border-box;
+    }
+    
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+      background: white;
+      color: black;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    /* Include all current page styles */
+    ${allCSS}
+
+    /* Print-specific overrides */
+    @media print {
+      body {
+        background: white !important;
+        color: black !important;
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+      
+      .print-preview-container {
+        background: white !important;
+        padding: 0 !important;
+        min-height: auto !important;
+      }
+      
+      .print-page {
+        page-break-after: always;
+        box-shadow: none !important;
+        margin: 0 !important;
+        margin-bottom: 0 !important;
+        transform: none !important;
+        width: 100% !important;
+        max-width: none !important;
+      }
+      
+      .print-page:last-child {
+        page-break-after: auto;
+      }
+      
+      .page-break-before {
+        page-break-before: always;
+      }
+
+      /* Ensure proper sizing */
+      .w-\\[8\\.5in\\] {
+        width: 100% !important;
+      }
+      
+      .min-h-\\[11in\\] {
+        min-height: auto !important;
+      }
+
+      /* Remove hover effects */
+      .print-page:hover {
+        transform: none !important;
+      }
+    }
+
+    /* Screen styles for preview */
+    @media screen {
+      .print-preview-container {
+        background: white;
+        padding: 0;
+        min-height: 100vh;
+      }
+      
+      .print-page {
+        transform: none;
+        margin: 0 auto 0.5rem auto;
+        max-width: 8.5in;
+      }
+    }
+  </style>
+</head>
+<body>
+  ${printPreviewElement.outerHTML}
+</body>
+</html>`
+
+    // Write the HTML to the new window
+    printWindow.document.write(printHTML)
+    printWindow.document.close()
+
+    // Wait for content to load, then print
+    setTimeout(() => {
+      printWindow.focus()
+      printWindow.print()
+      
+      // Close the print window after printing
+      setTimeout(() => {
+        printWindow.close()
+        isPrinting.value = false
+        emit('close') // Close the modal
+      }, 1000)
+    }, 1000)
+
   } catch (error) {
     console.error('Print error:', error)
     isPrinting.value = false
+    alert('Print failed. Please try again.')
   }
 }
 
 const handleSavePDF = async () => {
   isGeneratingPDF.value = true
+  
+  // Temporarily set isPrinting to false so handlePrint doesn't interfere
+  const originalPrintingState = isPrinting.value
+  isPrinting.value = false
+  
   try {
-    // Close modal and trigger print dialog for PDF saving
-    emit('close')
+    // Call handlePrint but manage our own state
+    await handlePrint()
     
-    // Small delay to let modal close, then print
     setTimeout(() => {
-      window.print()
       isGeneratingPDF.value = false
-    }, 300)
+    }, 1500)
     
   } catch (error) {
     console.error('PDF generation error:', error)
     isGeneratingPDF.value = false
+  } finally {
+    isPrinting.value = originalPrintingState
   }
 }
 
