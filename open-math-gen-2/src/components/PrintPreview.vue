@@ -25,7 +25,7 @@ const currentDate = new Date().toLocaleDateString()
 
 // Computed properties for styling
 const paperClasses = computed(() => {
-  const baseClasses = 'bg-white shadow-lg mx-auto mb-6 print:shadow-none print:mb-0'
+  const baseClasses = 'bg-white shadow-lg mx-auto mb-1 print:shadow-none print:mb-0'
   const sizeClasses = {
     letter: 'w-[8.5in] min-h-[11in]',
     a4: 'w-[210mm] min-h-[297mm]', 
@@ -113,9 +113,10 @@ const answerKeyPages = computed(() => {
     >
       <div :class="[marginClasses, fontSizeClasses]" class="print-content">
         
-        <!-- Page Header -->
-        <div v-if="settings.includeHeader" class="print-header border-b-2 border-black pb-4 mb-6">
+        <!-- Page Header (only on first page) -->
+        <div v-if="settings.includeHeader && page.pageNumber === 1" class="print-header border-b-2 border-black pb-4 mb-6">
           <div class="text-center">
+            <div v-if="settings.schoolName" class="text-lg font-semibold text-black mb-1">{{ settings.schoolName }}</div>
             <h1 class="text-2xl font-bold text-black mb-2">{{ worksheetTitle }}</h1>
             
             <!-- Student Info Section -->
@@ -132,12 +133,15 @@ const answerKeyPages = computed(() => {
               </div>
               
               <div class="text-center">
-                <div v-if="settings.includeDate" class="mb-1">
-                  <span class="font-medium">Date: </span>
-                  <span>{{ currentDate }}</span>
-                </div>
-                <div class="text-sm text-gray-800">
-                  {{ page.problems.length }} Problems
+                <div class="mb-1 text-sm">
+                  <span v-if="settings.includeDate" class="mr-4">
+                    <span class="font-medium">Date: </span>
+                    <span>{{ currentDate }}</span>
+                  </span>
+                  <span>
+                    <span class="font-medium">Problems: </span>
+                    <span>{{ problems.length }}</span>
+                  </span>
                 </div>
               </div>
               
@@ -146,7 +150,7 @@ const answerKeyPages = computed(() => {
                   <span class="font-medium">Score: </span>
                   <span class="inline-block border-b border-black w-16 h-5"></span>
                   <span class="mx-1">/</span>
-                  <span>{{ page.problems.length }}</span>
+                  <span>{{ problems.length }}</span>
                 </div>
                 <div v-if="settings.teacherName" class="text-sm">
                   <span>{{ settings.teacherName }}</span>
@@ -156,8 +160,8 @@ const answerKeyPages = computed(() => {
           </div>
         </div>
 
-        <!-- Instructions -->
-        <div class="print-instructions bg-gray-100 border border-gray-300 rounded p-3 mb-6">
+        <!-- Instructions (only on first page) -->
+        <div v-if="page.pageNumber === 1" class="print-instructions bg-gray-100 border border-gray-300 rounded p-3 mb-6">
           <h3 class="font-semibold text-black mb-2">Instructions:</h3>
           <ul class="text-sm text-black list-disc list-inside space-y-1">
             <li>Show all your work in the space provided</li>
@@ -236,8 +240,8 @@ const answerKeyPages = computed(() => {
         <div v-if="settings.includeFooter" class="print-footer border-t border-gray-300 pt-3 mt-6">
           <div class="flex justify-between items-center text-xs text-gray-700">
             <div v-if="settings.schoolName">{{ settings.schoolName }}</div>
-            <div class="text-center">Generated with Open Math Gen</div>
-            <div v-if="settings.includePageNumbers">
+            <div class="text-center">{{ settings.footerText || 'Generated with Open Math Gen' }}</div>
+            <div v-if="settings.includePageNumbers && settings.includeFooter">
               Page {{ page.pageNumber }} of {{ pages.length }}
             </div>
           </div>
@@ -259,6 +263,7 @@ const answerKeyPages = computed(() => {
         <!-- Answer Key Header -->
         <div class="print-header border-b-2 border-black pb-4 mb-6">
           <div class="text-center">
+            <div v-if="settings.schoolName" class="text-lg font-semibold text-black mb-1">{{ settings.schoolName }}</div>
             <h1 class="text-2xl font-bold text-black mb-2">{{ worksheetTitle }} - Answer Key</h1>
             <div class="text-sm text-gray-700">
               Page {{ answerPage.pageNumber }} Answers
@@ -267,15 +272,15 @@ const answerKeyPages = computed(() => {
         </div>
 
         <!-- Answer Grid -->
-        <div class="answer-grid grid grid-cols-2 md:grid-cols-3 gap-4">
+        <div class="answer-grid grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
           <div 
             v-for="answer in answerPage.answers" 
             :key="answer.problemNumber"
-            class="answer-item border border-gray-300 rounded p-3 bg-gray-100"
+            class="answer-item border border-gray-300 rounded p-2 bg-gray-100"
           >
-            <div class="flex items-center space-x-2">
-              <span class="font-bold text-black">{{ answer.problemNumber }}.</span>
-              <div class="flex-1 text-black">
+            <div class="flex items-center space-x-1">
+              <span class="font-bold text-black text-xs">{{ answer.problemNumber }}.</span>
+              <div class="flex-1 text-black text-xs">
                 <MathExpression 
                   v-if="answer.answerLaTeX" 
                   :expression="answer.answerLaTeX" 
@@ -287,11 +292,11 @@ const answerKeyPages = computed(() => {
         </div>
 
         <!-- Answer Key Footer -->
-        <div class="print-footer border-t border-gray-300 pt-3 mt-6">
+        <div v-if="settings.includeFooter" class="print-footer border-t border-gray-300 pt-3 mt-6">
           <div class="flex justify-between items-center text-xs text-gray-700">
             <div v-if="settings.schoolName">{{ settings.schoolName }}</div>
-            <div class="text-center">Answer Key - Generated with Open Math Gen</div>
-            <div v-if="settings.includePageNumbers">
+            <div class="text-center">Answer Key - {{ settings.footerText || 'Generated with Open Math Gen' }}</div>
+            <div v-if="settings.includePageNumbers && settings.includeFooter">
               Answer Page {{ answerPage.pageNumber }}
             </div>
           </div>
@@ -361,7 +366,7 @@ const answerKeyPages = computed(() => {
 @media screen {
   .print-preview-container {
     background: #f3f4f6;
-    padding: 2rem;
+    padding: 1rem;
     min-height: 100vh;
   }
   
@@ -417,11 +422,11 @@ const answerKeyPages = computed(() => {
 
 /* Answer grid responsiveness */
 .answer-grid {
-  gap: 0.75rem;
+  gap: 0.25rem;
 }
 
 .answer-item {
   break-inside: avoid;
-  min-height: 3rem;
+  min-height: 2rem;
 }
 </style>

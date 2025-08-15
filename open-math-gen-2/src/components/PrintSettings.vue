@@ -26,7 +26,7 @@ const estimatedPages = computed(() => {
   
   const worksheetPages = Math.ceil(props.problemCount / problemsPerPage)
   const answerKeyPages = props.settings.includeAnswerKey && props.settings.answerKeyLocation === 'separate' 
-    ? Math.ceil(props.problemCount / 24) // Answers are more compact
+    ? Math.ceil(props.problemCount / 36) // 36 answers per page
     : 0
   
   return worksheetPages + answerKeyPages
@@ -305,40 +305,40 @@ const problemsPerPageOptions = [
       <!-- Custom Fields -->
       <div v-if="settings.includeHeader" class="space-y-3">
         <div>
-          <label class="block text-xs font-medium text-gray-700 mb-1">School Name (optional)</label>
+          <label class="block text-xs font-medium text-gray-900 mb-1">School Name (optional)</label>
           <input 
             :value="settings.schoolName"
             @input="updateSetting('schoolName', $event.target.value)"
             type="text"
             placeholder="Enter school name"
-            class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-orange-500 focus:border-orange-500"
+            class="w-full px-3 py-2 border border-gray-400 rounded-md text-sm text-gray-900 bg-white focus:ring-orange-500 focus:border-orange-500 focus:bg-white"
           />
         </div>
         
         <div>
-          <label class="block text-xs font-medium text-gray-700 mb-1">Teacher Name (optional)</label>
+          <label class="block text-xs font-medium text-gray-900 mb-1">Teacher Name (optional)</label>
           <input 
             :value="settings.teacherName"
             @input="updateSetting('teacherName', $event.target.value)"
             type="text"
             placeholder="Enter teacher name"
-            class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-orange-500 focus:border-orange-500"
+            class="w-full px-3 py-2 border border-gray-400 rounded-md text-sm text-gray-900 bg-white focus:ring-orange-500 focus:border-orange-500 focus:bg-white"
           />
         </div>
         
         <div>
-          <label class="block text-xs font-medium text-gray-700 mb-1">Class Name (optional)</label>
+          <label class="block text-xs font-medium text-gray-900 mb-1">Class Name (optional)</label>
           <input 
             :value="settings.className"
             @input="updateSetting('className', $event.target.value)"
             type="text"
             placeholder="Enter class name"
-            class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-orange-500 focus:border-orange-500"
+            class="w-full px-3 py-2 border border-gray-400 rounded-md text-sm text-gray-900 bg-white focus:ring-orange-500 focus:border-orange-500 focus:bg-white"
           />
         </div>
       </div>
 
-      <!-- Footer Options -->
+      <!-- Date Option -->
       <div class="mt-4 space-y-3">
         <label class="flex items-center justify-between p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors">
           <div>
@@ -352,24 +352,14 @@ const problemsPerPageOptions = [
             class="text-orange-600 focus:ring-orange-500 rounded"
           />
         </label>
+      </div>
 
-        <label class="flex items-center justify-between p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors">
-          <div>
-            <div class="text-sm font-medium text-gray-900">Include Page Numbers</div>
-            <div class="text-xs text-gray-700">Show page numbers at bottom</div>
-          </div>
-          <input 
-            :checked="settings.includePageNumbers"
-            @change="updateSetting('includePageNumbers', $event.target.checked)"
-            type="checkbox"
-            class="text-orange-600 focus:ring-orange-500 rounded"
-          />
-        </label>
-
+      <!-- Footer Section -->
+      <div class="mt-4 space-y-3">
         <label class="flex items-center justify-between p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors">
           <div>
             <div class="text-sm font-medium text-gray-900">Include Footer</div>
-            <div class="text-xs text-gray-700">Show branding and attribution</div>
+            <div class="text-xs text-gray-700">Show footer with branding and page numbers</div>
           </div>
           <input 
             :checked="settings.includeFooter"
@@ -378,6 +368,33 @@ const problemsPerPageOptions = [
             class="text-orange-600 focus:ring-orange-500 rounded"
           />
         </label>
+
+        <!-- Footer Sub-options (only show when footer is enabled) -->
+        <div v-if="settings.includeFooter" class="ml-4 space-y-3 border-l-2 border-orange-200 pl-4">
+          <label class="flex items-center justify-between p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors">
+            <div>
+              <div class="text-sm font-medium text-gray-900">Include Page Numbers</div>
+              <div class="text-xs text-gray-700">Show page numbers in footer</div>
+            </div>
+            <input 
+              :checked="settings.includePageNumbers"
+              @change="updateSetting('includePageNumbers', $event.target.checked)"
+              type="checkbox"
+              class="text-orange-600 focus:ring-orange-500 rounded"
+            />
+          </label>
+
+          <div>
+            <label class="block text-xs font-medium text-gray-900 mb-1">Footer Text</label>
+            <input 
+              :value="settings.footerText"
+              @input="updateSetting('footerText', $event.target.value)"
+              type="text"
+              placeholder="Generated with Open Math Gen"
+              class="w-full px-3 py-2 border border-gray-400 rounded-md text-sm text-gray-900 bg-white focus:ring-orange-500 focus:border-orange-500 focus:bg-white"
+            />
+          </div>
+        </div>
       </div>
     </div>
 

@@ -128,31 +128,15 @@ const closePrintModal = () => {
 }
 
 const handlePrint = async (printSettings) => {
-  // Create a new window or iframe for printing with the specified settings
-  const printWindow = window.open('', '_blank')
-  if (!printWindow) {
-    alert('Please allow pop-ups to enable printing')
-    return
-  }
-  
-  // You could also implement a more sophisticated print handler here
-  // For now, we'll use the browser's native print with the current page
-  showPrintModal.value = false
-  
-  // Small delay to let modal close, then print
-  setTimeout(() => {
-    window.print()
-  }, 100)
+  // Print will be handled by the PrintModal component
+  // This is just a fallback/placeholder
+  console.log('Print settings:', printSettings)
 }
 
 const handleSavePDF = async (printSettings) => {
-  // In a real implementation, you might want to generate a PDF server-side
-  // For now, we'll trigger the browser's print dialog which allows saving as PDF
-  showPrintModal.value = false
-  
-  setTimeout(() => {
-    window.print()
-  }, 100)
+  // PDF generation will be handled by the PrintModal component
+  // This is just a fallback/placeholder
+  console.log('PDF settings:', printSettings)
 }
 
 const regenerateProblems = () => {

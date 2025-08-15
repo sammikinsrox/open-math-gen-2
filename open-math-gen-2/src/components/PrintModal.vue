@@ -44,11 +44,13 @@ const printSettings = ref({
   className: '',
   includeDate: true,
   includePageNumbers: true,
-  includeFooter: true
+  includeFooter: true,
+  footerText: 'Generated with Open Math Gen'
 })
 
 const isPrinting = ref(false)
 const isGeneratingPDF = ref(false)
+const zoomLevel = ref(100)
 
 // Computed properties for dynamic styling
 const paperDimensions = computed(() => {
@@ -69,6 +71,18 @@ const marginSizes = computed(() => {
   return margins[printSettings.value.margins]
 })
 
+// Zoom control methods
+const setZoom = (percentage) => {
+  zoomLevel.value = percentage
+}
+
+const previewStyle = computed(() => {
+  return {
+    transform: `scale(${zoomLevel.value / 100})`,
+    transformOrigin: 'top center'
+  }
+})
+
 // Modal control methods
 const closeModal = () => {
   emit('close')
@@ -77,11 +91,15 @@ const closeModal = () => {
 const handlePrint = async () => {
   isPrinting.value = true
   try {
-    await emit('print', printSettings.value)
-    // Give a moment for the print dialog to appear
+    // Close modal and print normally
+    emit('close')
+    
+    // Small delay to let modal close, then print
     setTimeout(() => {
+      window.print()
       isPrinting.value = false
-    }, 1000)
+    }, 300)
+    
   } catch (error) {
     console.error('Print error:', error)
     isPrinting.value = false
@@ -91,10 +109,17 @@ const handlePrint = async () => {
 const handleSavePDF = async () => {
   isGeneratingPDF.value = true
   try {
-    await emit('save-pdf', printSettings.value)
+    // Close modal and trigger print dialog for PDF saving
+    emit('close')
+    
+    // Small delay to let modal close, then print
+    setTimeout(() => {
+      window.print()
+      isGeneratingPDF.value = false
+    }, 300)
+    
   } catch (error) {
     console.error('PDF generation error:', error)
-  } finally {
     isGeneratingPDF.value = false
   }
 }
@@ -224,13 +249,25 @@ watch(() => props.isOpen, (isOpen) => {
                   <div class="flex items-center space-x-2">
                     <!-- Zoom Controls -->
                     <div class="flex items-center space-x-1 rounded-lg border border-gray-300 bg-white">
-                      <button class="px-3 py-1 text-sm text-gray-700 hover:bg-gray-200 transition-colors">
+                      <button 
+                        @click="setZoom(50)" 
+                        :class="zoomLevel === 50 ? 'bg-orange-100 text-orange-600 font-medium' : 'text-gray-700 hover:bg-gray-200'"
+                        class="px-3 py-1 text-sm transition-colors"
+                      >
                         50%
                       </button>
-                      <button class="px-3 py-1 text-sm text-gray-700 hover:bg-gray-200 transition-colors">
+                      <button 
+                        @click="setZoom(75)" 
+                        :class="zoomLevel === 75 ? 'bg-orange-100 text-orange-600 font-medium' : 'text-gray-700 hover:bg-gray-200'"
+                        class="px-3 py-1 text-sm transition-colors"
+                      >
                         75%
                       </button>
-                      <button class="px-3 py-1 text-sm bg-orange-100 text-orange-600 font-medium">
+                      <button 
+                        @click="setZoom(100)" 
+                        :class="zoomLevel === 100 ? 'bg-orange-100 text-orange-600 font-medium' : 'text-gray-700 hover:bg-gray-200'"
+                        class="px-3 py-1 text-sm transition-colors"
+                      >
                         100%
                       </button>
                     </div>
@@ -241,12 +278,14 @@ watch(() => props.isOpen, (isOpen) => {
               <!-- Preview Content -->
               <div class="flex-1 overflow-auto p-6">
                 <div class="flex justify-center">
-                  <PrintPreview
-                    :problems="generatedProblems"
-                    :worksheet-title="worksheetTitle"
-                    :settings="printSettings"
-                    :show-answers="showAnswers || printSettings.includeAnswerKey"
-                  />
+                  <div :style="previewStyle" class="transition-transform duration-200">
+                    <PrintPreview
+                      :problems="generatedProblems"
+                      :worksheet-title="worksheetTitle"
+                      :settings="printSettings"
+                      :show-answers="showAnswers || printSettings.includeAnswerKey"
+                    />
+                  </div>
                 </div>
               </div>
             </div>
