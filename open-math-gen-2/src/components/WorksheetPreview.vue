@@ -304,22 +304,10 @@ const toggleAnswers = () => {
 
             <!-- Answer Section -->
             <div class="flex flex-col justify-center">
-              <!-- Answer Blank -->
-              <div v-if="!showAnswers" class="mb-4">
+              <!-- Answer Blank (always show blank for student worksheet) -->
+              <div class="mb-4">
                 <div class="text-sm text-slate-600 mb-2">Answer:</div>
                 <div class="border-b-2 border-slate-300 min-h-[2rem] w-full"></div>
-              </div>
-              
-              <!-- Show Answer -->
-              <div v-else class="mb-4 p-3 bg-green-50 border border-green-200 rounded">
-                <div class="text-sm text-green-700 mb-2">Answer:</div>
-                <div class="text-lg font-semibold text-green-800">
-                  <MathExpression 
-                    v-if="problem.answerLaTeX" 
-                    :expression="problem.answerLaTeX" 
-                  />
-                  <span v-else>{{ problem.answer }}</span>
-                </div>
               </div>
 
               <!-- Problem Info Badge -->
@@ -342,6 +330,63 @@ const toggleAnswers = () => {
       <!-- Worksheet Footer -->
       <div class="mt-12 pt-6 border-t border-slate-200 text-center text-xs text-slate-500">
         <p>Generated with Open Math Gen • {{ new Date().toLocaleDateString() }}</p>
+      </div>
+
+    </div>
+
+    <!-- Answer Key Page (separate page when answers are shown) -->
+    <div v-if="showAnswers" class="bg-white rounded-lg shadow-2xl p-8 print:shadow-none print:rounded-none mt-8 page-break-before">
+      
+      <!-- Answer Key Header -->
+      <div class="border-b-2 border-slate-200 pb-6 mb-8">
+        <div class="text-center">
+          <h1 class="text-3xl font-bold text-slate-800 mb-2">{{ worksheetTitle }} - Answer Key</h1>
+          <div class="flex justify-between items-center text-sm text-slate-600">
+            <div>
+              <p>Teacher Reference</p>
+            </div>
+            <div class="text-center">
+              <p>Date: {{ currentDate }}</p>
+              <p>{{ totalProblems }} Problems</p>
+            </div>
+            <div>
+              <p>Open Math Gen</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Answer Grid -->
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <div 
+          v-for="(problem, index) in generatedProblems" 
+          :key="`answer-${problem.id}`"
+          class="bg-slate-50 border border-slate-200 rounded-lg p-4"
+        >
+          <div class="flex items-start space-x-2">
+            <span class="font-bold text-slate-800 text-sm min-w-[1.5rem]">
+              {{ problem.problemNumber }}.
+            </span>
+            <div class="flex-1">
+              <div class="text-lg font-semibold text-slate-800">
+                <MathExpression 
+                  v-if="problem.answerLaTeX" 
+                  :expression="problem.answerLaTeX" 
+                />
+                <span v-else>{{ problem.answer }}</span>
+              </div>
+              <div class="text-xs text-slate-500 mt-1 flex items-center space-x-1">
+                <span>{{ problem.setInfo.icon }}</span>
+                <span>{{ problem.setInfo.name }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Answer Key Footer -->
+      <div class="mt-12 pt-6 border-t border-slate-200 text-center text-xs text-slate-500">
+        <p>Answer Key - Generated with Open Math Gen • {{ new Date().toLocaleDateString() }}</p>
       </div>
 
     </div>
@@ -373,5 +418,13 @@ const toggleAnswers = () => {
   .bg-gradient-to-br {
     background: white !important;
   }
+  
+  .page-break-before {
+    page-break-before: always;
+  }
+}
+
+.page-break-before {
+  break-before: page;
 }
 </style>

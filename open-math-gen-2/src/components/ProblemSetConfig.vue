@@ -6,6 +6,10 @@ const props = defineProps({
   generator: {
     type: Object,
     required: true
+  },
+  editingProblemSet: {
+    type: Object,
+    default: null
   }
 })
 
@@ -13,7 +17,11 @@ const emit = defineEmits(['add-problem-set', 'cancel'])
 
 const generatorInfo = computed(() => props.generator.getInfo())
 const parameterOptions = computed(() => props.generator.getParameterOptions())
-const parameters = ref({ ...generatorInfo.value.defaultParameters })
+const parameters = ref(
+  props.editingProblemSet 
+    ? { ...props.editingProblemSet.parameters }
+    : { ...generatorInfo.value.defaultParameters }
+)
 const previewProblems = ref([])
 const isGeneratingPreview = ref(false)
 
@@ -96,8 +104,18 @@ const getStepValue = (param) => {
           <div class="flex items-center space-x-3">
             <div class="text-3xl">{{ generatorInfo.icon }}</div>
             <div>
-              <h2 class="text-2xl font-bold text-white">Configure {{ generatorInfo.name }}</h2>
-              <p class="text-slate-300">{{ generatorInfo.description }}</p>
+              <h2 class="text-2xl font-bold text-white">
+                {{ editingProblemSet ? 'Edit' : 'Configure' }} {{ generatorInfo.name }}
+              </h2>
+              <p class="text-slate-300">
+                {{ editingProblemSet ? 'Modifying existing problem set parameters' : generatorInfo.description }}
+              </p>
+              <div v-if="editingProblemSet" class="mt-2 inline-flex items-center px-3 py-1 rounded-full bg-orange-500/20 border border-orange-400/30">
+                <svg class="w-4 h-4 text-orange-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                </svg>
+                <span class="text-orange-300 text-sm font-medium">Editing Problem Set</span>
+              </div>
             </div>
           </div>
         </div>
@@ -113,7 +131,7 @@ const getStepValue = (param) => {
             @click="addProblemSet"
             class="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-lg font-medium transition-colors"
           >
-            Add to Worksheet
+            {{ editingProblemSet ? 'Update Problem Set' : 'Add to Worksheet' }}
           </button>
         </div>
       </div>

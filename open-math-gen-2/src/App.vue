@@ -18,6 +18,16 @@ onMounted(() => {
 
 const navigateTo = (page) => {
   currentPage.value = page
+  
+  // If navigating to home from worksheet builder, scroll to features after a short delay
+  if (page === 'home') {
+    setTimeout(() => {
+      const featuresElement = document.getElementById('features')
+      if (featuresElement) {
+        featuresElement.scrollIntoView({ behavior: 'smooth' })
+      }
+    }, 100)
+  }
 }
 </script>
 
@@ -37,6 +47,6 @@ const navigateTo = (page) => {
       <WorksheetBuilder />
     </div>
     
-    <Footer v-if="currentPage === 'home'" />
+    <Footer />
   </div>
 </template>

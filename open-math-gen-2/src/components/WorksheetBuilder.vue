@@ -10,6 +10,7 @@ const selectedCategory = ref('basic-operations')
 const searchQuery = ref('')
 const currentView = ref('generators') // 'generators', 'configure', 'preview'
 const selectedGenerator = ref(null)
+const editingProblemSet = ref(null)
 const problemSets = ref([])
 const worksheetTitle = ref('Math Worksheet')
 
@@ -75,20 +76,35 @@ const findGeneratorByInfo = (generatorInfo) => {
 
 const selectGenerator = (generator) => {
   selectedGenerator.value = generator
+  editingProblemSet.value = null // Clear editing state for new generator
   currentView.value = 'configure'
 }
 
 const addProblemSet = (generator, parameters) => {
-  const problemSet = {
-    id: Date.now(),
-    generatorInfo: generator.getInfo(),
-    generatorClass: generator.constructor.name,
-    generator: generator, // Keep reference to actual generator
-    parameters: { ...parameters },
-    problemCount: parameters.problemCount || 10
+  if (editingProblemSet.value) {
+    // Update existing problem set
+    const index = problemSets.value.findIndex(set => set.id === editingProblemSet.value.id)
+    if (index !== -1) {
+      problemSets.value[index] = {
+        ...editingProblemSet.value,
+        parameters: { ...parameters },
+        problemCount: parameters.problemCount || 10
+      }
+    }
+    editingProblemSet.value = null
+  } else {
+    // Create new problem set
+    const problemSet = {
+      id: Date.now(),
+      generatorInfo: generator.getInfo(),
+      generatorClass: generator.constructor.name,
+      generator: generator, // Keep reference to actual generator
+      parameters: { ...parameters },
+      problemCount: parameters.problemCount || 10
+    }
+    problemSets.value.push(problemSet)
   }
   
-  problemSets.value.push(problemSet)
   saveState()
   currentView.value = 'generators'
 }
@@ -100,8 +116,8 @@ const removeProblemSet = (id) => {
 
 const editProblemSet = (problemSet) => {
   selectedGenerator.value = problemSet.generator
+  editingProblemSet.value = problemSet
   currentView.value = 'configure'
-  // TODO: Pre-fill with existing parameters
 }
 
 const previewWorksheet = () => {
@@ -138,6 +154,7 @@ const clearWorksheet = () => {
 
 const goBack = () => {
   if (currentView.value === 'configure') {
+    editingProblemSet.value = null // Clear editing state when going back
     currentView.value = 'generators'
   } else if (currentView.value === 'preview') {
     currentView.value = 'generators'
@@ -187,35 +204,96 @@ const goBack = () => {
         </div>
       </div>
 
-      <!-- Worksheet Status Bar -->
+      <!-- Current Worksheet Panel - Always visible when sets exist -->
       <div v-if="problemSets.length > 0" class="mb-8">
-        <div class="bg-slate-800/30 backdrop-blur-sm border border-slate-700/50 rounded-xl p-4">
-          <div class="flex flex-col md:flex-row md:items-center justify-between">
-            <div class="flex items-center space-x-4 mb-4 md:mb-0">
-              <input 
-                v-model="worksheetTitle"
-                @input="saveState"
-                class="bg-slate-700/50 text-white border border-slate-600 rounded-lg px-4 py-2 font-semibold text-lg"
-                placeholder="Worksheet Title"
-              />
-              <span class="text-slate-300">
-                {{ problemSets.length }} set{{ problemSets.length !== 1 ? 's' : '' }} • 
-                {{ totalProblems }} problem{{ totalProblems !== 1 ? 's' : '' }}
-              </span>
+        <div class="bg-gradient-to-r from-orange-500/20 to-blue-500/20 backdrop-blur-sm border-2 border-orange-400/50 rounded-2xl p-6 shadow-xl">
+          <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center space-x-3">
+              <div class="bg-orange-500 text-white p-2 rounded-lg">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+              </div>
+              <div>
+                <h3 class="text-xl font-bold text-white">Current Worksheet</h3>
+                <p class="text-orange-200">{{ problemSets.length }} generator{{ problemSets.length !== 1 ? 's' : '' }} • {{ totalProblems }} total problems</p>
+              </div>
             </div>
             <div class="flex space-x-2">
               <button 
                 @click="previewWorksheet"
-                class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+                class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium transition-colors flex items-center space-x-2"
               >
-                Preview Worksheet
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                </svg>
+                <span>Preview</span>
               </button>
               <button 
                 @click="clearWorksheet"
                 class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+                title="Clear All"
               >
-                Clear All
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                </svg>
               </button>
+            </div>
+          </div>
+          
+          <!-- Worksheet Title -->
+          <div class="mb-4">
+            <label class="block text-orange-200 text-sm font-medium mb-2">Worksheet Title</label>
+            <input 
+              v-model="worksheetTitle"
+              @input="saveState"
+              class="w-full bg-white/10 text-white border border-orange-300/30 rounded-lg px-4 py-3 font-semibold text-lg placeholder-orange-200/50 focus:border-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-400/30"
+              placeholder="Enter worksheet title..."
+            />
+          </div>
+
+          <!-- Problem Sets List -->
+          <div class="space-y-3">
+            <div 
+              v-for="(set, index) in problemSets" 
+              :key="set.id"
+              :class="[
+                'backdrop-blur-sm rounded-xl p-4 transition-all duration-200',
+                editingProblemSet?.id === set.id && currentView === 'configure'
+                  ? 'bg-orange-500/30 border-2 border-orange-400 shadow-lg shadow-orange-500/20'
+                  : 'bg-white/10 border border-white/20 hover:bg-white/15'
+              ]"
+            >
+              <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                  <div class="text-2xl">{{ set.generatorInfo.icon }}</div>
+                  <div>
+                    <h4 class="text-white font-semibold">{{ set.generatorInfo.name }}</h4>
+                    <div class="flex items-center space-x-3 text-sm text-orange-200">
+                      <span>{{ set.problemCount }} problems</span>
+                      <span>•</span>
+                      <span>{{ set.generatorInfo.gradeLevel }}</span>
+                      <span>•</span>
+                      <span class="capitalize">{{ set.generatorInfo.difficulty }}</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="flex space-x-2">
+                  <button 
+                    @click="editProblemSet(set)"
+                    class="text-blue-300 hover:text-blue-200 px-3 py-1 rounded-lg bg-blue-500/20 hover:bg-blue-500/30 transition-colors text-sm font-medium"
+                  >
+                    Edit
+                  </button>
+                  <button 
+                    @click="removeProblemSet(set.id)"
+                    class="text-red-300 hover:text-red-200 px-3 py-1 rounded-lg bg-red-500/20 hover:bg-red-500/30 transition-colors text-sm font-medium"
+                  >
+                    Remove
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -273,6 +351,7 @@ const goBack = () => {
       <div v-if="currentView === 'configure' && selectedGenerator">
         <ProblemSetConfig
           :generator="selectedGenerator"
+          :editing-problem-set="editingProblemSet"
           @add-problem-set="addProblemSet"
           @cancel="goBack"
         />
@@ -289,41 +368,6 @@ const goBack = () => {
         />
       </div>
 
-      <!-- Problem Sets Summary (always visible when sets exist) -->
-      <div v-if="problemSets.length > 0 && currentView === 'generators'" class="mt-12">
-        <h3 class="text-2xl font-bold text-white mb-6">Current Worksheet</h3>
-        <div class="space-y-4">
-          <div 
-            v-for="(set, index) in problemSets" 
-            :key="set.id"
-            class="bg-slate-800/30 backdrop-blur-sm border border-slate-700/50 rounded-xl p-6"
-          >
-            <div class="flex items-center justify-between">
-              <div class="flex items-center space-x-4">
-                <div class="text-2xl">{{ set.generatorInfo.icon }}</div>
-                <div>
-                  <h4 class="text-white font-semibold">{{ set.generatorInfo.name }}</h4>
-                  <p class="text-slate-300 text-sm">{{ set.problemCount }} problems • {{ set.generatorInfo.gradeLevel }}</p>
-                </div>
-              </div>
-              <div class="flex space-x-2">
-                <button 
-                  @click="editProblemSet(set)"
-                  class="text-blue-400 hover:text-blue-300 px-3 py-1 rounded transition-colors"
-                >
-                  Edit
-                </button>
-                <button 
-                  @click="removeProblemSet(set.id)"
-                  class="text-red-400 hover:text-red-300 px-3 py-1 rounded transition-colors"
-                >
-                  Remove
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
 
     </div>
   </div>

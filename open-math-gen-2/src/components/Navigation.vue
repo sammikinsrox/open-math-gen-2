@@ -16,6 +16,20 @@ const navigateTo = (page) => {
   emit('navigate', page)
   mobileMenuOpen.value = false
 }
+
+const goToFeatures = () => {
+  if (props.currentPage === 'home') {
+    // Already on home page, just scroll to features
+    const featuresElement = document.getElementById('features')
+    if (featuresElement) {
+      featuresElement.scrollIntoView({ behavior: 'smooth' })
+    }
+  } else {
+    // Navigate to home page (which will auto-scroll to features)
+    navigateTo('home')
+  }
+  mobileMenuOpen.value = false
+}
 </script>
 
 <template>
@@ -34,7 +48,7 @@ const navigateTo = (page) => {
         <!-- Desktop Navigation -->
         <div class="hidden md:block">
           <div class="ml-10 flex items-baseline space-x-8">
-            <a href="#features" class="text-slate-300 hover:text-orange-400 px-3 py-2 text-sm font-medium transition-colors">Features</a>
+            <button @click="goToFeatures" class="text-slate-300 hover:text-orange-400 px-3 py-2 text-sm font-medium transition-colors">Features</button>
             <button @click="navigateTo('worksheet-builder')" :class="currentPage === 'worksheet-builder' ? 'text-orange-400' : 'text-slate-300 hover:text-orange-400'" class="px-3 py-2 text-sm font-medium transition-colors">Worksheet Builder</button>
             <a href="#templates" class="text-slate-300 hover:text-orange-400 px-3 py-2 text-sm font-medium transition-colors">Templates</a>
             <a href="#docs" class="text-slate-300 hover:text-orange-400 px-3 py-2 text-sm font-medium transition-colors">Docs</a>
@@ -66,7 +80,7 @@ const navigateTo = (page) => {
     <!-- Mobile menu -->
     <div v-if="mobileMenuOpen" class="md:hidden bg-slate-800/95 backdrop-blur-md border-t border-slate-700/50">
       <div class="px-2 pt-2 pb-3 space-y-1">
-        <a href="#features" class="text-slate-300 hover:text-orange-400 block px-3 py-2 text-base font-medium">Features</a>
+        <button @click="goToFeatures" class="text-slate-300 hover:text-orange-400 block px-3 py-2 text-base font-medium text-left w-full">Features</button>
         <button @click="navigateTo('worksheet-builder')" :class="currentPage === 'worksheet-builder' ? 'text-orange-400' : 'text-slate-300 hover:text-orange-400'" class="block px-3 py-2 text-base font-medium text-left w-full">Worksheet Builder</button>
         <a href="#templates" class="text-slate-300 hover:text-orange-400 block px-3 py-2 text-base font-medium">Templates</a>
         <a href="#docs" class="text-slate-300 hover:text-orange-400 block px-3 py-2 text-base font-medium">Docs</a>
