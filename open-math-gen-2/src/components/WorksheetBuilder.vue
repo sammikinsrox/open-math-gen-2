@@ -14,6 +14,26 @@ const editingProblemSet = ref(null)
 const problemSets = ref([])
 const worksheetTitle = ref('Math Worksheet')
 
+// Print settings state
+const printSettings = ref({
+  includeHeader: true,
+  includeInstructions: true,
+  includeFooter: true,
+  includeDate: true,
+  includePageNumbers: false,
+  schoolName: '',
+  teacherName: '',
+  className: '',
+  footerText: 'Generated with Open Math Gen',
+  showWorkSpace: true,
+  includeAnswerKey: false,
+  answerKeyLocation: 'separate', // 'separate', 'inline'
+  paperSize: 'letter',
+  margins: 'normal',
+  fontSize: 'normal',
+  orientation: 'portrait'
+})
+
 // Drag and drop state
 const draggedIndex = ref(null)
 const dragOverIndex = ref(null)
@@ -61,6 +81,11 @@ onMounted(() => {
       }).filter(Boolean) // Remove any null entries
       
       worksheetTitle.value = state.worksheetTitle || 'Math Worksheet'
+      
+      // Load print settings
+      if (state.printSettings) {
+        printSettings.value = { ...printSettings.value, ...state.printSettings }
+      }
     } catch (error) {
       console.warn('Failed to load saved worksheet state:', error)
     }
@@ -145,7 +170,8 @@ const saveState = () => {
   
   localStorage.setItem('worksheet-builder-state', JSON.stringify({
     problemSets: serializableProblemSets,
-    worksheetTitle: worksheetTitle.value
+    worksheetTitle: worksheetTitle.value,
+    printSettings: printSettings.value
   }))
 }
 
@@ -400,7 +426,7 @@ const handleDropEnd = (event) => {
           </div>
           
           <!-- Worksheet Title -->
-          <div class="mb-4">
+          <div class="mb-6">
             <label class="block text-orange-200 text-sm font-medium mb-2">Worksheet Title</label>
             <input 
               v-model="worksheetTitle"
@@ -408,6 +434,109 @@ const handleDropEnd = (event) => {
               class="w-full bg-white/10 text-white border border-orange-300/30 rounded-lg px-4 py-3 font-semibold text-lg placeholder-orange-200/50 focus:border-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-400/30"
               placeholder="Enter worksheet title..."
             />
+          </div>
+
+          <!-- Print Settings -->
+          <div class="mb-6 border-t border-orange-300/30 pt-6">
+            <h4 class="text-orange-200 text-lg font-semibold mb-4 flex items-center">
+              <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
+              </svg>
+              Print Settings
+            </h4>
+            
+            <!-- Content Settings Row -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+              <label class="flex items-center space-x-3 text-orange-200 cursor-pointer">
+                <input 
+                  type="checkbox" 
+                  v-model="printSettings.showWorkSpace"
+                  @change="saveState"
+                  class="text-orange-500 focus:ring-orange-400 rounded"
+                />
+                <span class="text-sm">Include Work Space</span>
+              </label>
+              
+              <label class="flex items-center space-x-3 text-orange-200 cursor-pointer">
+                <input 
+                  type="checkbox" 
+                  v-model="printSettings.includeAnswerKey"
+                  @change="saveState"
+                  class="text-orange-500 focus:ring-orange-400 rounded"
+                />
+                <span class="text-sm">Include Answer Key</span>
+              </label>
+              
+              <label class="flex items-center space-x-3 text-orange-200 cursor-pointer">
+                <input 
+                  type="checkbox" 
+                  v-model="printSettings.includeHeader"
+                  @change="saveState"
+                  class="text-orange-500 focus:ring-orange-400 rounded"
+                />
+                <span class="text-sm">Include Header</span>
+              </label>
+            </div>
+
+            <!-- Header Information (show when header is enabled) -->
+            <div v-if="printSettings.includeHeader" class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4 pl-4 border-l-2 border-orange-400/50">
+              <div>
+                <label class="block text-orange-200 text-xs font-medium mb-1">School Name</label>
+                <input 
+                  v-model="printSettings.schoolName"
+                  @input="saveState"
+                  class="w-full bg-white/10 text-white border border-orange-300/30 rounded px-3 py-2 text-sm placeholder-orange-200/50 focus:border-orange-400 focus:outline-none"
+                  placeholder="Optional"
+                />
+              </div>
+              
+              <div>
+                <label class="block text-orange-200 text-xs font-medium mb-1">Teacher Name</label>
+                <input 
+                  v-model="printSettings.teacherName"
+                  @input="saveState"
+                  class="w-full bg-white/10 text-white border border-orange-300/30 rounded px-3 py-2 text-sm placeholder-orange-200/50 focus:border-orange-400 focus:outline-none"
+                  placeholder="Optional"
+                />
+              </div>
+              
+              <div>
+                <label class="block text-orange-200 text-xs font-medium mb-1">Class Name</label>
+                <input 
+                  v-model="printSettings.className"
+                  @input="saveState"
+                  class="w-full bg-white/10 text-white border border-orange-300/30 rounded px-3 py-2 text-sm placeholder-orange-200/50 focus:border-orange-400 focus:outline-none"
+                  placeholder="Optional"
+                />
+              </div>
+            </div>
+
+            <!-- Answer Key Location (show when answer key is enabled) -->
+            <div v-if="printSettings.includeAnswerKey" class="mb-4 pl-4 border-l-2 border-orange-400/50">
+              <label class="block text-orange-200 text-xs font-medium mb-2">Answer Key Location</label>
+              <div class="flex space-x-4">
+                <label class="flex items-center space-x-2 text-orange-200 cursor-pointer">
+                  <input 
+                    type="radio" 
+                    value="separate" 
+                    v-model="printSettings.answerKeyLocation"
+                    @change="saveState"
+                    class="text-orange-500 focus:ring-orange-400"
+                  />
+                  <span class="text-sm">Separate Pages</span>
+                </label>
+                <label class="flex items-center space-x-2 text-orange-200 cursor-pointer">
+                  <input 
+                    type="radio" 
+                    value="inline" 
+                    v-model="printSettings.answerKeyLocation"
+                    @change="saveState"
+                    class="text-orange-500 focus:ring-orange-400"
+                  />
+                  <span class="text-sm">Show Answers</span>
+                </label>
+              </div>
+            </div>
           </div>
 
           <!-- Problem Sets List -->
@@ -565,6 +694,7 @@ const handleDropEnd = (event) => {
         <WorksheetPreview
           :problem-sets="problemSets"
           :worksheet-title="worksheetTitle"
+          :print-settings="printSettings"
           @back="goBack"
           @edit-set="editProblemSet"
           @remove-set="removeProblemSet"

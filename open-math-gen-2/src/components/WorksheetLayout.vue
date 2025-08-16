@@ -72,9 +72,9 @@ const paperDimensions = computed(() => {
 
 const marginSizes = computed(() => {
   const margins = {
-    narrow: 48,   // 0.5" = 48px
-    normal: 96,   // 1" = 96px  
-    wide: 144     // 1.5" = 144px
+    narrow: 24,   // 0.25" = 24px
+    normal: 48,   // 0.5" = 48px (updated default)
+    wide: 64      // 0.67" = 64px
   }
   return margins[props.settings.margins] || margins.normal
 })
@@ -259,9 +259,9 @@ const paperClasses = computed(() => {
 
 const marginClasses = computed(() => {
   const margins = {
-    narrow: 'p-4',
-    normal: 'p-8', 
-    wide: 'p-12'
+    narrow: 'p-4',   // 1rem = 16px ≈ 0.17in
+    normal: 'p-12',  // 3rem = 48px = 0.5in (updated default)
+    wide: 'p-16'     // 4rem = 64px ≈ 0.67in
   }
   return margins[props.settings.margins] || margins.normal
 })
@@ -674,7 +674,7 @@ const fontSizeClasses = computed(() => {
 /* A4 size pages */
 @page a4 {
   size: 210mm 297mm;
-  margin: 12mm;
+  margin: 12.7mm;  /* 0.5 inches = 12.7mm */
 }
 
 /* Legal size pages */
@@ -685,17 +685,17 @@ const fontSizeClasses = computed(() => {
 
 /* Narrow margins */
 @page narrow {
-  margin: 0.5in;
+  margin: 0.25in;
 }
 
 /* Normal margins */
 @page normal {
-  margin: 1in;
+  margin: 0.5in;
 }
 
 /* Wide margins */
 @page wide {
-  margin: 1.5in;
+  margin: 0.67in;
 }
 
 /* Answer blank styling */

@@ -1,7 +1,6 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import WorksheetLayout from './WorksheetLayout.vue'
-import PrintModal from './PrintModal.vue'
 
 const props = defineProps({
   problemSets: {
@@ -10,6 +9,10 @@ const props = defineProps({
   },
   worksheetTitle: {
     type: String,
+    required: true
+  },
+  printSettings: {
+    type: Object,
     required: true
   }
 })
@@ -20,7 +23,7 @@ const generatedProblems = ref([])
 const isGenerating = ref(false)
 const showAnswers = ref(false)
 const currentDate = ref(new Date().toLocaleDateString())
-const showPrintModal = ref(false)
+const isPrinting = ref(false)
 
 const totalProblems = computed(() => {
   return props.problemSets.reduce((total, set) => total + set.problemCount, 0)
@@ -96,24 +99,42 @@ const removeSet = (setIndex) => {
   emit('remove-set', problemSet.id)
 }
 
-const exportToPDF = () => {
-  showPrintModal.value = true
-}
+const handlePrint = async () => {
+  isPrinting.value = true
+  try {
+    // Hide everything on the current page except the worksheet layout
+    const body = document.body
+    const originalStyle = body.style.cssText
+    const allElements = document.querySelectorAll('*:not(.worksheet-layout):not(.worksheet-layout *)')
+    
+    // Hide all elements except worksheet
+    allElements.forEach(el => {
+      if (!el.closest('.worksheet-layout')) {
+        el.style.visibility = 'hidden'
+      }
+    })
+    
+    // Set print-friendly body styles
+    body.style.cssText = 'margin: 0; padding: 0; background: white !important;'
+    
+    // Print the page
+    window.print()
+    
+    // Restore original styles after printing
+    setTimeout(() => {
+      body.style.cssText = originalStyle
+      allElements.forEach(el => {
+        el.style.visibility = ''
+      })
+      
+      isPrinting.value = false
+    }, 500)
 
-const closePrintModal = () => {
-  showPrintModal.value = false
-}
-
-const handlePrint = async (printSettings) => {
-  // Print will be handled by the PrintModal component
-  // This is just a fallback/placeholder
-  console.log('Print settings:', printSettings)
-}
-
-const handleSavePDF = async (printSettings) => {
-  // PDF generation will be handled by the PrintModal component
-  // This is just a fallback/placeholder
-  console.log('PDF settings:', printSettings)
+  } catch (error) {
+    console.error('Print error:', error)
+    isPrinting.value = false
+    alert('Print failed. Please try again.')
+  }
 }
 
 const regenerateProblems = () => {
@@ -161,10 +182,12 @@ const toggleAnswers = () => {
           {{ isGenerating ? 'Generating...' : 'Regenerate' }}
         </button>
         <button 
-          @click="exportToPDF"
-          class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+          @click="handlePrint"
+          :disabled="isPrinting"
+          class="bg-green-600 hover:bg-green-700 disabled:opacity-50 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center"
         >
-<span class="material-icons mr-2">print</span>Print/Export
+          <span class="material-icons mr-2">print</span>
+          {{ isPrinting ? 'Printing...' : 'Print' }}
         </button>
       </div>
     </div>
@@ -193,39 +216,13 @@ const toggleAnswers = () => {
       v-else
       :problems="generatedProblems"
       :worksheet-title="worksheetTitle"
-      :settings="{
-        includeHeader: true,
-        includeInstructions: true, 
-        includeFooter: true,
-        includeDate: true,
-        includePageNumbers: false,
-        schoolName: '',
-        teacherName: '',
-        className: '',
-        footerText: 'Generated with Open Math Gen',
-        showWorkSpace: true,
-        paperSize: 'letter',
-        margins: 'normal',
-        fontSize: 'normal',
-        orientation: 'portrait'
-      }"
-      :show-answers="showAnswers"
-      :include-answer-key="showAnswers"
-      :answer-key-location="'separate'"
+      :settings="printSettings"
+      :show-answers="showAnswers || (printSettings.includeAnswerKey && printSettings.answerKeyLocation === 'inline')"
+      :include-answer-key="printSettings.includeAnswerKey"
+      :answer-key-location="printSettings.answerKeyLocation"
       mode="preview"
     />
 
-    <!-- Print Modal -->
-    <PrintModal
-      :is-open="showPrintModal"
-      :problem-sets="problemSets"
-      :generated-problems="generatedProblems"
-      :worksheet-title="worksheetTitle"
-      :show-answers="showAnswers"
-      @close="closePrintModal"
-      @print="handlePrint"
-      @save-pdf="handleSavePDF"
-    />
   </div>
 </template>
 
