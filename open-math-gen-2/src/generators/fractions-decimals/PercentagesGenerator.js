@@ -170,11 +170,15 @@ export class PercentagesGenerator extends BaseGenerator {
       Math.round(result * 100) / 100 : 
       Math.round(result)
     
-    const questionText = params.includeWordProblems && Math.random() < 0.3 ?
+    const wordProblem = params.includeWordProblems && Math.random() < 0.3 ?
       this.generateWordProblem('percent-of-number', percentage, number) :
-      `What is ${percentage}% of ${number}?`
+      {
+        question: `What is ${percentage}% of ${number}?`,
+        questionLaTeX: `\\text{What is } ${percentage}\\% \\text{ of } ${number}\\text{?}`
+      }
     
-    const questionLaTeX = `\\text{What is } ${percentage}\\% \\text{ of } ${number}\\text{?}`
+    const questionText = wordProblem.question
+    const questionLaTeX = wordProblem.questionLaTeX
     
     const steps = [
       `${percentage}\\% \\text{ of } ${number}`,
@@ -393,14 +397,31 @@ export class PercentagesGenerator extends BaseGenerator {
   generateWordProblem(type, percentage, number) {
     const scenarios = {
       'percent-of-number': [
-        `A store offers ${percentage}% off on a item that costs $${number}.\n\nHow much is the discount?`,
-        `In a class of ${number} students, ${percentage}% are boys.\n\nHow many boys are there?`,
-        `A tip of ${percentage}% is left on a bill of $${number}.\n\nHow much is the tip?`,
-        `${percentage}% of ${number} books in a library are fiction.\n\nHow many fiction books are there?`
+        {
+          question: `A store offers ${percentage}% off on a item that costs $${number}.\n\nHow much is the discount?`,
+          questionLaTeX: `\\text{A store offers ${percentage}\\% off on a item that costs \\$${number}.} \\\\ \\text{How much is the discount?}`
+        },
+        {
+          question: `In a class of ${number} students, ${percentage}% are boys.\n\nHow many boys are there?`,
+          questionLaTeX: `\\text{In a class of ${number} students, ${percentage}\\% are boys.} \\\\ \\text{How many boys are there?}`
+        },
+        {
+          question: `A tip of ${percentage}% is left on a bill of $${number}.\n\nHow much is the tip?`,
+          questionLaTeX: `\\text{A tip of ${percentage}\\% is left on a bill of \\$${number}.} \\\\ \\text{How much is the tip?}`
+        },
+        {
+          question: `${percentage}% of ${number} books in a library are fiction.\n\nHow many fiction books are there?`,
+          questionLaTeX: `\\text{${percentage}\\% of ${number} books in a library are fiction.} \\\\ \\text{How many fiction books are there?}`
+        }
       ]
     }
     
-    const problemList = scenarios[type] || [`What is ${percentage}% of ${number}?`]
+    const problemList = scenarios[type] || [
+      {
+        question: `What is ${percentage}% of ${number}?`,
+        questionLaTeX: `\\text{What is ${percentage}\\% of ${number}?}`
+      }
+    ]
     return this.getRandomElement(problemList)
   }
 

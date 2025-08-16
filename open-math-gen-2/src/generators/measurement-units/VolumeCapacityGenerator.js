@@ -310,16 +310,19 @@ export class VolumeCapacityGenerator extends BaseGenerator {
     const scenarios = [
       {
         question: `A recipe calls for ${value1} ${unit.name} of water and ${value2} ${unit.name} of milk.\n\nHow much liquid is needed in total?`,
+        questionLaTeX: `\\text{A recipe calls for ${value1} ${unit.name} of water and ${value2} ${unit.name} of milk.} \\\\ \\text{How much liquid is needed in total?}`,
         answer: value1 + value2,
         operation: 'addition'
       },
       {
         question: `A tank holds ${Math.max(value1, value2)} ${unit.name} of water.\n\nIf ${Math.min(value1, value2)} ${unit.name} is used, how much remains?`,
+        questionLaTeX: `\\text{A tank holds ${Math.max(value1, value2)} ${unit.name} of water.} \\\\ \\text{If ${Math.min(value1, value2)} ${unit.name} is used, how much remains?}`,
         answer: Math.max(value1, value2) - Math.min(value1, value2),
         operation: 'subtraction'
       },
       {
         question: `A container has a capacity of ${value1} ${unit.name}.\n\nIs this more or less than ${value2} ${unit.name}?`,
+        questionLaTeX: `\\text{A container has a capacity of ${value1} ${unit.name}.} \\\\ \\text{Is this more or less than ${value2} ${unit.name}?}`,
         answer: value1 > value2 ? 'more' : 'less',
         operation: 'comparison'
       }
@@ -329,7 +332,7 @@ export class VolumeCapacityGenerator extends BaseGenerator {
     
     return {
       question: scenario.question,
-      questionLaTeX: `\\text{${scenario.question}}`,
+      questionLaTeX: scenario.questionLaTeX,
       answer: scenario.answer.toString(),
       answerLaTeX: scenario.answer.toString(),
       steps: [

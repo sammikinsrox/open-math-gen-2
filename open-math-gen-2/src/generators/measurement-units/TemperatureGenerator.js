@@ -326,20 +326,32 @@ export class TemperatureGenerator extends BaseGenerator {
     const availableScales = this.getAvailableScales(params)
     const scale = this.getRandomElement(availableScales)
     
+    const tempValue1 = this.generateTemperature(params)
+    const tempValue2 = this.generateTemperature(params)
+    const tempValue3 = this.generateTemperature(params)
+    const tempRise = Math.floor(Math.random() * 15) + 5
+    
     const scenarios = [
       {
-        question: `Water freezes at 0°C.\n\nIf the temperature is currently ${this.generateTemperature(params)}°C, is the water frozen?`,
+        question: `Water freezes at 0°C.\n\nIf the temperature is currently ${tempValue1}°C, is the water frozen?`,
+        questionLaTeX: `\\text{Water freezes at 0°C.} \\\\ \\text{If the temperature is currently ${tempValue1}°C, is the water frozen?}`,
         type: 'comparison',
-        freezingPoint: 0
+        freezingPoint: 0,
+        tempValue: tempValue1
       },
       {
-        question: `Normal body temperature is 98.6°F.\n\nIf someone has a temperature of ${this.generateTemperature(params)}°F, do they have a fever?`,
+        question: `Normal body temperature is 98.6°F.\n\nIf someone has a temperature of ${tempValue2}°F, do they have a fever?`,
+        questionLaTeX: `\\text{Normal body temperature is 98.6°F.} \\\\ \\text{If someone has a temperature of ${tempValue2}°F, do they have a fever?}`,
         type: 'comparison',
-        normalTemp: 98.6
+        normalTemp: 98.6,
+        tempValue: tempValue2
       },
       {
-        question: `The temperature was ${this.generateTemperature(params)}°${scale.symbol} in the morning and rose by ${Math.floor(Math.random() * 15) + 5}° during the day.\n\nWhat was the afternoon temperature?`,
-        type: 'addition'
+        question: `The temperature was ${tempValue3}°${scale.symbol} in the morning and rose by ${tempRise}° during the day.\n\nWhat was the afternoon temperature?`,
+        questionLaTeX: `\\text{The temperature was ${tempValue3}°${scale.symbol} in the morning and rose by ${tempRise}° during the day.} \\\\ \\text{What was the afternoon temperature?}`,
+        type: 'addition',
+        tempValue: tempValue3,
+        tempRise: tempRise
       }
     ]
     
@@ -349,26 +361,22 @@ export class TemperatureGenerator extends BaseGenerator {
     let answer, answerLaTeX
     if (scenario.type === 'comparison') {
       if (scenario.freezingPoint !== undefined) {
-        const temp = this.generateTemperature(params)
-        answer = temp <= 0 ? 'Yes, frozen' : 'No, not frozen'
+        answer = scenario.tempValue <= 0 ? 'Yes, frozen' : 'No, not frozen'
         answerLaTeX = answer
       } else {
-        const temp = this.generateTemperature(params)
-        answer = temp > 98.6 ? 'Yes, fever' : 'No, normal'
+        answer = scenario.tempValue > 98.6 ? 'Yes, fever' : 'No, normal'
         answerLaTeX = answer
       }
     } else {
       // For addition type
-      const morning = this.generateTemperature(params)
-      const rise = Math.floor(Math.random() * 15) + 5
-      const afternoon = morning + rise
+      const afternoon = scenario.tempValue + scenario.tempRise
       answer = `${afternoon}°${scale.symbol}`
       answerLaTeX = `${afternoon}°${scale.symbol}`
     }
     
     return {
       question: scenario.question,
-      questionLaTeX: `\\text{${scenario.question}}`,
+      questionLaTeX: scenario.questionLaTeX,
       answer: answer,
       answerLaTeX: answerLaTeX,
       steps: [

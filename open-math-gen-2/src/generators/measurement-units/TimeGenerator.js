@@ -351,7 +351,8 @@ export class TimeGenerator extends BaseGenerator {
   generateWordProblem(params) {
     const scenarios = [
       {
-        question: 'A movie starts at 7:30 PM and lasts 2 hours and 15 minutes. \n\nWhat time does it end?',
+        question: 'A movie starts at 7:30 PM and lasts 2 hours and 15 minutes. \\break What time does it end?',
+        questionLaTeX: '\\text{A movie starts at 7:30 PM and lasts 2 hours and 15 minutes.} \\\\ \\text{What time does it end?}',
         startHour: 7,
         startMinute: 30,
         durationHours: 2,
@@ -359,7 +360,8 @@ export class TimeGenerator extends BaseGenerator {
         operation: 'addition'
       },
       {
-        question: 'School starts at 8:00 AM and ends at 3:15 PM.\n\nHow long is the school day?',
+        question: 'School starts at 8:00 AM and ends at 3:15 PM.\\break How long is the school day?',
+        questionLaTeX: '\\text{School starts at 8:00 AM and ends at 3:15 PM.} \\\\ \\text{How long is the school day?}',
         startHour: 8,
         startMinute: 0,
         endHour: 15,
@@ -367,7 +369,8 @@ export class TimeGenerator extends BaseGenerator {
         operation: 'elapsed'
       },
       {
-        question: 'A train journey takes 4 hours and 30 minutes.\n\nIf it arrives at 2:45 PM, what time did it depart?',
+        question: 'A train journey takes 4 hours and 30 minutes.\\break If it arrives at 2:45 PM, what time did it depart?',
+        questionLaTeX: '\\text{A train journey takes 4 hours and 30 minutes.} \\\\ \\text{If it arrives at 2:45 PM, what time did it depart?}',
         endHour: 14,
         endMinute: 45,
         durationHours: 4,
@@ -398,7 +401,7 @@ export class TimeGenerator extends BaseGenerator {
     
     return {
       question: scenario.question,
-      questionLaTeX: `\\text{${scenario.question}}`,
+      questionLaTeX: scenario.questionLaTeX,
       answer: answer,
       answerLaTeX: answerLaTeX,
       steps: [

@@ -251,7 +251,10 @@ export class MetricImperialGenerator extends BaseGenerator {
       .replace('{fromUnit}', conversion.fromUnit)
       .replace('{toUnit}', conversion.toUnit)
     
-    const questionLaTeX = `\\text{${questionText}}`
+    const questionLaTeX = scenario.questionLaTeX
+      .replace('{value}', value)
+      .replace('{fromUnit}', conversion.fromUnit)
+      .replace('{toUnit}', conversion.toUnit)
     
     return {
       question: questionText,
@@ -340,16 +343,19 @@ export class MetricImperialGenerator extends BaseGenerator {
       length: [
         {
           question: 'A running track is {value} {fromUnit} long.\n\nHow many {toUnit} is that?',
+          questionLaTeX: '\\text{A running track is {value} {fromUnit} long.} \\\\ \\text{How many {toUnit} is that?}',
           type: 'sports',
           units: ['meters', 'feet', 'yards']
         },
         {
           question: 'The height of a building is {value} {fromUnit}.\n\nConvert this to {toUnit}.',
+          questionLaTeX: '\\text{The height of a building is {value} {fromUnit}.} \\\\ \\text{Convert this to {toUnit}.}',
           type: 'architecture',
           units: ['meters', 'feet']
         },
         {
           question: 'A road trip covers {value} {fromUnit}.\n\nHow many {toUnit} is this?',
+          questionLaTeX: '\\text{A road trip covers {value} {fromUnit}.} \\\\ \\text{How many {toUnit} is this?}',
           type: 'travel',
           units: ['kilometers', 'miles']
         }
@@ -358,16 +364,19 @@ export class MetricImperialGenerator extends BaseGenerator {
       weight: [
         {
           question: 'A package weighs {value} {fromUnit}.\n\nWhat is its weight in {toUnit}?',
+          questionLaTeX: '\\text{A package weighs {value} {fromUnit}.} \\\\ \\text{What is its weight in {toUnit}?}',
           type: 'shipping',
           units: ['kilograms', 'pounds']
         },
         {
           question: 'A recipe calls for {value} {fromUnit} of flour.\n\nHow many {toUnit} is that?',
+          questionLaTeX: '\\text{A recipe calls for {value} {fromUnit} of flour.} \\\\ \\text{How many {toUnit} is that?}',
           type: 'cooking',
           units: ['grams', 'ounces']
         },
         {
           question: 'An athlete weighs {value} {fromUnit}.\n\nConvert this to {toUnit}.',
+          questionLaTeX: '\\text{An athlete weighs {value} {fromUnit}.} \\\\ \\text{Convert this to {toUnit}.}',
           type: 'sports',
           units: ['kilograms', 'pounds']
         }
@@ -376,16 +385,19 @@ export class MetricImperialGenerator extends BaseGenerator {
       volume: [
         {
           question: 'A car\'s fuel tank holds {value} {fromUnit}.\n\nHow many {toUnit} is that?',
+          questionLaTeX: '\\text{A car\'s fuel tank holds {value} {fromUnit}.} \\\\ \\text{How many {toUnit} is that?}',
           type: 'automotive',
           units: ['liters', 'gallons']
         },
         {
           question: 'A recipe requires {value} {fromUnit} of milk.\n\nConvert to {toUnit}.',
+          questionLaTeX: '\\text{A recipe requires {value} {fromUnit} of milk.} \\\\ \\text{Convert to {toUnit}.}',
           type: 'cooking',
           units: ['milliliters', 'fluid ounces']
         },
         {
           question: 'A swimming pool contains {value} {fromUnit} of water.\n\nHow many {toUnit}?',
+          questionLaTeX: '\\text{A swimming pool contains {value} {fromUnit} of water.} \\\\ \\text{How many {toUnit}?}',
           type: 'recreation',
           units: ['liters', 'gallons']
         }
@@ -394,16 +406,19 @@ export class MetricImperialGenerator extends BaseGenerator {
       temperature: [
         {
           question: 'The weather forecast shows {value}°{fromUnit}.\n\nWhat is this in °{toUnit}?',
+          questionLaTeX: '\\text{The weather forecast shows {value}°{fromUnit}.} \\\\ \\text{What is this in °{toUnit}?}',
           type: 'weather',
           units: ['Celsius', 'Fahrenheit']
         },
         {
           question: 'A recipe calls for baking at {value}°{fromUnit}.\n\nConvert to °{toUnit}.',
+          questionLaTeX: '\\text{A recipe calls for baking at {value}°{fromUnit}.} \\\\ \\text{Convert to °{toUnit}.}',
           type: 'cooking',
           units: ['Celsius', 'Fahrenheit']
         },
         {
           question: 'Body temperature is {value}°{fromUnit}.\n\nWhat is this in °{toUnit}?',
+          questionLaTeX: '\\text{Body temperature is {value}°{fromUnit}.} \\\\ \\text{What is this in °{toUnit}?}',
           type: 'medical',
           units: ['Celsius', 'Fahrenheit']
         }
