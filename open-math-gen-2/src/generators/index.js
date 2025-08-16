@@ -10,7 +10,6 @@ import AdditionGenerator from './basic-operations/AdditionGenerator.js'
 import SubtractionGenerator from './basic-operations/SubtractionGenerator.js'
 import MultiplicationGenerator from './basic-operations/MultiplicationGenerator.js'
 import DivisionGenerator from './basic-operations/DivisionGenerator.js'
-import MixedOperationsGenerator from './basic-operations/MixedOperationsGenerator.js'
 import OrderOfOperationsGenerator from './basic-operations/OrderOfOperationsGenerator.js'
 
 // Fractions & Decimals Generators
@@ -33,7 +32,6 @@ export const GENERATOR_CATEGORIES = {
       'subtraction': new SubtractionGenerator(),
       'multiplication': new MultiplicationGenerator(),
       'division': new DivisionGenerator(),
-      'mixed-operations': new MixedOperationsGenerator(),
       'order-of-operations': new OrderOfOperationsGenerator()
     }
   },

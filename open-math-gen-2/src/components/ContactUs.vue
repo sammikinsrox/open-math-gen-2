@@ -50,13 +50,6 @@ const contactMethods = [
     response: 'We take bugs seriously and respond quickly'
   },
   {
-    icon: '💡',
-    title: 'Feature Requests',
-    description: 'Suggest new features and improvements',
-    contact: 'features@openmathgen.com',
-    response: 'We love hearing your ideas'
-  },
-  {
     icon: '🏫',
     title: 'Educational Partnerships',
     description: 'Bulk licensing and educational discounts',

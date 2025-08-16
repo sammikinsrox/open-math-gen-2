@@ -19,9 +19,7 @@ export class FractionAdditionGenerator extends BaseGenerator {
         maxDenominator: 12,
         allowMixedNumbers: false,
         requireSimplification: true,
-        commonDenominators: false,
-        showWorkSpace: true,
-        includeAnswerKey: true
+        commonDenominators: false
       },
       
       parameterSchema: {
@@ -63,16 +61,6 @@ export class FractionAdditionGenerator extends BaseGenerator {
           type: 'boolean',
           label: 'Common Denominators Only',
           description: 'Only generate problems with same denominators'
-        },
-        showWorkSpace: {
-          type: 'boolean',
-          label: 'Show Work Space',
-          description: 'Include space for student work'
-        },
-        includeAnswerKey: {
-          type: 'boolean',
-          label: 'Include Answer Key',
-          description: 'Generate answer key with solutions'
         }
       }
     })
@@ -107,7 +95,6 @@ export class FractionAdditionGenerator extends BaseGenerator {
       questionLaTeX: questionLaTeX,
       answer: `${answer.numerator}/${answer.denominator}`,
       answerLaTeX: `\\frac{${answer.numerator}}{${answer.denominator}}`,
-      workSpace: params.showWorkSpace,
       steps: this.generateSteps(frac1, frac2, answer),
       metadata: {
         operation: 'fraction-addition',

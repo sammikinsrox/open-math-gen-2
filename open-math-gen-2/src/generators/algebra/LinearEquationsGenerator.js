@@ -30,9 +30,7 @@ export class LinearEquationsGenerator extends BaseGenerator {
         maxConstant: 50,
         allowNegatives: true,
         allowFractions: false,
-        equationType: 'one-step',
-        showWorkSpace: true,
-        includeAnswerKey: true
+        equationType: 'one-step'
       },
       
       parameterSchema: {
@@ -91,16 +89,6 @@ export class LinearEquationsGenerator extends BaseGenerator {
           label: 'Equation Type',
           description: 'Type of linear equation',
           options: ['one-step', 'two-step', 'multi-step']
-        },
-        showWorkSpace: {
-          type: 'boolean',
-          label: 'Show Work Space',
-          description: 'Include space for student work'
-        },
-        includeAnswerKey: {
-          type: 'boolean',
-          label: 'Include Answer Key',
-          description: 'Generate answer key with solutions'
         }
       }
     })
@@ -138,7 +126,6 @@ export class LinearEquationsGenerator extends BaseGenerator {
       questionLaTeX: questionLaTeX,
       answer: solution.display,
       answerLaTeX: solution.latex,
-      workSpace: params.showWorkSpace,
       steps: steps,
       metadata: {
         operation: 'linear-equations',

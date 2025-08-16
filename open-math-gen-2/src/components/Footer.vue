@@ -48,8 +48,6 @@ const emit = defineEmits(['navigate'])
           <ul class="space-y-2">
             <li><button @click="emit('navigate', 'contact')" class="text-slate-300 hover:text-orange-400 transition-colors text-sm bg-transparent border-none cursor-pointer p-0 font-inherit">Contact Us</button></li>
             <li><a href="#" class="text-slate-300 hover:text-orange-400 transition-colors text-sm">Bug Reports</a></li>
-            <li><a href="#" class="text-slate-300 hover:text-orange-400 transition-colors text-sm">Feature Requests</a></li>
-            <li><a href="#" class="text-slate-300 hover:text-orange-400 transition-colors text-sm">Status</a></li>
           </ul>
         </div>
       </div>

@@ -59,6 +59,52 @@ const totalProblems = computed(() => {
   return problemSets.value.reduce((total, set) => total + set.problemCount, 0)
 })
 
+// Generate a readable summary of problem set parameters
+const getParameterSummary = (problemSet) => {
+  const params = problemSet.parameters
+  const summary = []
+  
+  // Always include problem count
+  summary.push(`${params.problemCount || problemSet.problemCount} problems`)
+  
+  // Add key parameters based on what's configured (exclude defaults)
+  Object.entries(params).forEach(([key, value]) => {
+    // Skip common/boring parameters
+    if (['problemCount'].includes(key)) return
+    
+    // Format parameter names and values nicely
+    const formatKey = (k) => k.replace(/([A-Z])/g, ' $1').toLowerCase().replace(/^./, s => s.toUpperCase())
+    const formatValue = (v) => {
+      if (typeof v === 'boolean') return v ? 'Yes' : 'No'
+      if (typeof v === 'string') return v.replace('-', ' ').replace(/^\w/, c => c.toUpperCase())
+      return v
+    }
+    
+    // Only show non-default interesting parameters
+    if (key.includes('min') && key.includes('max')) {
+      // Combine min/max ranges
+      const minKey = key.replace(/Max$/, 'Min')
+      const maxKey = key.replace(/Min$/, 'Max')
+      const minVal = params[minKey]
+      const maxVal = params[maxKey]
+      
+      if (minVal !== undefined && maxVal !== undefined && key.includes('Max')) {
+        const baseKey = key.replace(/(Min|Max)$/, '')
+        summary.push(`${formatKey(baseKey)}: ${minVal}-${maxVal}`)
+      }
+    } else if (!key.includes('Min') && !key.includes('Max')) {
+      // Show other interesting parameters
+      if (typeof value === 'boolean' && value) {
+        summary.push(formatKey(key))
+      } else if (typeof value !== 'boolean') {
+        summary.push(`${formatKey(key)}: ${formatValue(value)}`)
+      }
+    }
+  })
+  
+  return summary.slice(0, 4) // Limit to 4 items to keep it concise
+}
+
 onMounted(() => {
   // Load any saved worksheet data
   const saved = localStorage.getItem('worksheet-builder-state')
@@ -576,12 +622,17 @@ const handleDropEnd = (event) => {
                   </div>
                   <div>
                     <h4 class="text-white font-semibold">{{ set.generatorInfo.name }}</h4>
-                    <div class="flex items-center space-x-3 text-sm text-orange-200">
-                      <span>{{ set.problemCount }} problems</span>
-                      <span>•</span>
-                      <span>{{ set.generatorInfo.gradeLevel }}</span>
-                      <span>•</span>
-                      <span class="capitalize">{{ set.generatorInfo.difficulty }}</span>
+                    <div class="text-sm text-orange-200">
+                      <div class="flex flex-wrap items-center gap-x-3 gap-y-1">
+                        <span 
+                          v-for="(param, index) in getParameterSummary(set)" 
+                          :key="index"
+                          class="flex items-center"
+                        >
+                          {{ param }}
+                          <span v-if="index < getParameterSummary(set).length - 1" class="ml-3 text-orange-300">•</span>
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>

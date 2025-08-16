@@ -19,9 +19,7 @@ export class BoilerplateGenerator extends BaseGenerator {
         problemCount: 10,
         minValue: 1,
         maxValue: 100,
-        allowNegatives: false,
-        showWorkSpace: true,
-        includeAnswerKey: true
+        allowNegatives: false
       },
       
       // Parameter schema for validation and UI generation
@@ -54,16 +52,6 @@ export class BoilerplateGenerator extends BaseGenerator {
           type: 'boolean',
           label: 'Allow Negative Numbers',
           description: 'Include negative numbers in problems'
-        },
-        showWorkSpace: {
-          type: 'boolean',
-          label: 'Show Work Space',
-          description: 'Include space for student work'
-        },
-        includeAnswerKey: {
-          type: 'boolean',
-          label: 'Include Answer Key',
-          description: 'Generate answer key with solutions'
         }
       }
     })
@@ -97,7 +85,6 @@ export class BoilerplateGenerator extends BaseGenerator {
       questionLaTeX: `${num1} ${operation} ${num2} = \\square`,
       answer: answer,
       answerLaTeX: `${answer}`,
-      workSpace: params.showWorkSpace,
       steps: [
         `${num1} ${operation} ${num2}`,
         `= ${answer}`

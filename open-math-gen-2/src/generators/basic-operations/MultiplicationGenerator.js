@@ -20,9 +20,7 @@ export class MultiplicationGenerator extends BaseGenerator {
         factor2Min: 1,
         factor2Max: 12,
         allowSingleDigit: true,
-        allowDoubleDigit: true,
-        showWorkSpace: true,
-        includeAnswerKey: true
+        allowDoubleDigit: true
       },
       
       parameterSchema: {
@@ -75,16 +73,6 @@ export class MultiplicationGenerator extends BaseGenerator {
           type: 'boolean',
           label: 'Allow Double Digit',
           description: 'Include double digit multiplication'
-        },
-        showWorkSpace: {
-          type: 'boolean',
-          label: 'Show Work Space',
-          description: 'Include space for student work'
-        },
-        includeAnswerKey: {
-          type: 'boolean',
-          label: 'Include Answer Key',
-          description: 'Generate answer key with solutions'
         }
       }
     })
@@ -98,9 +86,46 @@ export class MultiplicationGenerator extends BaseGenerator {
       throw new Error(`Invalid parameters: ${validation.errors.join(', ')}`)
     }
     
-    const factor1 = this.getRandomNumber(params.factor1Min, params.factor1Max)
-    const factor2 = this.getRandomNumber(params.factor2Min, params.factor2Max)
-    const answer = factor1 * factor2
+    // Generate factors with digit constraint logic
+    let factor1, factor2, answer
+    let attempts = 0
+    const maxAttempts = 100
+    
+    do {
+      attempts++
+      
+      factor1 = this.getRandomNumber(params.factor1Min, params.factor1Max)
+      factor2 = this.getRandomNumber(params.factor2Min, params.factor2Max)
+      
+      // Check digit constraints
+      const factor1Digits = factor1.toString().length
+      const factor2Digits = factor2.toString().length
+      
+      const hasSingleDigit = factor1Digits === 1 || factor2Digits === 1
+      const hasDoubleDigit = factor1Digits >= 2 || factor2Digits >= 2
+      
+      // Accept based on constraints
+      const meetsSingleDigitConstraint = params.allowSingleDigit || !hasSingleDigit
+      const meetsDoubleDigitConstraint = params.allowDoubleDigit || !hasDoubleDigit
+      
+      if (meetsSingleDigitConstraint && meetsDoubleDigitConstraint) {
+        break
+      }
+      
+    } while (attempts < maxAttempts)
+    
+    // Fallback: ensure we have a valid problem
+    if (attempts >= maxAttempts) {
+      // Generate simple valid problem
+      factor1 = params.allowSingleDigit ? 
+        this.getRandomNumber(1, 9) : 
+        this.getRandomNumber(10, Math.min(params.factor1Max, 99))
+      factor2 = params.allowSingleDigit ? 
+        this.getRandomNumber(1, 9) : 
+        this.getRandomNumber(10, Math.min(params.factor2Max, 99))
+    }
+    
+    answer = factor1 * factor2
     
     const questionText = `${factor1} × ${factor2} = ?`
     const questionLaTeX = `${factor1} \\times ${factor2} = \\square`
@@ -110,7 +135,6 @@ export class MultiplicationGenerator extends BaseGenerator {
       questionLaTeX: questionLaTeX,
       answer: answer,
       answerLaTeX: `${answer}`,
-      workSpace: params.showWorkSpace,
       steps: [
         `${factor1} × ${factor2}`,
         `= ${answer}`

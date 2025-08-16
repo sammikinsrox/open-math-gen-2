@@ -28,9 +28,7 @@ export class AdditionGenerator extends BaseGenerator {
         maxAddend: 100,
         addendCount: 2,
         allowNegatives: false,
-        allowCarrying: true,
-        showWorkSpace: true,
-        includeAnswerKey: true
+        allowCarrying: true
       },
       
       parameterSchema: {
@@ -75,16 +73,6 @@ export class AdditionGenerator extends BaseGenerator {
           type: 'boolean',
           label: 'Allow Carrying',
           description: 'Allow problems that require carrying'
-        },
-        showWorkSpace: {
-          type: 'boolean',
-          label: 'Show Work Space',
-          description: 'Include space for student work'
-        },
-        includeAnswerKey: {
-          type: 'boolean',
-          label: 'Include Answer Key',
-          description: 'Generate answer key with solutions'
         }
       }
     })
@@ -99,10 +87,48 @@ export class AdditionGenerator extends BaseGenerator {
       throw new Error(`Invalid parameters: ${validation.errors.join(', ')}`)
     }
     
-    // Generate addends
+    // Generate addends with carrying logic
     const addends = []
-    for (let i = 0; i < params.addendCount; i++) {
-      addends.push(this.getRandomNumber(params.minAddend, params.maxAddend, params.allowNegatives))
+    let attempts = 0
+    const maxAttempts = 100
+    
+    while (addends.length < params.addendCount && attempts < maxAttempts) {
+      attempts++
+      
+      // Adjust range for negative numbers
+      let minRange = params.minAddend
+      let maxRange = params.maxAddend
+      
+      if (params.allowNegatives) {
+        // Allow negative numbers by expanding the range
+        minRange = -Math.abs(params.maxAddend)
+        maxRange = Math.abs(params.maxAddend)
+      }
+      
+      const candidate = this.getRandomNumber(minRange, maxRange, params.allowNegatives)
+      
+      // For the first addend, always accept
+      if (addends.length === 0) {
+        addends.push(candidate)
+        continue
+      }
+      
+      // Check if adding this candidate would create carrying
+      const tempAddends = [...addends, candidate]
+      const requiresCarrying = this.checkRequiresCarrying(tempAddends)
+      
+      // Accept or reject based on allowCarrying setting
+      if (params.allowCarrying || !requiresCarrying) {
+        addends.push(candidate)
+      }
+    }
+    
+    // Fallback: if we couldn't generate enough addends, fill with simple numbers
+    while (addends.length < params.addendCount) {
+      const simpleNumber = params.allowNegatives ? 
+        this.getRandomNumber(-9, 9, true) : 
+        this.getRandomNumber(1, 9, false)
+      addends.push(simpleNumber)
     }
     
     // Calculate answer
@@ -117,7 +143,6 @@ export class AdditionGenerator extends BaseGenerator {
       questionLaTeX: questionLaTeX,
       answer: answer,
       answerLaTeX: `${answer}`,
-      workSpace: params.showWorkSpace,
       steps: [
         addends.join(' + '),
         `= ${answer}`
@@ -131,7 +156,42 @@ export class AdditionGenerator extends BaseGenerator {
     }
   }
 
+  /**
+   * Check if adding a set of numbers requires carrying
+   * @param {number[]} addends - Array of numbers to add
+   * @returns {boolean} - True if carrying is required
+   */
+  checkRequiresCarrying(addends) {
+    // Convert to positive numbers for carrying check (negative numbers complicate this)
+    const positiveAddends = addends.map(n => Math.abs(n))
+    
+    // Convert each number to string to check digit by digit
+    const stringNumbers = positiveAddends.map(n => n.toString())
+    const maxLength = Math.max(...stringNumbers.map(s => s.length))
+    
+    // Pad with leading zeros for consistent length
+    const paddedNumbers = stringNumbers.map(s => s.padStart(maxLength, '0'))
+    
+    // Check each column from right to left
+    for (let position = maxLength - 1; position >= 0; position--) {
+      let columnSum = 0
+      
+      // Add all digits in this column
+      for (let numIndex = 0; numIndex < paddedNumbers.length; numIndex++) {
+        columnSum += parseInt(paddedNumbers[numIndex][position])
+      }
+      
+      // If any column sum is >= 10, carrying is required
+      if (columnSum >= 10) {
+        return true
+      }
+    }
+    
+    return false
+  }
+
   getRandomNumber(min, max, allowNegatives = false) {
+    // Only force min to 0 if negatives are not allowed AND min is negative
     if (!allowNegatives && min < 0) {
       min = 0
     }
