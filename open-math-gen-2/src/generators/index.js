@@ -12,6 +12,14 @@ import MultiplicationGenerator from './basic-operations/MultiplicationGenerator.
 import DivisionGenerator from './basic-operations/DivisionGenerator.js'
 import OrderOfOperationsGenerator from './basic-operations/OrderOfOperationsGenerator.js'
 
+// Numbers & Place Value Generators
+import PlaceValueGenerator from './numbers-place-value/PlaceValueGenerator.js'
+import RoundingGenerator from './numbers-place-value/RoundingGenerator.js'
+import NumberComparisonGenerator from './numbers-place-value/NumberComparisonGenerator.js'
+import NumberPatternsGenerator from './numbers-place-value/NumberPatternsGenerator.js'
+import PrimeCompositeGenerator from './numbers-place-value/PrimeCompositeGenerator.js'
+import FactorsMultiplesGenerator from './numbers-place-value/FactorsMultiplesGenerator.js'
+
 // Fractions & Decimals Generators
 import FractionAdditionGenerator from './fractions-decimals/FractionAdditionGenerator.js'
 
@@ -41,13 +49,12 @@ export const GENERATOR_CATEGORIES = {
     description: 'Place value, rounding, number comparison, patterns, and prime numbers',
     icon: 'pin',
     generators: {
-      // TODO: Add generators for this category
-      // 'place-value': new PlaceValueGenerator(),
-      // 'rounding': new RoundingGenerator(),
-      // 'number-comparison': new NumberComparisonGenerator(),
-      // 'number-patterns': new NumberPatternsGenerator(),
-      // 'prime-composite': new PrimeCompositeGenerator(),
-      // 'factors-multiples': new FactorsMultiplesGenerator()
+      'place-value': new PlaceValueGenerator(),
+      'rounding': new RoundingGenerator(),
+      'number-comparison': new NumberComparisonGenerator(),
+      'number-patterns': new NumberPatternsGenerator(),
+      'prime-composite': new PrimeCompositeGenerator(),
+      'factors-multiples': new FactorsMultiplesGenerator()
     }
   },
   

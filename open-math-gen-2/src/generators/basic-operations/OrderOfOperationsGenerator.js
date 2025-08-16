@@ -12,6 +12,15 @@ export class OrderOfOperationsGenerator extends BaseGenerator {
       category: 'basic-operations',
       difficulty: 'hard',
       icon: 'analytics',
+      tags: ['arithmetic', 'pemdas', 'bodmas', 'order-of-operations', 'parentheses'],
+      gradeLevel: '5-8',
+      estimatedTime: '120 seconds',
+      exampleProblem: {
+        question: '2 + 3 × (4 - 1) = ?',
+        questionLaTeX: '2 + 3 \\times (4 - 1) = \\square',
+        answer: '11',
+        answerLaTeX: '11'
+      },
       
       defaultParameters: {
         problemCount: 10,

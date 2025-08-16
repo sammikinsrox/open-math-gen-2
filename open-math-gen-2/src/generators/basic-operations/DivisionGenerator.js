@@ -12,6 +12,15 @@ export class DivisionGenerator extends BaseGenerator {
       category: 'basic-operations',
       difficulty: 'medium',
       icon: 'percent',
+      tags: ['arithmetic', 'whole-numbers', 'division', 'long-division'],
+      gradeLevel: '3-6',
+      estimatedTime: '60 seconds',
+      exampleProblem: {
+        question: '72 ÷ 8 = ?',
+        questionLaTeX: '72 \\div 8 = \\square',
+        answer: '9',
+        answerLaTeX: '9'
+      },
       
       defaultParameters: {
         problemCount: 10,

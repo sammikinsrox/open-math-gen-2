@@ -68,12 +68,14 @@ const selectGenerator = () => {
     <!-- Example Problem -->
     <div class="bg-white border border-gray-200 rounded-lg p-4 mb-4 shadow-sm">
       <div class="text-xs font-medium text-gray-500 mb-2">EXAMPLE PROBLEM</div>
-      <div class="text-black font-medium">
-        <MathExpression 
-          v-if="exampleProblem.questionLaTeX" 
-          :expression="exampleProblem.questionLaTeX" 
-        />
-        <span v-else>{{ exampleProblem.question }}</span>
+      <div class="text-black font-medium overflow-hidden">
+        <div class="math-container overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
+          <MathExpression 
+            v-if="exampleProblem.questionLaTeX" 
+            :expression="exampleProblem.questionLaTeX" 
+          />
+          <span v-else>{{ exampleProblem.question }}</span>
+        </div>
       </div>
       <div class="mt-3 pt-2 border-t border-gray-200">
         <div class="text-xs text-gray-600 mb-1">Answer:</div>
@@ -111,5 +113,47 @@ const selectGenerator = () => {
 <style scoped>
 .group {
   position: relative;
+}
+
+.math-container {
+  max-width: 100%;
+  min-height: 1.5rem;
+}
+
+/* Ensure KaTeX expressions can scroll horizontally when needed */
+.math-container :deep(.katex-display) {
+  margin: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  white-space: nowrap;
+}
+
+.math-container :deep(.katex) {
+  font-size: 0.95em;
+  white-space: nowrap;
+}
+
+/* Custom scrollbar styling for better UX */
+.scrollbar-thin {
+  scrollbar-width: thin;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  height: 4px;
+  width: 4px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 2px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 2px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
 }
 </style>

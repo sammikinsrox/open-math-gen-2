@@ -12,6 +12,15 @@ export class MultiplicationGenerator extends BaseGenerator {
       category: 'basic-operations',
       difficulty: 'medium',
       icon: 'close',
+      tags: ['arithmetic', 'whole-numbers', 'times-tables', 'multiplication'],
+      gradeLevel: '2-6',
+      estimatedTime: '45 seconds',
+      exampleProblem: {
+        question: '7 × 8 = ?',
+        questionLaTeX: '7 \\times 8 = \\square',
+        answer: '56',
+        answerLaTeX: '56'
+      },
       
       defaultParameters: {
         problemCount: 10,

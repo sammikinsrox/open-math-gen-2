@@ -12,6 +12,15 @@ export class SubtractionGenerator extends BaseGenerator {
       category: 'basic-operations',
       difficulty: 'easy',
       icon: 'remove',
+      tags: ['arithmetic', 'whole-numbers', 'basic-math', 'borrowing'],
+      gradeLevel: 'K-5',
+      estimatedTime: '30 seconds',
+      exampleProblem: {
+        question: '45 - 23 = ?',
+        questionLaTeX: '45 - 23 = \\square',
+        answer: '22',
+        answerLaTeX: '22'
+      },
       
       defaultParameters: {
         problemCount: 10,
