@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { GENERATOR_CATEGORIES, getAllGenerators, getGeneratorsByCategory, getGenerator } from '../generators/index.js'
+import { GENERATOR_CATEGORIES, getAllGenerators, getGeneratorsByCategory, getGenerator, searchGenerators } from '../generators/index.js'
 import GeneratorCard from './GeneratorCard.vue'
 import ProblemSetConfig from './ProblemSetConfig.vue'
 import WorksheetPreview from './WorksheetPreview.vue'
@@ -41,18 +41,13 @@ const dragOverIndex = ref(null)
 const categories = computed(() => GENERATOR_CATEGORIES)
 
 const filteredGenerators = computed(() => {
-  let generators = getGeneratorsByCategory(selectedCategory.value)
-  
   if (searchQuery.value) {
-    const query = searchQuery.value.toLowerCase()
-    generators = generators.filter(gen => 
-      gen.name.toLowerCase().includes(query) ||
-      gen.description.toLowerCase().includes(query) ||
-      gen.tags.some(tag => tag.toLowerCase().includes(query))
-    )
+    // When searching, search through ALL generators regardless of selected category
+    return searchGenerators(searchQuery.value).map(result => result.generator)
   }
   
-  return generators
+  // When not searching, show generators from the selected category
+  return getGeneratorsByCategory(selectedCategory.value)
 })
 
 const totalProblems = computed(() => {

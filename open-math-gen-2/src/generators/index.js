@@ -21,7 +21,14 @@ import PrimeCompositeGenerator from './numbers-place-value/PrimeCompositeGenerat
 import FactorsMultiplesGenerator from './numbers-place-value/FactorsMultiplesGenerator.js'
 
 // Fractions & Decimals Generators
-import FractionAdditionGenerator from './fractions-decimals/FractionAdditionGenerator.js'
+import BasicFractionsGenerator from './fractions-decimals/BasicFractionsGenerator.js'
+import FractionOperationsGenerator from './fractions-decimals/FractionOperationsGenerator.js'
+import MixedNumbersGenerator from './fractions-decimals/MixedNumbersGenerator.js'
+import DecimalOperationsGenerator from './fractions-decimals/DecimalOperationsGenerator.js'
+import FractionDecimalConversionGenerator from './fractions-decimals/FractionDecimalConversionGenerator.js'
+import PercentagesGenerator from './fractions-decimals/PercentagesGenerator.js'
+import EquivalentFractionsGenerator from './fractions-decimals/EquivalentFractionsGenerator.js'
+import ComparingFractionsGenerator from './fractions-decimals/ComparingFractionsGenerator.js'
 
 // Algebra Generators
 import LinearEquationsGenerator from './algebra/LinearEquationsGenerator.js'
@@ -63,15 +70,14 @@ export const GENERATOR_CATEGORIES = {
     description: 'Fraction operations, mixed numbers, decimal conversions, and percentages',
     icon: 'percent',
     generators: {
-      'fraction-addition': new FractionAdditionGenerator()
-      // TODO: Add more generators for this category
-      // 'fraction-subtraction': new FractionSubtractionGenerator(),
-      // 'fraction-multiplication': new FractionMultiplicationGenerator(),
-      // 'fraction-division': new FractionDivisionGenerator(),
-      // 'mixed-numbers': new MixedNumbersGenerator(),
-      // 'decimal-operations': new DecimalOperationsGenerator(),
-      // 'fraction-decimal-conversion': new FractionDecimalConversionGenerator(),
-      // 'percentages': new PercentagesGenerator()
+      'basic-fractions': new BasicFractionsGenerator(),
+      'fraction-operations': new FractionOperationsGenerator(),
+      'mixed-numbers': new MixedNumbersGenerator(),
+      'decimal-operations': new DecimalOperationsGenerator(),
+      'fraction-decimal-conversion': new FractionDecimalConversionGenerator(),
+      'percentages': new PercentagesGenerator(),
+      'equivalent-fractions': new EquivalentFractionsGenerator(),
+      'comparing-fractions': new ComparingFractionsGenerator()
     }
   },
   
