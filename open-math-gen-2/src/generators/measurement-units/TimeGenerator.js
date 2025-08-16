@@ -349,32 +349,59 @@ export class TimeGenerator extends BaseGenerator {
   }
 
   generateWordProblem(params) {
+    // Generate random times respecting parameter constraints
+    const timeFormat = this.getTimeFormat(params)
+    
+    // Generate random start times, durations, etc.
+    const movieStartHour = this.generateHour(params)
+    const movieStartMinute = this.generateMinute()
+    const movieDurationHours = Math.floor(Math.random() * 3) + 1 // 1-3 hours
+    const movieDurationMinutes = Math.floor(Math.random() * 4) * 15 // 0, 15, 30, or 45 minutes
+    const movieStartAmpm = params.includeAMPM ? this.getRandomElement(['AM', 'PM']) : ''
+    const movieStartTime = this.formatTime(movieStartHour, movieStartMinute, timeFormat, movieStartAmpm)
+    
+    const schoolStartHour = Math.floor(Math.random() * 3) + 7 // 7-9 AM
+    const schoolStartMinute = Math.floor(Math.random() * 4) * 15 // 0, 15, 30, 45
+    const schoolEndHour = Math.floor(Math.random() * 4) + 14 // 2-5 PM (14-17 in 24h)
+    const schoolEndMinute = Math.floor(Math.random() * 4) * 15
+    const schoolStartAmpm = params.includeAMPM ? 'AM' : ''
+    const schoolEndAmpm = params.includeAMPM ? 'PM' : ''
+    const schoolStartTime = this.formatTime(schoolStartHour, schoolStartMinute, timeFormat, schoolStartAmpm)
+    const schoolEndTime = this.formatTime(schoolEndHour, schoolEndMinute, timeFormat, schoolEndAmpm)
+    
+    const trainArrivalHour = this.generateHour(params)
+    const trainArrivalMinute = this.generateMinute()
+    const trainDurationHours = Math.floor(Math.random() * 6) + 2 // 2-7 hours
+    const trainDurationMinutes = Math.floor(Math.random() * 4) * 15
+    const trainArrivalAmpm = params.includeAMPM ? this.getRandomElement(['AM', 'PM']) : ''
+    const trainArrivalTime = this.formatTime(trainArrivalHour, trainArrivalMinute, timeFormat, trainArrivalAmpm)
+    
     const scenarios = [
       {
-        question: 'A movie starts at 7:30 PM and lasts 2 hours and 15 minutes. \\break What time does it end?',
-        questionLaTeX: '\\text{A movie starts at 7:30 PM and lasts 2 hours and 15 minutes.} \\\\ \\text{What time does it end?}',
-        startHour: 7,
-        startMinute: 30,
-        durationHours: 2,
-        durationMinutes: 15,
+        question: `A movie starts at ${movieStartTime} and lasts ${movieDurationHours} hours and ${movieDurationMinutes} minutes. What time does it end?`,
+        questionLaTeX: `\\text{A movie starts at ${movieStartTime} and lasts ${movieDurationHours} hours and ${movieDurationMinutes} minutes.} \\\\ \\text{What time does it end?}`,
+        startHour: movieStartHour,
+        startMinute: movieStartMinute,
+        durationHours: movieDurationHours,
+        durationMinutes: movieDurationMinutes,
         operation: 'addition'
       },
       {
-        question: 'School starts at 8:00 AM and ends at 3:15 PM.\\break How long is the school day?',
-        questionLaTeX: '\\text{School starts at 8:00 AM and ends at 3:15 PM.} \\\\ \\text{How long is the school day?}',
-        startHour: 8,
-        startMinute: 0,
-        endHour: 15,
-        endMinute: 15,
+        question: `School starts at ${schoolStartTime} and ends at ${schoolEndTime}. How long is the school day?`,
+        questionLaTeX: `\\text{School starts at ${schoolStartTime} and ends at ${schoolEndTime}.} \\\\ \\text{How long is the school day?}`,
+        startHour: schoolStartHour,
+        startMinute: schoolStartMinute,
+        endHour: schoolEndHour,
+        endMinute: schoolEndMinute,
         operation: 'elapsed'
       },
       {
-        question: 'A train journey takes 4 hours and 30 minutes.\\break If it arrives at 2:45 PM, what time did it depart?',
-        questionLaTeX: '\\text{A train journey takes 4 hours and 30 minutes.} \\\\ \\text{If it arrives at 2:45 PM, what time did it depart?}',
-        endHour: 14,
-        endMinute: 45,
-        durationHours: 4,
-        durationMinutes: 30,
+        question: `A train journey takes ${trainDurationHours} hours and ${trainDurationMinutes} minutes. If it arrives at ${trainArrivalTime}, what time did it depart?`,
+        questionLaTeX: `\\text{A train journey takes ${trainDurationHours} hours and ${trainDurationMinutes} minutes.} \\\\ \\text{If it arrives at ${trainArrivalTime}, what time did it depart?}`,
+        endHour: trainArrivalHour,
+        endMinute: trainArrivalMinute,
+        durationHours: trainDurationHours,
+        durationMinutes: trainDurationMinutes,
         operation: 'subtraction'
       }
     ]

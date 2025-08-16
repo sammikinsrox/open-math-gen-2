@@ -326,10 +326,11 @@ export class TemperatureGenerator extends BaseGenerator {
     const availableScales = this.getAvailableScales(params)
     const scale = this.getRandomElement(availableScales)
     
-    const tempValue1 = this.generateTemperature(params)
-    const tempValue2 = this.generateTemperature(params)
-    const tempValue3 = this.generateTemperature(params)
-    const tempRise = Math.floor(Math.random() * 15) + 5
+    // Generate appropriate temperature values based on scenario context
+    const tempValue1 = Math.floor(Math.random() * 40) - 10 // -10 to 30°C for freezing scenario
+    const tempValue2 = Math.floor(Math.random() * 10) + 95 // 95-105°F for fever scenario  
+    const tempValue3 = this.generateTemperature(params) // Morning temp using params
+    const tempRise = Math.floor(Math.random() * 15) + 5  // 5-20° rise during day
     
     const scenarios = [
       {

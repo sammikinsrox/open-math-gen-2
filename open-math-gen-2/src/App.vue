@@ -59,6 +59,6 @@ const navigateTo = (page) => {
       <PrivacyPolicy @navigate="navigateTo" />
     </div>
     
-    <Footer v-if="currentPage === 'home'" @navigate="navigateTo" />
+    <Footer @navigate="navigateTo" />
   </div>
 </template>
