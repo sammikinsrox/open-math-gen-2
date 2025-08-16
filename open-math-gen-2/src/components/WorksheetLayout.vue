@@ -258,10 +258,11 @@ const paperClasses = computed(() => {
 })
 
 const marginClasses = computed(() => {
+  // Use minimal padding since @page rules handle margins
   const margins = {
-    narrow: 'p-4',   // 1rem = 16px ≈ 0.17in
-    normal: 'p-12',  // 3rem = 48px = 0.5in (updated default)
-    wide: 'p-16'     // 4rem = 64px ≈ 0.67in
+    narrow: 'p-2',   // Minimal padding
+    normal: 'p-3',   // Small padding for readability
+    wide: 'p-4'      // Slightly more padding
   }
   return margins[props.settings.margins] || margins.normal
 })
@@ -659,43 +660,41 @@ const fontSizeClasses = computed(() => {
   }
 }
 
-/* Paper size constraints - exact matching */
+/* Force our margins - override print dialog settings */
 @page {
-  margin: 0.5in;
+  margin: 0.5in !important;
   size: auto;
 }
 
 /* Letter size pages */
 @page letter {
   size: 8.5in 11in;
-  margin: 0.5in;
+  margin: 0.5in !important;
 }
 
 /* A4 size pages */
 @page a4 {
   size: 210mm 297mm;
-  margin: 12.7mm;  /* 0.5 inches = 12.7mm */
+  margin: 12.7mm !important;  /* 0.5 inches = 12.7mm */
 }
 
 /* Legal size pages */
 @page legal {
   size: 8.5in 14in;
-  margin: 0.5in;
+  margin: 0.5in !important;
 }
 
-/* Narrow margins */
+/* Force specific margin settings */
 @page narrow {
-  margin: 0.25in;
+  margin: 0.25in !important;
 }
 
-/* Normal margins */
 @page normal {
-  margin: 0.5in;
+  margin: 0.5in !important;
 }
 
-/* Wide margins */
 @page wide {
-  margin: 0.67in;
+  margin: 0.67in !important;
 }
 
 /* Answer blank styling */

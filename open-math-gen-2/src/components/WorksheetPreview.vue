@@ -185,6 +185,7 @@ const toggleAnswers = () => {
           @click="handlePrint"
           :disabled="isPrinting"
           class="bg-green-600 hover:bg-green-700 disabled:opacity-50 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center"
+          title="Set print dialog margins to 'None' or 'Minimum' for best results"
         >
           <span class="material-icons mr-2">print</span>
           {{ isPrinting ? 'Printing...' : 'Print' }}
@@ -192,6 +193,20 @@ const toggleAnswers = () => {
       </div>
     </div>
 
+    <!-- Print Instructions -->
+    <div class="bg-blue-900/50 backdrop-blur-sm border border-blue-400/50 rounded-lg p-4 mb-6 no-print">
+      <div class="flex items-start space-x-3">
+        <svg class="w-5 h-5 text-blue-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+        <div>
+          <p class="text-blue-200 text-sm">
+            <strong>Print Tip:</strong> For best results, set your browser print dialog margins to <strong>"None"</strong> or <strong>"Minimum"</strong>. 
+            The worksheet uses CSS to control margins and page breaks automatically.
+          </p>
+        </div>
+      </div>
+    </div>
 
     <!-- Loading State -->
     <div v-if="isGenerating" class="bg-white rounded-lg shadow-2xl p-8 print:shadow-none print:rounded-none">
