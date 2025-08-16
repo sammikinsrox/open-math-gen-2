@@ -328,17 +328,17 @@ export class TemperatureGenerator extends BaseGenerator {
     
     const scenarios = [
       {
-        question: `Water freezes at 0°C. If the temperature is currently ${this.generateTemperature(params)}°C, is the water frozen?`,
+        question: `Water freezes at 0°C.\n\nIf the temperature is currently ${this.generateTemperature(params)}°C, is the water frozen?`,
         type: 'comparison',
         freezingPoint: 0
       },
       {
-        question: `Normal body temperature is 98.6°F. If someone has a temperature of ${this.generateTemperature(params)}°F, do they have a fever?`,
+        question: `Normal body temperature is 98.6°F.\n\nIf someone has a temperature of ${this.generateTemperature(params)}°F, do they have a fever?`,
         type: 'comparison',
         normalTemp: 98.6
       },
       {
-        question: `The temperature was ${this.generateTemperature(params)}°${scale.symbol} in the morning and rose by ${Math.floor(Math.random() * 15) + 5}° during the day. What was the afternoon temperature?`,
+        question: `The temperature was ${this.generateTemperature(params)}°${scale.symbol} in the morning and rose by ${Math.floor(Math.random() * 15) + 5}° during the day.\n\nWhat was the afternoon temperature?`,
         type: 'addition'
       }
     ]

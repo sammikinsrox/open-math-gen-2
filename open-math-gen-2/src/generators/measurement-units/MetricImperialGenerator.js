@@ -339,17 +339,17 @@ export class MetricImperialGenerator extends BaseGenerator {
     const scenarios = {
       length: [
         {
-          question: 'A running track is {value} {fromUnit} long. How many {toUnit} is that?',
+          question: 'A running track is {value} {fromUnit} long.\n\nHow many {toUnit} is that?',
           type: 'sports',
           units: ['meters', 'feet', 'yards']
         },
         {
-          question: 'The height of a building is {value} {fromUnit}. Convert this to {toUnit}.',
+          question: 'The height of a building is {value} {fromUnit}.\n\nConvert this to {toUnit}.',
           type: 'architecture',
           units: ['meters', 'feet']
         },
         {
-          question: 'A road trip covers {value} {fromUnit}. How many {toUnit} is this?',
+          question: 'A road trip covers {value} {fromUnit}.\n\nHow many {toUnit} is this?',
           type: 'travel',
           units: ['kilometers', 'miles']
         }
@@ -357,17 +357,17 @@ export class MetricImperialGenerator extends BaseGenerator {
       
       weight: [
         {
-          question: 'A package weighs {value} {fromUnit}. What is its weight in {toUnit}?',
+          question: 'A package weighs {value} {fromUnit}.\n\nWhat is its weight in {toUnit}?',
           type: 'shipping',
           units: ['kilograms', 'pounds']
         },
         {
-          question: 'A recipe calls for {value} {fromUnit} of flour. How many {toUnit} is that?',
+          question: 'A recipe calls for {value} {fromUnit} of flour.\n\nHow many {toUnit} is that?',
           type: 'cooking',
           units: ['grams', 'ounces']
         },
         {
-          question: 'An athlete weighs {value} {fromUnit}. Convert this to {toUnit}.',
+          question: 'An athlete weighs {value} {fromUnit}.\n\nConvert this to {toUnit}.',
           type: 'sports',
           units: ['kilograms', 'pounds']
         }
@@ -375,17 +375,17 @@ export class MetricImperialGenerator extends BaseGenerator {
       
       volume: [
         {
-          question: 'A car\'s fuel tank holds {value} {fromUnit}. How many {toUnit} is that?',
+          question: 'A car\'s fuel tank holds {value} {fromUnit}.\n\nHow many {toUnit} is that?',
           type: 'automotive',
           units: ['liters', 'gallons']
         },
         {
-          question: 'A recipe requires {value} {fromUnit} of milk. Convert to {toUnit}.',
+          question: 'A recipe requires {value} {fromUnit} of milk.\n\nConvert to {toUnit}.',
           type: 'cooking',
           units: ['milliliters', 'fluid ounces']
         },
         {
-          question: 'A swimming pool contains {value} {fromUnit} of water. How many {toUnit}?',
+          question: 'A swimming pool contains {value} {fromUnit} of water.\n\nHow many {toUnit}?',
           type: 'recreation',
           units: ['liters', 'gallons']
         }
@@ -393,17 +393,17 @@ export class MetricImperialGenerator extends BaseGenerator {
       
       temperature: [
         {
-          question: 'The weather forecast shows {value}°{fromUnit}. What is this in °{toUnit}?',
+          question: 'The weather forecast shows {value}°{fromUnit}.\n\nWhat is this in °{toUnit}?',
           type: 'weather',
           units: ['Celsius', 'Fahrenheit']
         },
         {
-          question: 'A recipe calls for baking at {value}°{fromUnit}. Convert to °{toUnit}.',
+          question: 'A recipe calls for baking at {value}°{fromUnit}.\n\nConvert to °{toUnit}.',
           type: 'cooking',
           units: ['Celsius', 'Fahrenheit']
         },
         {
-          question: 'Body temperature is {value}°{fromUnit}. What is this in °{toUnit}?',
+          question: 'Body temperature is {value}°{fromUnit}.\n\nWhat is this in °{toUnit}?',
           type: 'medical',
           units: ['Celsius', 'Fahrenheit']
         }

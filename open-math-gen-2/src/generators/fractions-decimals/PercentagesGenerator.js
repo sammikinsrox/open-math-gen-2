@@ -393,10 +393,10 @@ export class PercentagesGenerator extends BaseGenerator {
   generateWordProblem(type, percentage, number) {
     const scenarios = {
       'percent-of-number': [
-        `A store offers ${percentage}% off on a item that costs $${number}. How much is the discount?`,
-        `In a class of ${number} students, ${percentage}% are boys. How many boys are there?`,
-        `A tip of ${percentage}% is left on a bill of $${number}. How much is the tip?`,
-        `${percentage}% of ${number} books in a library are fiction. How many fiction books are there?`
+        `A store offers ${percentage}% off on a item that costs $${number}.\n\nHow much is the discount?`,
+        `In a class of ${number} students, ${percentage}% are boys.\n\nHow many boys are there?`,
+        `A tip of ${percentage}% is left on a bill of $${number}.\n\nHow much is the tip?`,
+        `${percentage}% of ${number} books in a library are fiction.\n\nHow many fiction books are there?`
       ]
     }
     

@@ -378,7 +378,7 @@ const fontSizeClasses = computed(() => {
                   <!-- Work Space -->
                   <div v-if="settings.showWorkSpace" class="work-space mb-4">
                     <div class="text-xs text-slate-400 print:text-gray-700 mb-2">Work Space:</div>
-                    <div class="border border-slate-200 print:border-gray-300 rounded p-3 min-h-[80px] bg-slate-50 print:bg-gray-100">
+                    <div class="border border-slate-200 print:border-gray-300 rounded p-3 min-h-[80px] bg-slate-50 print:bg-gray-100 w-80 max-w-full">
                       <div class="space-y-3">
                         <div class="border-b border-slate-100 print:border-gray-300 h-4"></div>
                         <div class="border-b border-slate-100 print:border-gray-300 h-4"></div>
