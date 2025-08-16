@@ -30,6 +30,15 @@ import PercentagesGenerator from './fractions-decimals/PercentagesGenerator.js'
 import EquivalentFractionsGenerator from './fractions-decimals/EquivalentFractionsGenerator.js'
 import ComparingFractionsGenerator from './fractions-decimals/ComparingFractionsGenerator.js'
 
+// Measurement & Units Generators
+import LengthGenerator from './measurement-units/LengthGenerator.js'
+import WeightMassGenerator from './measurement-units/WeightMassGenerator.js'
+import VolumeCapacityGenerator from './measurement-units/VolumeCapacityGenerator.js'
+import TimeGenerator from './measurement-units/TimeGenerator.js'
+import TemperatureGenerator from './measurement-units/TemperatureGenerator.js'
+import UnitConversionGenerator from './measurement-units/UnitConversionGenerator.js'
+import MetricImperialGenerator from './measurement-units/MetricImperialGenerator.js'
+
 // Algebra Generators
 import LinearEquationsGenerator from './algebra/LinearEquationsGenerator.js'
 
@@ -86,14 +95,13 @@ export const GENERATOR_CATEGORIES = {
     description: 'Length, weight, volume, time, temperature, and unit conversions',
     icon: 'straighten',
     generators: {
-      // TODO: Add generators for this category
-      // 'length': new LengthGenerator(),
-      // 'weight-mass': new WeightMassGenerator(),
-      // 'volume-capacity': new VolumeCapacityGenerator(),
-      // 'time': new TimeGenerator(),
-      // 'temperature': new TemperatureGenerator(),
-      // 'unit-conversion': new UnitConversionGenerator(),
-      // 'metric-imperial': new MetricImperialGenerator()
+      'length': new LengthGenerator(),
+      'weight-mass': new WeightMassGenerator(),
+      'volume-capacity': new VolumeCapacityGenerator(),
+      'time': new TimeGenerator(),
+      'temperature': new TemperatureGenerator(),
+      'unit-conversion': new UnitConversionGenerator(),
+      'metric-imperial': new MetricImperialGenerator()
     }
   },
   

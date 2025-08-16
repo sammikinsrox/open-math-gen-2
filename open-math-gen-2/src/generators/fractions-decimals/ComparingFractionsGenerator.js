@@ -17,7 +17,7 @@ export class ComparingFractionsGenerator extends BaseGenerator {
       estimatedTime: '75 seconds',
       exampleProblem: {
         question: 'Compare: 2/3 ___ 3/4',
-        questionLaTeX: '\\text{Compare: } \\frac{2}{3} \\text{ ___ } \\frac{3}{4}',
+        questionLaTeX: '\\text{Compare: } \\frac{2}{3} \\; \\square \\; \\frac{3}{4}',
         answer: '<',
         answerLaTeX: '<'
       },
@@ -186,7 +186,7 @@ export class ComparingFractionsGenerator extends BaseGenerator {
     }
     
     const questionText = `Compare: ${fraction1.numerator}/${fraction1.denominator} ___ ${fraction2.numerator}/${fraction2.denominator}`
-    const questionLaTeX = `\\text{Compare: } \\frac{${fraction1.numerator}}{${fraction1.denominator}} \\text{ ___ } \\frac{${fraction2.numerator}}{${fraction2.denominator}}`
+    const questionLaTeX = `\\text{Compare: } \\frac{${fraction1.numerator}}{${fraction1.denominator}} \\; \\square \\; \\frac{${fraction2.numerator}}{${fraction2.denominator}}`
     
     const steps = this.getComparisonSteps(fraction1, fraction2, comparisonSymbol, params)
     
@@ -275,7 +275,7 @@ export class ComparingFractionsGenerator extends BaseGenerator {
     }
     
     const questionText = `Compare: ${fraction.numerator}/${fraction.denominator} ___ ${decimal}`
-    const questionLaTeX = `\\text{Compare: } \\frac{${fraction.numerator}}{${fraction.denominator}} \\text{ ___ } ${decimal}`
+    const questionLaTeX = `\\text{Compare: } \\frac{${fraction.numerator}}{${fraction.denominator}} \\; \\square \\; ${decimal}`
     
     const steps = [
       `\\text{Convert fraction to decimal:}`,

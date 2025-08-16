@@ -29,8 +29,10 @@ export class PercentagesGenerator extends BaseGenerator {
         includeConversionFromPercent: false,
         includeFindWhole: false,
         includeFindPercent: false,
-        percentageRange: { min: 5, max: 95 },
-        numberRange: { min: 10, max: 200 },
+        percentageMin: 5,
+        percentageMax: 95,
+        numberMin: 10,
+        numberMax: 200,
         includeCommonPercentages: true,
         allowDecimals: false,
         includeWordProblems: false
@@ -70,23 +72,37 @@ export class PercentagesGenerator extends BaseGenerator {
           label: 'Include Find the Percent',
           description: 'Include problems like "20 is ?% of 80"'
         },
-        percentageRange: {
-          type: 'object',
-          label: 'Percentage Range',
-          description: 'Range of percentages to use',
-          properties: {
-            min: { type: 'number', min: 1, max: 99 },
-            max: { type: 'number', min: 1, max: 99 }
-          }
+        percentageMin: {
+          type: 'number',
+          label: 'Minimum Percentage',
+          description: 'Smallest percentage to use',
+          min: 1,
+          max: 99,
+          required: true
         },
-        numberRange: {
-          type: 'object',
-          label: 'Number Range',
-          description: 'Range of numbers to use in problems',
-          properties: {
-            min: { type: 'number', min: 1, max: 1000 },
-            max: { type: 'number', min: 1, max: 1000 }
-          }
+        percentageMax: {
+          type: 'number',
+          label: 'Maximum Percentage',
+          description: 'Largest percentage to use',
+          min: 1,
+          max: 99,
+          required: true
+        },
+        numberMin: {
+          type: 'number',
+          label: 'Minimum Number',
+          description: 'Smallest number to use in problems',
+          min: 1,
+          max: 1000,
+          required: true
+        },
+        numberMax: {
+          type: 'number',
+          label: 'Maximum Number',
+          description: 'Largest number to use in problems',
+          min: 1,
+          max: 1000,
+          required: true
         },
         includeCommonPercentages: {
           type: 'boolean',
@@ -147,7 +163,7 @@ export class PercentagesGenerator extends BaseGenerator {
 
   generatePercentOfNumberProblem(params) {
     const percentage = this.generatePercentage(params)
-    const number = this.getRandomNumber(params.numberRange.min, params.numberRange.max)
+    const number = this.getRandomNumber(params.numberMin, params.numberMax)
     
     const result = (percentage / 100) * number
     const roundedResult = params.allowDecimals ? 
@@ -311,7 +327,7 @@ export class PercentagesGenerator extends BaseGenerator {
 
   generateFindWholeProblem(params) {
     const percentage = this.generatePercentage(params)
-    const whole = this.getRandomNumber(params.numberRange.min, params.numberRange.max)
+    const whole = this.getRandomNumber(params.numberMin, params.numberMax)
     const part = Math.round((percentage / 100) * whole)
     
     const questionText = `${part} is ${percentage}% of what number?`
@@ -343,7 +359,7 @@ export class PercentagesGenerator extends BaseGenerator {
   }
 
   generateFindPercentProblem(params) {
-    const whole = this.getRandomNumber(params.numberRange.min, params.numberRange.max)
+    const whole = this.getRandomNumber(params.numberMin, params.numberMax)
     const part = this.getRandomNumber(1, whole)
     const percentage = Math.round((part / whole) * 100 * 100) / 100
     
@@ -394,7 +410,7 @@ export class PercentagesGenerator extends BaseGenerator {
       return this.getRandomElement(commonPercentages)
     }
     
-    return this.getRandomNumber(params.percentageRange.min, params.percentageRange.max)
+    return this.getRandomNumber(params.percentageMin, params.percentageMax)
   }
 
   generateRandomDecimal(places) {

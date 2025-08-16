@@ -74,15 +74,19 @@ const getInputType = (param) => {
 
 const getStepValue = (param) => {
   if (param.type === 'number') {
-    if (param.min !== undefined && param.max !== undefined) {
-      const range = param.max - param.min
-      if (range <= 10) return 1
-      if (range <= 100) return 5
-      return 10
-    }
     return 1
   }
   return undefined
+}
+
+const shouldShowParameter = (paramKey) => {
+  // For Mixed Numbers generator, hide operation type parameters unless operations are enabled
+  if (props.generator.name === 'Mixed Numbers') {
+    if ((paramKey === 'includeAddition' || paramKey === 'includeSubtraction') && !parameters.value.includeOperations) {
+      return false
+    }
+  }
+  return true
 }
 </script>
 
@@ -150,6 +154,7 @@ const getStepValue = (param) => {
             <div 
               v-for="(param, key) in parameterOptions" 
               :key="key"
+              v-show="shouldShowParameter(key)"
               class="space-y-2"
             >
               <label class="block text-sm font-medium text-slate-200">
