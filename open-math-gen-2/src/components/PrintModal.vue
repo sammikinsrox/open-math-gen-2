@@ -100,200 +100,38 @@ const closeModal = () => {
 const handlePrint = async () => {
   isPrinting.value = true
   try {
-    // Get the exact print preview content
-    const printPreviewElement = document.querySelector('.print-preview-container')
-    if (!printPreviewElement) {
-      alert('Print preview not found')
-      isPrinting.value = false
-      return
-    }
-
-    // Create a new window for printing
-    const printWindow = window.open('', '_blank', 'width=1200,height=800')
-    if (!printWindow) {
-      alert('Please allow pop-ups to enable printing')
-      isPrinting.value = false
-      return
-    }
-
-    // Get all stylesheets from the current page
-    const stylesheets = Array.from(document.styleSheets)
-    let allCSS = ''
+    // Hide everything on the current page except the worksheet layout
+    const body = document.body
+    const originalStyle = body.style.cssText
+    const allElements = document.querySelectorAll('*:not(.worksheet-layout):not(.worksheet-layout *)')
     
-    stylesheets.forEach(sheet => {
-      try {
-        if (sheet.cssRules) {
-          Array.from(sheet.cssRules).forEach(rule => {
-            allCSS += rule.cssText + '\n'
-          })
-        }
-      } catch (e) {
-        // Skip stylesheets that can't be accessed (CORS)
-        console.log('Skipping stylesheet due to CORS:', e)
+    // Hide all elements except worksheet
+    allElements.forEach(el => {
+      if (!el.closest('.worksheet-layout')) {
+        el.style.visibility = 'hidden'
       }
     })
-
-    // Create the print HTML with all styles
-    const printHTML = `
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Print - ${props.worksheetTitle}</title>
-  <style>
-    /* Reset and base styles */
-    * {
-      box-sizing: border-box;
-    }
     
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
-      background: white;
-      color: black;
-      -webkit-print-color-adjust: exact;
-      print-color-adjust: exact;
-    }
-
-    /* Include all current page styles */
-    ${allCSS}
-
-    /* Print-specific overrides */
-    @media print {
-      body {
-        background: white !important;
-        color: black !important;
-        margin: 0 !important;
-        padding: 0 !important;
-      }
-      
-      .print-preview-container {
-        background: white !important;
-        padding: 0 !important;
-        min-height: auto !important;
-      }
-      
-      .print-page {
-        page-break-after: always;
-        box-shadow: none !important;
-        margin: 0 !important;
-        margin-bottom: 0 !important;
-        transform: none !important;
-        width: 100% !important;
-        max-width: none !important;
-        height: 100vh !important;
-        min-height: 100vh !important;
-        max-height: 100vh !important;
-        overflow: hidden !important;
-        display: flex !important;
-        flex-direction: column !important;
-      }
-      
-      .print-page:last-child {
-        page-break-after: auto;
-      }
-      
-      .page-break-before {
-        page-break-before: always;
-      }
-      
-      .print-content {
-        height: 100% !important;
-        flex: 1 !important;
-        display: flex !important;
-        flex-direction: column !important;
-        overflow: hidden !important;
-      }
-      
-      .print-problems {
-        flex: 1 !important;
-        overflow: hidden !important;
-      }
-      
-      .print-footer {
-        margin-top: auto !important;
-        flex-shrink: 0 !important;
-      }
-
-      /* Ensure proper sizing */
-      .w-\\[8\\.5in\\] {
-        width: 100% !important;
-      }
-      
-      .min-h-\\[11in\\] {
-        min-height: auto !important;
-      }
-      
-      .h-\\[11in\\] {
-        height: 100vh !important;
-      }
-
-      /* Remove hover effects */
-      .print-page:hover {
-        transform: none !important;
-      }
-      
-      /* Ensure high contrast for B&W printing */
-      .text-gray-700 {
-        color: #374151 !important;
-      }
-      
-      .text-gray-800 {
-        color: #1f2937 !important;
-      }
-      
-      .bg-gray-100 {
-        background-color: #f3f4f6 !important;
-      }
-      
-      .border-black {
-        border-color: #000000 !important;
-      }
-      
-      .border-gray-300 {
-        border-color: #d1d5db !important;
-      }
-    }
-
-    /* Screen styles for preview */
-    @media screen {
-      .print-preview-container {
-        background: white;
-        padding: 0;
-        min-height: 100vh;
-      }
-      
-      .print-page {
-        transform: none;
-        margin: 0 auto 0.5rem auto;
-        max-width: 8.5in;
-      }
-    }
-  </style>
-</head>
-<body>
-  ${printPreviewElement.outerHTML}
-</body>
-</html>`
-
-    // Write the HTML to the new window
-    printWindow.document.write(printHTML)
-    printWindow.document.close()
-
-    // Wait for content to load, then print
+    // Set print-friendly body styles
+    body.style.cssText = 'margin: 0; padding: 0; background: white !important;'
+    
+    // Add print class to enable print styles
+    document.documentElement.classList.add('printing')
+    
+    // Print the page
+    window.print()
+    
+    // Restore original styles after printing
     setTimeout(() => {
-      printWindow.focus()
-      printWindow.print()
+      body.style.cssText = originalStyle
+      allElements.forEach(el => {
+        el.style.visibility = ''
+      })
+      document.documentElement.classList.remove('printing')
       
-      // Close the print window after printing
-      setTimeout(() => {
-        printWindow.close()
-        isPrinting.value = false
-        emit('close') // Close the modal
-      }, 1000)
-    }, 1000)
+      isPrinting.value = false
+      emit('close')
+    }, 500)
 
   } catch (error) {
     console.error('Print error:', error)
@@ -305,13 +143,10 @@ const handlePrint = async () => {
 const handleSavePDF = async () => {
   isGeneratingPDF.value = true
   
-  // Temporarily set isPrinting to false so handlePrint doesn't interfere
-  const originalPrintingState = isPrinting.value
-  isPrinting.value = false
-  
   try {
-    // Call handlePrint but manage our own state
-    await handlePrint()
+    // For PDF saving, we'll use the same print function
+    // The user can choose "Save as PDF" in the print dialog
+    window.print()
     
     setTimeout(() => {
       isGeneratingPDF.value = false
@@ -320,8 +155,6 @@ const handleSavePDF = async () => {
   } catch (error) {
     console.error('PDF generation error:', error)
     isGeneratingPDF.value = false
-  } finally {
-    isPrinting.value = originalPrintingState
   }
 }
 
@@ -370,7 +203,7 @@ watch(() => props.isOpen, (isOpen) => {
   >
     <div
       v-if="isOpen"
-      class="fixed inset-0 z-50 bg-gray-900/80 backdrop-blur-sm"
+      class="fixed inset-0 z-50 bg-gray-900/80 backdrop-blur-sm no-print"
       @click="closeModal"
     >
       <!-- Modal Container -->
@@ -382,7 +215,7 @@ watch(() => props.isOpen, (isOpen) => {
       >
         <div
           v-if="isOpen"
-          class="fixed inset-4 bg-white shadow-2xl rounded-2xl overflow-hidden"
+          class="fixed inset-4 bg-white shadow-2xl rounded-2xl overflow-hidden no-print"
           @click.stop
         >
           <!-- Modal Header -->
