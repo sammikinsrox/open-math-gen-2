@@ -1,4 +1,5 @@
 import { BaseGenerator } from '../BaseGenerator.js'
+import { getDiagramSize } from './shared/DiagramSizes.js'
 
 /**
  * Perimeter Generator
@@ -436,13 +437,7 @@ export class PerimeterGenerator extends BaseGenerator {
    * @returns {Object} Diagram configuration
    */
   generateDiagram(shape, measurements, unit, params) {
-    const sizes = {
-      small: { width: 250, height: 200 },
-      medium: { width: 350, height: 250 },
-      large: { width: 450, height: 300 }
-    }
-    
-    const size = sizes[params.diagramSize] || sizes.medium
+    const size = getDiagramSize('standard', params.diagramSize)
     
     return {
       type: 'geometry-renderer',

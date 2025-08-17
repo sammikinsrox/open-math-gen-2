@@ -249,7 +249,11 @@ export class CoordinateBasicsGenerator extends BaseGenerator {
     }
     
     if (params.showVisualDiagrams) {
-      problem.diagram = this.generateCoordinateDiagram('plotting', { point, pointLabel }, params)
+      // Worksheet diagram - empty grid without the point (student fills this in)
+      problem.diagram = this.generateCoordinateDiagram('plotting', { pointLabel }, params)
+      
+      // Answer sheet diagram - shows the plotted point
+      problem.answerDiagram = this.generateCoordinateDiagram('plotting-answer', { point, pointLabel }, params)
     }
     
     return problem
@@ -573,20 +577,26 @@ export class CoordinateBasicsGenerator extends BaseGenerator {
     
     const size = sizes[params.diagramSize] || sizes.medium
     
+    // Enhanced data object with coordinate system parameters
+    const enhancedData = {
+      ...data,
+      coordinateRange: params.coordinateRange || 10,
+      allowNegatives: params.allowNegatives || false,
+      showGridNumbers: params.showGridNumbers !== false, // Default to true
+      showAxesLabels: params.showAxesLabels !== false,   // Default to true
+      gridSize: params.gridSize || 1
+    }
+    
     return {
       type: 'geometry-renderer',
       shape: 'coordinate-plane',
       problemType: problemType,
-      data: data,
+      data: enhancedData,
       config: {
         width: size.width,
         height: size.height,
-        theme: params.diagramTheme,
-        coordinateRange: params.coordinateRange,
-        allowNegatives: params.allowNegatives,
-        showAxesLabels: params.showAxesLabels,
-        showGridNumbers: params.showGridNumbers,
-        gridSize: params.gridSize,
+        theme: params.diagramTheme || 'educational',
+        showGrid: true,
         center: true
       },
       svgId: `coordinate-${problemType}-${Date.now()}`

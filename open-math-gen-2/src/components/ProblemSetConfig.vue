@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed, watch } from 'vue'
 import MathExpression from './MathExpression.vue'
+import GeometryDiagram from './GeometryDiagram.vue'
 
 const props = defineProps({
   generator: {
@@ -269,6 +270,14 @@ const shouldShowParameter = (paramKey) => {
                   :expression="problem.questionLaTeX" 
                 />
                 <span v-else>{{ problem.question }}</span>
+              </div>
+              
+              <!-- Geometry Diagram in Preview -->
+              <div v-if="problem.diagram" class="preview-diagram mb-4">
+                <GeometryDiagram 
+                  :diagramConfig="problem.diagram"
+                  className="preview-geometry-diagram"
+                />
               </div>
               
               <!-- Answer (shown for preview) -->

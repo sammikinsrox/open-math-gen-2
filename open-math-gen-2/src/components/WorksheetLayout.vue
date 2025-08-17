@@ -1,6 +1,7 @@
 <script setup>
 import { computed } from 'vue'
 import MathExpression from './MathExpression.vue'
+import GeometryDiagram from './GeometryDiagram.vue'
 
 const props = defineProps({
   problems: {
@@ -375,6 +376,14 @@ const fontSizeClasses = computed(() => {
                     <span v-else>{{ problem.question }}</span>
                   </div>
                   
+                  <!-- Geometry Diagram -->
+                  <div v-if="problem.diagram" class="diagram-section mb-4">
+                    <GeometryDiagram 
+                      :diagramConfig="problem.diagram"
+                      :className="`worksheet-diagram ${mode === 'print' ? 'print-mode' : ''}`"
+                    />
+                  </div>
+                  
                   <!-- Work Space -->
                   <div v-if="settings.showWorkSpace" class="work-space mb-4">
                     <div class="text-xs text-slate-400 print:text-gray-700 mb-2">Work Space:</div>
@@ -741,6 +750,60 @@ const fontSizeClasses = computed(() => {
     margin-top: 2rem;
     border-top: 2px dashed #f97316;
     padding-top: 1rem;
+  }
+}
+
+/* Worksheet diagram styles */
+.worksheet-diagram {
+  margin: 1rem 0;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.worksheet-diagram.print-mode {
+  background: white !important;
+  border: 1px solid #000 !important;
+  box-shadow: none !important;
+}
+
+.diagram-section {
+  break-inside: avoid;
+  page-break-inside: avoid;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+/* Enhanced geometry diagram display */
+:deep(.geometry-diagram) {
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 1rem;
+  margin: 1rem 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Print-specific diagram styles */
+@media print {
+  .worksheet-diagram,
+  :deep(.geometry-diagram) {
+    background: white !important;
+    border: 1px solid #000 !important;
+    box-shadow: none !important;
+    page-break-inside: avoid;
+  }
+  
+  .diagram-section {
+    margin: 0.5rem 0 !important;
   }
 }
 </style>

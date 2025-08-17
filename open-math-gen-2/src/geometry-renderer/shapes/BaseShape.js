@@ -47,10 +47,17 @@ export class BaseShape {
   center() {
     if (this.renderer) {
       const center = this.renderer.getCenter();
+      // Get bounds at current position to understand shape dimensions
+      const tempX = this.x;
+      const tempY = this.y;
+      this.x = 0;
+      this.y = 0;
       const bounds = this.getBounds();
+      
+      // Calculate center position accounting for shape's natural offset
       this.setPosition(
-        center.x - bounds.width / 2,
-        center.y - bounds.height / 2
+        center.x - bounds.x - bounds.width / 2,
+        center.y - bounds.y - bounds.height / 2
       );
     }
     return this;

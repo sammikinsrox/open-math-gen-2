@@ -40,9 +40,7 @@ export class GeometryRenderer {
       .append('svg')
       .attr('width', this.options.width)
       .attr('height', this.options.height)
-      .style('background-color', this.options.backgroundColor)
-      .style('border', '1px solid #dee2e6')
-      .style('border-radius', '4px');
+      .style('background-color', this.options.backgroundColor);
     
     // Create main group for all content
     this.mainGroup = this.svg
