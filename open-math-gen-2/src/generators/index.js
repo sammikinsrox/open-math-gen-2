@@ -39,6 +39,14 @@ import TemperatureGenerator from './measurement-units/TemperatureGenerator.js'
 import UnitConversionGenerator from './measurement-units/UnitConversionGenerator.js'
 import MetricImperialGenerator from './measurement-units/MetricImperialGenerator.js'
 
+// Money & Finance Generators
+import MoneyCountingGenerator from './money-finance/MoneyCountingGenerator.js'
+import MakingChangeGenerator from './money-finance/MakingChangeGenerator.js'
+import MoneyOperationsGenerator from './money-finance/MoneyOperationsGenerator.js'
+import SimpleInterestGenerator from './money-finance/SimpleInterestGenerator.js'
+import ProfitLossGenerator from './money-finance/ProfitLossGenerator.js'
+import BudgetingGenerator from './money-finance/BudgetingGenerator.js'
+
 // Algebra Generators
 import LinearEquationsGenerator from './algebra/LinearEquationsGenerator.js'
 
@@ -107,16 +115,15 @@ export const GENERATOR_CATEGORIES = {
   
   'money-finance': {
     name: 'Money & Finance',
-    description: 'Money counting, change making, simple interest, and budgeting',
+    description: 'Money counting, change making, money operations, simple interest, profit/loss, and budgeting',
     icon: 'attach_money',
     generators: {
-      // TODO: Add generators for this category
-      // 'money-counting': new MoneyCountingGenerator(),
-      // 'making-change': new MakingChangeGenerator(),
-      // 'money-operations': new MoneyOperationsGenerator(),
-      // 'simple-interest': new SimpleInterestGenerator(),
-      // 'profit-loss': new ProfitLossGenerator(),
-      // 'budgeting': new BudgetingGenerator()
+      'money-counting': new MoneyCountingGenerator(),
+      'making-change': new MakingChangeGenerator(),
+      'money-operations': new MoneyOperationsGenerator(),
+      'simple-interest': new SimpleInterestGenerator(),
+      'profit-loss': new ProfitLossGenerator(),
+      'budgeting': new BudgetingGenerator()
     }
   },
   
