@@ -1,8 +1,16 @@
 @import "tailwindcss";
 @import "katex/dist/katex.min.css";
 
+@font-face {
+  font-family: 'Latin Modern Math';
+  src: url('/fonts/latinmodern-math.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
-  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: 'Latin Modern Math', 'Times New Roman', serif;
   line-height: 1.6;
   font-weight: 400;
   color-scheme: dark;
@@ -38,4 +46,247 @@ body {
 
 .worksheet-preview .katex {
   font-size: 1.1em;
+}
+
+/* Geometry-specific styling */
+.geometry-problem {
+  margin: 2rem 0;
+  padding: 1.5rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  background: #fafafa;
+}
+
+.geometry-diagram {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 1rem 0;
+  padding: 1rem;
+  background: white;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.geometry-diagram svg {
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.25rem;
+}
+
+/* Enhanced visual styling for shapes */
+.shape-visual {
+  stroke: #374151;
+  stroke-width: 2;
+  fill: #93c5fd;
+  fill-opacity: 0.2;
+}
+
+.shape-visual.highlighted {
+  stroke: #dc2626;
+  stroke-width: 3;
+  fill: #fca5a5;
+  fill-opacity: 0.3;
+}
+
+/* Measurement labels */
+.measurement-label {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  fill: #374151;
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+
+/* Grid styling */
+.coordinate-grid {
+  stroke: #d1d5db;
+  stroke-width: 0.5;
+  fill: none;
+}
+
+.coordinate-axes {
+  stroke: #374151;
+  stroke-width: 1.5;
+  fill: none;
+}
+
+.grid-numbers {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 10px;
+  fill: #6b7280;
+  text-anchor: middle;
+}
+
+/* Point styling */
+.coordinate-point {
+  fill: #dc2626;
+  stroke: #fff;
+  stroke-width: 2;
+}
+
+.point-label {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  fill: #374151;
+  text-anchor: middle;
+}
+
+/* Line styling */
+.geometry-line {
+  stroke: #374151;
+  stroke-width: 2;
+  fill: none;
+}
+
+.geometry-line.parallel {
+  stroke: #059669;
+}
+
+.geometry-line.perpendicular {
+  stroke: #dc2626;
+}
+
+.line-arrows {
+  fill: #374151;
+}
+
+/* Angle markings */
+.angle-arc {
+  stroke: #7c3aed;
+  stroke-width: 2;
+  fill: #a78bfa;
+  fill-opacity: 0.2;
+}
+
+.angle-measurement {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  fill: #7c3aed;
+  text-anchor: middle;
+}
+
+/* Symmetry lines */
+.symmetry-line {
+  stroke: #ea580c;
+  stroke-width: 2;
+  stroke-dasharray: 8,4;
+  fill: none;
+}
+
+/* Enhanced problem layout */
+.problem-container {
+  margin: 2rem 0;
+  padding: 1.5rem;
+  background: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+}
+
+.problem-question {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 1rem;
+  line-height: 1.6;
+}
+
+.problem-diagram {
+  margin: 1.5rem 0;
+  text-align: center;
+}
+
+.problem-answer {
+  margin-top: 2rem;
+  padding: 1rem;
+  background: #f3f4f6;
+  border-radius: 0.375rem;
+  border-left: 4px solid #10b981;
+}
+
+.problem-steps {
+  margin-top: 1rem;
+}
+
+.problem-step {
+  margin: 0.5rem 0;
+  padding: 0.5rem;
+  background: #fafafa;
+  border-radius: 0.25rem;
+  color: #6b7280;
+}
+
+/* Worksheet layout improvements */
+.worksheet-header {
+  text-align: center;
+  padding: 2rem 0;
+  border-bottom: 2px solid #e5e7eb;
+  margin-bottom: 2rem;
+}
+
+.worksheet-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 0.5rem;
+}
+
+.worksheet-subtitle {
+  font-size: 1.125rem;
+  color: #6b7280;
+}
+
+/* Print optimizations */
+@media print {
+  .geometry-problem {
+    background: white !important;
+    border: 1px solid #000 !important;
+    box-shadow: none !important;
+    page-break-inside: avoid;
+  }
+  
+  .geometry-diagram {
+    background: white !important;
+    border: 1px solid #000 !important;
+    box-shadow: none !important;
+  }
+  
+  .shape-visual {
+    stroke: #000 !important;
+    fill: none !important;
+  }
+  
+  .coordinate-grid {
+    stroke: #ccc !important;
+  }
+  
+  .coordinate-axes {
+    stroke: #000 !important;
+  }
+  
+  .measurement-label,
+  .grid-numbers,
+  .point-label {
+    fill: #000 !important;
+  }
+}
+
+/* Responsive design for diagrams */
+@media (max-width: 768px) {
+  .geometry-diagram {
+    padding: 0.5rem;
+  }
+  
+  .geometry-diagram svg {
+    max-width: 95%;
+  }
+  
+  .problem-container {
+    padding: 1rem;
+    margin: 1rem 0;
+  }
 }

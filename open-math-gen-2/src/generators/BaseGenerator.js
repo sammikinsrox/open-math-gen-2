@@ -77,8 +77,20 @@ export class BaseGenerator {
         continue
       }
       
-      if (value !== undefined && schema.type && typeof value !== schema.type) {
-        errors.push(`Parameter '${key}' must be of type ${schema.type}`)
+      // Handle different parameter types
+      if (value !== undefined && schema.type) {
+        if (schema.type === 'select') {
+          // For select types, validate against available options
+          if (schema.options && Array.isArray(schema.options)) {
+            const validValues = schema.options.map(option => option.value)
+            if (!validValues.includes(value)) {
+              errors.push(`Parameter '${key}' must be one of: ${validValues.join(', ')}`)
+            }
+          }
+        } else if (typeof value !== schema.type) {
+          // For other types, use standard type checking
+          errors.push(`Parameter '${key}' must be of type ${schema.type}`)
+        }
       }
       
       if (value !== undefined && schema.min !== undefined && value < schema.min) {

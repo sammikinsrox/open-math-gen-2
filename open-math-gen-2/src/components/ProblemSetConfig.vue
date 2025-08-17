@@ -195,10 +195,10 @@ const shouldShowParameter = (paramKey) => {
               >
                 <option 
                   v-for="option in param.options" 
-                  :key="option"
-                  :value="option"
+                  :key="option.value"
+                  :value="option.value"
                 >
-                  {{ option }}
+                  {{ option.label }}
                 </option>
               </select>
               

@@ -47,6 +47,16 @@ import SimpleInterestGenerator from './money-finance/SimpleInterestGenerator.js'
 import ProfitLossGenerator from './money-finance/ProfitLossGenerator.js'
 import BudgetingGenerator from './money-finance/BudgetingGenerator.js'
 
+// Basic Geometry Generators
+import BasicShapesGenerator from './geometry-basic/BasicShapesGenerator.js'
+import PerimeterGenerator from './geometry-basic/PerimeterGenerator.js'
+import AreaGenerator from './geometry-basic/AreaGenerator.js'
+import AnglesGenerator from './geometry-basic/AnglesGenerator.js'
+import LinesSegmentsGenerator from './geometry-basic/LinesSegmentsGenerator.js'
+import SymmetryGenerator from './geometry-basic/SymmetryGenerator.js'
+import CoordinateBasicsGenerator from './geometry-basic/CoordinateBasicsGenerator.js'
+import PropertiesGenerator from './geometry-basic/PropertiesGenerator.js'
+
 // Algebra Generators
 import LinearEquationsGenerator from './algebra/LinearEquationsGenerator.js'
 
@@ -129,17 +139,17 @@ export const GENERATOR_CATEGORIES = {
   
   'geometry-basic': {
     name: 'Basic Geometry',
-    description: 'Shapes, perimeter, area, angles, lines, and coordinate basics',
+    description: 'Shapes, perimeter, area, angles, lines, symmetry, coordinates, and properties',
     icon: 'square_foot',
     generators: {
-      // TODO: Add generators for this category
-      // 'basic-shapes': new BasicShapesGenerator(),
-      // 'perimeter': new PerimeterGenerator(),
-      // 'area': new AreaGenerator(),
-      // 'angles': new AnglesGenerator(),
-      // 'lines-segments': new LinesSegmentsGenerator(),
-      // 'symmetry': new SymmetryGenerator(),
-      // 'coordinate-basics': new CoordinateBasicsGenerator()
+      'basic-shapes': new BasicShapesGenerator(),
+      'perimeter': new PerimeterGenerator(),
+      'area': new AreaGenerator(),
+      'angles': new AnglesGenerator(),
+      'lines-segments': new LinesSegmentsGenerator(),
+      'symmetry': new SymmetryGenerator(),
+      'coordinate-basics': new CoordinateBasicsGenerator(),
+      'properties': new PropertiesGenerator()
     }
   },
   
