@@ -185,8 +185,20 @@ export class BudgetingGenerator extends BaseGenerator {
     
     const expenseList = expenses.map(e => `$${e.amount.toFixed(2)} on ${e.category}`).join(', ')
     
+    const expenseListLaTeX = expenses.map((e, index) => {
+      const expenseText = `\\$${e.amount.toFixed(2)} \\text{ on ${e.category}}`
+      // Add line break after every second item (index 1, 3, 5, etc.)
+      if ((index + 1) % 2 === 0 && index < expenses.length - 1) {
+        return expenseText + ', \\\\\\\\ '
+      } else if (index < expenses.length - 1) {
+        return expenseText + ', '
+      } else {
+        return expenseText
+      }
+    }).join('')
+    
     const questionText = `Monthly income is $${income.toFixed(2)}. Expenses are: ${expenseList}. How much can be saved?`
-    const questionLaTeX = `\\text{Monthly income is } \\$${income.toFixed(2)}\\text{. Expenses are: ${expenseList}. How much can be saved?}`
+    const questionLaTeX = `\\text{Monthly income is } \\$${income.toFixed(2)}\\text{.} \\\\\\\\ \\text{Expenses are: ${expenseListLaTeX}.} \\\\\\\\ \\text{How much can be saved?}`
     
     const steps = []
     if (params.showSteps) {
@@ -219,7 +231,7 @@ export class BudgetingGenerator extends BaseGenerator {
     const percentage = (selectedExpense.amount / income) * 100
     
     const questionText = `If monthly income is $${income.toFixed(2)} and ${selectedExpense.category} costs $${selectedExpense.amount.toFixed(2)}, what percentage of income is spent on ${selectedExpense.category}?`
-    const questionLaTeX = `\\text{If monthly income is } \\$${income.toFixed(2)} \\text{ and ${selectedExpense.category} costs } \\$${selectedExpense.amount.toFixed(2)}\\text{, what percentage of income is spent on ${selectedExpense.category}?}`
+    const questionLaTeX = `\\text{If monthly income is } \\$${income.toFixed(2)} \\\\\\\\ \\text{and ${selectedExpense.category} costs } \\$${selectedExpense.amount.toFixed(2)} \\text{,} \\\\\\\\  \\text{what percentage of income is spent} \\\\\\\\ \\text{on ${selectedExpense.category}?}`
     
     const steps = []
     if (params.showSteps) {
@@ -428,7 +440,17 @@ export class BudgetingGenerator extends BaseGenerator {
     switch (type) {
       case 'savings-calculation':
         const expenseList = expenses.map(e => `$${e.amount.toFixed(2)} on ${e.category}`).join(', ')
-        const expenseListLaTeX = expenses.map(e => `\\$${e.amount.toFixed(2)} \\text{ on ${e.category}}`).join(', \\\\\\\\ ')
+        const expenseListLaTeX = expenses.map((e, index) => {
+          const expenseText = `\\$${e.amount.toFixed(2)} \\text{ on ${e.category}}`
+          // Add line break after every second item (index 1, 3, 5, etc.)
+          if ((index + 1) % 2 === 0 && index < expenses.length - 1) {
+            return expenseText + ', \\\\\\\\ '
+          } else if (index < expenses.length - 1) {
+            return expenseText + ', '
+          } else {
+            return expenseText
+          }
+        }).join('')
         scenarios.push({
           question: `${name} earns $${income.toFixed(2)} per month. Their expenses are: ${expenseList}.\\n\\nHow much can ${name} save each month?`,
           questionLaTeX: `\\text{${name} earns } \\$${income.toFixed(2)} \\text{ per month.} \\\\\\\\ \\text{Their expenses are: ${expenseListLaTeX}.} \\\\\\\\ \\text{How much can ${name} save each month?}`,
