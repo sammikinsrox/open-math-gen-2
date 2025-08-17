@@ -177,7 +177,7 @@ export class MakingChangeGenerator extends BaseGenerator {
     }
     
     const questionText = `An item costs $${itemPrice.toFixed(2)}. You pay with $${payment.toFixed(2)}. How much change do you receive?`
-    const questionLaTeX = `\\text{An item costs } \\$${itemPrice.toFixed(2)}\\text{. You pay with } \\$${payment.toFixed(2)}\\text{. How much change do you receive?}`
+    const questionLaTeX = `\\text{An item costs } \\$${itemPrice.toFixed(2)}\\text{.} \\\\\\\\ \\text{You pay with } \\$${payment.toFixed(2)}\\text{.} \\\\\\\\ \\text{How much change do you receive?}`
     
     const steps = []
     if (params.showSteps) {
@@ -218,9 +218,10 @@ export class MakingChangeGenerator extends BaseGenerator {
     const change = payment - totalCost
     
     const itemList = items.map(price => `$${price.toFixed(2)}`).join(', ')
+    const itemListLaTeX = items.map(price => `\\$${price.toFixed(2)}`).join(', ')
     
     const questionText = `You buy items costing ${itemList}. You pay with $${payment.toFixed(2)}. How much change do you receive?`
-    const questionLaTeX = `\\text{You buy items costing ${itemList}. You pay with } \\$${payment.toFixed(2)}\\text{. How much change do you receive?}`
+    const questionLaTeX = `\\text{You buy items costing ${itemListLaTeX}.} \\\\\\\\ \\text{You pay with } \\$${payment.toFixed(2)}\\text{.} \\\\\\\\ \\text{How much change do you receive?}`
     
     const steps = []
     if (params.showSteps) {
@@ -257,7 +258,7 @@ export class MakingChangeGenerator extends BaseGenerator {
     const change = payment - totalCost
     
     const questionText = `An item costs $${itemPrice.toFixed(2)} plus ${(taxRate * 100)}% tax. You pay with $${payment.toFixed(2)}. How much change do you receive?`
-    const questionLaTeX = `\\text{An item costs } \\$${itemPrice.toFixed(2)} \\text{ plus } ${(taxRate * 100)}\\% \\text{ tax. You pay with } \\$${payment.toFixed(2)}\\text{. How much change do you receive?}`
+    const questionLaTeX = `\\text{An item costs } \\$${itemPrice.toFixed(2)} \\text{ plus } ${(taxRate * 100)}\\% \\text{ tax.} \\\\\\\\ \\text{You pay with } \\$${payment.toFixed(2)}\\text{.} \\\\\\\\ \\text{How much change do you receive?}`
     
     const steps = []
     if (params.showSteps) {
@@ -291,7 +292,7 @@ export class MakingChangeGenerator extends BaseGenerator {
     const itemPrice = this.generatePrice(params)
     
     const questionText = `An item costs $${itemPrice.toFixed(2)}. What is the exact change needed?`
-    const questionLaTeX = `\\text{An item costs } \\$${itemPrice.toFixed(2)}\\text{. What is the exact change needed?}`
+    const questionLaTeX = `\\text{An item costs } \\$${itemPrice.toFixed(2)}\\text{.} \\\\\\\\ \\text{What is the exact change needed?}`
     
     return {
       question: questionText,
@@ -321,17 +322,17 @@ export class MakingChangeGenerator extends BaseGenerator {
     const scenarios = [
       {
         question: `Sarah buys a ${item} for $${itemPrice.toFixed(2)}. She pays with $${payment.toFixed(2)}.\\n\\nHow much change should she receive?`,
-        questionLaTeX: `\\text{Sarah buys a ${item} for } \\$${itemPrice.toFixed(2)}\\text{. She pays with } \\$${payment.toFixed(2)}\\text{.} \\\\\\\\ \\text{How much change should she receive?}`,
+        questionLaTeX: `\\text{Sarah buys a ${item} for } \\$${itemPrice.toFixed(2)}\\text{.} \\\\\\\\ \\text{She pays with } \\$${payment.toFixed(2)}\\text{.} \\\\\\\\ \\text{How much change should she receive?}`,
         type: 'shopping'
       },
       {
         question: `At the store, a ${item} costs $${itemPrice.toFixed(2)}. Mike gives the cashier $${payment.toFixed(2)}.\\n\\nWhat change does Mike get back?`,
-        questionLaTeX: `\\text{At the store, a ${item} costs } \\$${itemPrice.toFixed(2)}\\text{. Mike gives the cashier } \\$${payment.toFixed(2)}\\text{.} \\\\\\\\ \\text{What change does Mike get back?}`,
+        questionLaTeX: `\\text{At the store, a ${item} costs } \\$${itemPrice.toFixed(2)}\\text{.} \\\\\\\\ \\text{Mike gives the cashier } \\$${payment.toFixed(2)}\\text{.} \\\\\\\\ \\text{What change does Mike get back?}`,
         type: 'store'
       },
       {
         question: `Emma wants to buy a ${item} that costs $${itemPrice.toFixed(2)}. She hands the clerk $${payment.toFixed(2)}.\\n\\nHow much money will she receive in change?`,
-        questionLaTeX: `\\text{Emma wants to buy a ${item} that costs } \\$${itemPrice.toFixed(2)}\\text{. She hands the clerk } \\$${payment.toFixed(2)}\\text{.} \\\\\\\\ \\text{How much money will she receive in change?}`,
+        questionLaTeX: `\\text{Emma wants to buy a ${item}} \\\\\\\\ \\text{that costs } \\$${itemPrice.toFixed(2)}\\text{.} \\\\\\\\ \\text{She hands the clerk } \\$${payment.toFixed(2)}\\text{.} \\\\\\\\ \\text{How much money will she receive in change?}`,
         type: 'purchase'
       }
     ]

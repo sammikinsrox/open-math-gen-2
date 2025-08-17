@@ -206,9 +206,11 @@ export class SimpleInterestGenerator extends BaseGenerator {
     const interest = this.calculateInterest(principal, rate, time)
     
     const rateDisplay = params.usePercentages ? `${rate}%` : (rate / 100).toFixed(3)
+    const rateDisplayLaTeX = params.usePercentages ? `${rate}\\%` : (rate / 100).toFixed(3)
+    const yearText = time !== 1 ? 'years' : 'year'
     
-    const questionText = `Find the simple interest on $${principal.toFixed(2)} at ${rateDisplay} per year for ${time} year${time !== 1 ? 's' : ''}`
-    const questionLaTeX = `\\text{Find the simple interest on } \\$${principal.toFixed(2)} \\text{ at } ${params.usePercentages ? `${rate}\\%` : (rate / 100).toFixed(3)} \\text{ per year for } ${time} \\text{ year${time !== 1 ? 's' : ''}}`
+    const questionText = `Find the simple interest on $${principal.toFixed(2)} at ${rateDisplay} per year for ${time} ${yearText}`
+    const questionLaTeX = `\\text{Find the simple interest on } \\$${principal.toFixed(2)} \\\\\\\\ \\text{at } ${rateDisplayLaTeX} \\text{ per year for } ${time} \\text{ ${yearText}}`
     
     const steps = this.generateInterestSteps(principal, rate, time, interest, params)
     
@@ -235,9 +237,11 @@ export class SimpleInterestGenerator extends BaseGenerator {
     const interest = this.calculateInterest(principal, rate, time)
     
     const rateDisplay = params.usePercentages ? `${rate}%` : (rate / 100).toFixed(3)
+    const rateDisplayLaTeX = params.usePercentages ? `${rate}\\%` : (rate / 100).toFixed(3)
+    const yearText = time !== 1 ? 'years' : 'year'
     
-    const questionText = `If the simple interest is $${interest.toFixed(2)} at ${rateDisplay} per year for ${time} year${time !== 1 ? 's' : ''}, find the principal`
-    const questionLaTeX = `\\text{If the simple interest is } \\$${interest.toFixed(2)} \\text{ at } ${params.usePercentages ? `${rate}\\%` : (rate / 100).toFixed(3)} \\text{ per year for } ${time} \\text{ year${time !== 1 ? 's' : ''}}, \\text{ find the principal}`
+    const questionText = `If the simple interest is $${interest.toFixed(2)} at ${rateDisplay} per year for ${time} ${yearText}, find the principal`
+    const questionLaTeX = `\\text{If the simple interest is } \\$${interest.toFixed(2)} \\\\\\\\ \\text{at } ${rateDisplayLaTeX} \\text{ per year for } ${time} \\text{ ${yearText},} \\\\\\\\ \\text{find the principal}`
     
     const steps = this.generatePrincipalSteps(interest, rate, time, principal, params)
     
@@ -263,8 +267,10 @@ export class SimpleInterestGenerator extends BaseGenerator {
     const { principal, rate, time } = values
     const interest = this.calculateInterest(principal, rate, time)
     
-    const questionText = `If $${principal.toFixed(2)} earns $${interest.toFixed(2)} simple interest in ${time} year${time !== 1 ? 's' : ''}, find the annual interest rate`
-    const questionLaTeX = `\\text{If } \\$${principal.toFixed(2)} \\text{ earns } \\$${interest.toFixed(2)} \\text{ simple interest in } ${time} \\text{ year${time !== 1 ? 's' : ''}}, \\text{ find the annual interest rate}`
+    const yearText = time !== 1 ? 'years' : 'year'
+    
+    const questionText = `If $${principal.toFixed(2)} earns $${interest.toFixed(2)} simple interest in ${time} ${yearText}, find the annual interest rate`
+    const questionLaTeX = `\\text{If } \\$${principal.toFixed(2)} \\text{ earns } \\$${interest.toFixed(2)} \\\\\\\\ \\text{simple interest in } ${time} \\text{ ${yearText},} \\\\\\\\ \\text{find the annual interest rate}`
     
     const steps = this.generateRateSteps(principal, interest, time, rate, params)
     
@@ -294,17 +300,18 @@ export class SimpleInterestGenerator extends BaseGenerator {
     const interest = this.calculateInterest(principal, rate, time)
     
     const rateDisplay = params.usePercentages ? `${rate}%` : (rate / 100).toFixed(3)
+    const rateDisplayLaTeX = params.usePercentages ? `${rate}\\%` : (rate / 100).toFixed(3)
     
     const questionText = `How long will it take for $${principal.toFixed(2)} to earn $${interest.toFixed(2)} simple interest at ${rateDisplay} per year?`
-    const questionLaTeX = `\\text{How long will it take for } \\$${principal.toFixed(2)} \\text{ to earn } \\$${interest.toFixed(2)} \\text{ simple interest at } ${params.usePercentages ? `${rate}\\%` : (rate / 100).toFixed(3)} \\text{ per year?}`
+    const questionLaTeX = `\\text{How long will it take for } \\$${principal.toFixed(2)} \\\\\\\\ \\text{to earn } \\$${interest.toFixed(2)} \\text{ simple interest} \\\\\\\\ \\text{at } ${rateDisplayLaTeX} \\text{ per year?}`
     
     const steps = this.generateTimeSteps(principal, rate, interest, time, params)
     
     return {
       question: questionText,
       questionLaTeX: questionLaTeX,
-      answer: `${time} year${time !== 1 ? 's' : ''}`,
-      answerLaTeX: `${time} \\text{ year${time !== 1 ? 's' : ''}}`,
+      answer: `${time} ${time !== 1 ? 'years' : 'year'}`,
+      answerLaTeX: `${time} \\text{ ${time !== 1 ? 'years' : 'year'}}`,
       steps: steps,
       metadata: {
         operation: 'simple-interest-find-time',
@@ -324,9 +331,11 @@ export class SimpleInterestGenerator extends BaseGenerator {
     const total = principal + interest
     
     const rateDisplay = params.usePercentages ? `${rate}%` : (rate / 100).toFixed(3)
+    const rateDisplayLaTeX = params.usePercentages ? `${rate}\\%` : (rate / 100).toFixed(3)
+    const yearText = time !== 1 ? 'years' : 'year'
     
-    const questionText = `Find the total amount after $${principal.toFixed(2)} is invested at ${rateDisplay} simple interest for ${time} year${time !== 1 ? 's' : ''}`
-    const questionLaTeX = `\\text{Find the total amount after } \\$${principal.toFixed(2)} \\text{ is invested at } ${params.usePercentages ? `${rate}\\%` : (rate / 100).toFixed(3)} \\text{ simple interest for } ${time} \\text{ year${time !== 1 ? 's' : ''}}`
+    const questionText = `Find the total amount after $${principal.toFixed(2)} is invested at ${rateDisplay} simple interest for ${time} ${yearText}`
+    const questionLaTeX = `\\text{Find the total amount after } \\$${principal.toFixed(2)} \\\\\\\\ \\text{is invested at } ${rateDisplayLaTeX} \\text{ simple interest} \\\\\\\\ \\text{for } ${time} \\text{ ${yearText}}`
     
     const steps = this.generateTotalSteps(principal, rate, time, interest, total, params)
     
@@ -406,45 +415,47 @@ export class SimpleInterestGenerator extends BaseGenerator {
 
   getScenarios(type, principal, rate, time, interest, total, params) {
     const rateDisplay = params.usePercentages ? `${rate}%` : (rate / 100).toFixed(3)
+    const rateDisplayLaTeX = params.usePercentages ? `${rate}\\%` : (rate / 100).toFixed(3)
+    const yearText = time !== 1 ? 'years' : 'year'
     
     const scenarios = {
       'find-interest': [
         {
-          question: `Sarah deposits $${principal.toFixed(2)} in a savings account that pays ${rateDisplay} simple interest per year.\\n\\nHow much interest will she earn in ${time} year${time !== 1 ? 's' : ''}?`,
-          questionLaTeX: `\\text{Sarah deposits } \\$${principal.toFixed(2)} \\text{ in a savings account that pays } ${params.usePercentages ? `${rate}\\%` : (rate / 100).toFixed(3)} \\text{ simple interest per year.} \\\\\\\\ \\text{How much interest will she earn in } ${time} \\text{ year${time !== 1 ? 's' : ''}?}`,
+          question: `Sarah deposits $${principal.toFixed(2)} in a savings account that pays ${rateDisplay} simple interest per year.\\n\\nHow much interest will she earn in ${time} ${yearText}?`,
+          questionLaTeX: `\\text{Sarah deposits } \\$${principal.toFixed(2)} \\text{ in a savings account} \\\\\\\\ \\text{that pays } ${rateDisplayLaTeX} \\text{ simple interest per year.} \\\\\\\\ \\text{How much interest will she earn in } ${time} \\text{ ${yearText}?}`,
           type: 'savings'
         },
         {
-          question: `Tom borrows $${principal.toFixed(2)} at ${rateDisplay} simple interest per year for ${time} year${time !== 1 ? 's' : ''}.\\n\\nHow much interest will he pay?`,
-          questionLaTeX: `\\text{Tom borrows } \\$${principal.toFixed(2)} \\text{ at } ${params.usePercentages ? `${rate}\\%` : (rate / 100).toFixed(3)} \\text{ simple interest per year for } ${time} \\text{ year${time !== 1 ? 's' : ''}}.} \\\\\\\\ \\text{How much interest will he pay?}`,
+          question: `Tom borrows $${principal.toFixed(2)} at ${rateDisplay} simple interest per year for ${time} ${yearText}.\\n\\nHow much interest will he pay?`,
+          questionLaTeX: `\\text{Tom borrows } \\$${principal.toFixed(2)} \\text{ at } ${rateDisplayLaTeX} \\\\\\\\ \\text{simple interest per year for } ${time} \\text{ ${yearText}.} \\\\\\\\ \\text{How much interest will he pay?}`,
           type: 'loan'
         }
       ],
       'find-principal': [
         {
-          question: `A bank account earns $${interest.toFixed(2)} in simple interest at ${rateDisplay} per year for ${time} year${time !== 1 ? 's' : ''}.\\n\\nWhat was the principal amount?`,
-          questionLaTeX: `\\text{A bank account earns } \\$${interest.toFixed(2)} \\text{ in simple interest at } ${params.usePercentages ? `${rate}\\%` : (rate / 100).toFixed(3)} \\text{ per year for } ${time} \\text{ year${time !== 1 ? 's' : ''}}.} \\\\\\\\ \\text{What was the principal amount?}`,
+          question: `A bank account earns $${interest.toFixed(2)} in simple interest at ${rateDisplay} per year for ${time} ${yearText}.\\n\\nWhat was the principal amount?`,
+          questionLaTeX: `\\text{A bank account earns } \\$${interest.toFixed(2)} \\text{ in simple interest} \\\\\\\\ \\text{at } ${rateDisplayLaTeX} \\text{ per year for } ${time} \\text{ ${yearText}.} \\\\\\\\ \\text{What was the principal amount?}`,
           type: 'savings'
         }
       ],
       'find-rate': [
         {
-          question: `An investment of $${principal.toFixed(2)} grows by $${interest.toFixed(2)} in ${time} year${time !== 1 ? 's' : ''} with simple interest.\\n\\nWhat was the annual interest rate?`,
-          questionLaTeX: `\\text{An investment of } \\$${principal.toFixed(2)} \\text{ grows by } \\$${interest.toFixed(2)} \\text{ in } ${time} \\text{ year${time !== 1 ? 's' : ''} with simple interest.} \\\\\\\\ \\text{What was the annual interest rate?}`,
+          question: `An investment of $${principal.toFixed(2)} grows by $${interest.toFixed(2)} in ${time} ${yearText} with simple interest.\\n\\nWhat was the annual interest rate?`,
+          questionLaTeX: `\\text{An investment of } \\$${principal.toFixed(2)} \\text{ grows by } \\$${interest.toFixed(2)} \\\\\\\\ \\text{in } ${time} \\text{ ${yearText} with simple interest.} \\\\\\\\ \\text{What was the annual interest rate?}`,
           type: 'investment'
         }
       ],
       'find-time': [
         {
           question: `How long will it take for $${principal.toFixed(2)} to earn $${interest.toFixed(2)} in simple interest at ${rateDisplay} per year?`,
-          questionLaTeX: `\\text{How long will it take for } \\$${principal.toFixed(2)} \\text{ to earn } \\$${interest.toFixed(2)} \\text{ in simple interest at } ${params.usePercentages ? `${rate}\\%` : (rate / 100).toFixed(3)} \\text{ per year?}`,
+          questionLaTeX: `\\text{How long will it take for } \\$${principal.toFixed(2)} \\\\\\\\ \\text{to earn } \\$${interest.toFixed(2)} \\text{ in simple interest} \\\\\\\\ \\text{at } ${rateDisplayLaTeX} \\text{ per year?}`,
           type: 'time-calculation'
         }
       ],
       'find-total': [
         {
-          question: `Lisa invests $${principal.toFixed(2)} at ${rateDisplay} simple interest for ${time} year${time !== 1 ? 's' : ''}.\\n\\nWhat will be the total amount in her account?`,
-          questionLaTeX: `\\text{Lisa invests } \\$${principal.toFixed(2)} \\text{ at } ${params.usePercentages ? `${rate}\\%` : (rate / 100).toFixed(3)} \\text{ simple interest for } ${time} \\text{ year${time !== 1 ? 's' : ''}}.} \\\\\\\\ \\text{What will be the total amount in her account?}`,
+          question: `Lisa invests $${principal.toFixed(2)} at ${rateDisplay} simple interest for ${time} ${yearText}.\\n\\nWhat will be the total amount in her account?`,
+          questionLaTeX: `\\text{Lisa invests } \\$${principal.toFixed(2)} \\text{ at } ${rateDisplayLaTeX} \\\\\\\\ \\text{simple interest for } ${time} \\text{ ${yearText}.} \\\\\\\\ \\text{What will be the total amount in her account?}`,
           type: 'investment'
         }
       ]

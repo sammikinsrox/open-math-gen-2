@@ -211,7 +211,7 @@ export class ProfitLossGenerator extends BaseGenerator {
     const { costPrice, sellingPrice, profit } = values
     
     const questionText = `An item is bought for $${costPrice.toFixed(2)} and sold for $${sellingPrice.toFixed(2)}. Find the profit.`
-    const questionLaTeX = `\\text{An item is bought for } \\$${costPrice.toFixed(2)} \\text{ and sold for } \\$${sellingPrice.toFixed(2)}\\text{. Find the profit.}`
+    const questionLaTeX = `\\text{An item is bought for } \\$${costPrice.toFixed(2)} \\\\\\\\ \\text{and sold for } \\$${sellingPrice.toFixed(2)}\\text{.} \\\\\\\\ \\text{Find the profit.}`
     
     const steps = []
     if (params.showSteps) {
@@ -242,7 +242,7 @@ export class ProfitLossGenerator extends BaseGenerator {
     const { costPrice, sellingPrice, loss } = values
     
     const questionText = `An item is bought for $${costPrice.toFixed(2)} and sold for $${sellingPrice.toFixed(2)}. Find the loss.`
-    const questionLaTeX = `\\text{An item is bought for } \\$${costPrice.toFixed(2)} \\text{ and sold for } \\$${sellingPrice.toFixed(2)}\\text{. Find the loss.}`
+    const questionLaTeX = `\\text{An item is bought for } \\$${costPrice.toFixed(2)} \\\\\\\\ \\text{and sold for } \\$${sellingPrice.toFixed(2)}\\text{.} \\\\\\\\ \\text{Find the loss.}`
     
     const steps = []
     if (params.showSteps) {
@@ -273,7 +273,7 @@ export class ProfitLossGenerator extends BaseGenerator {
     const { costPrice, sellingPrice, profit, profitPercent } = values
     
     const questionText = `An item is bought for $${costPrice.toFixed(2)} and sold for $${sellingPrice.toFixed(2)}. Find the profit percentage.`
-    const questionLaTeX = `\\text{An item is bought for } \\$${costPrice.toFixed(2)} \\text{ and sold for } \\$${sellingPrice.toFixed(2)}\\text{. Find the profit percentage.}`
+    const questionLaTeX = `\\text{An item is bought for } \\$${costPrice.toFixed(2)} \\\\\\\\ \\text{and sold for } \\$${sellingPrice.toFixed(2)}\\text{.} \\\\\\\\ \\text{Find the profit percentage.}`
     
     const steps = []
     if (params.showSteps) {
@@ -306,7 +306,7 @@ export class ProfitLossGenerator extends BaseGenerator {
     const { costPrice, sellingPrice, loss, lossPercent } = values
     
     const questionText = `An item is bought for $${costPrice.toFixed(2)} and sold for $${sellingPrice.toFixed(2)}. Find the loss percentage.`
-    const questionLaTeX = `\\text{An item is bought for } \\$${costPrice.toFixed(2)} \\text{ and sold for } \\$${sellingPrice.toFixed(2)}\\text{. Find the loss percentage.}`
+    const questionLaTeX = `\\text{An item is bought for } \\$${costPrice.toFixed(2)} \\\\\\\\ \\text{and sold for } \\$${sellingPrice.toFixed(2)}\\text{.} \\\\\\\\ \\text{Find the loss percentage.}`
     
     const steps = []
     if (params.showSteps) {
@@ -342,7 +342,7 @@ export class ProfitLossGenerator extends BaseGenerator {
     const percent = isProfit ? profitPercent : values.lossPercent
     
     const questionText = `An item is sold for $${sellingPrice.toFixed(2)} at a ${percent.toFixed(1)}% ${type}. Find the cost price.`
-    const questionLaTeX = `\\text{An item is sold for } \\$${sellingPrice.toFixed(2)} \\text{ at a } ${percent.toFixed(1)}\\% \\text{ ${type}. Find the cost price.}`
+    const questionLaTeX = `\\text{An item is sold for } \\$${sellingPrice.toFixed(2)} \\\\\\\\ \\text{at a } ${percent.toFixed(1)}\\% \\text{ ${type}.} \\\\\\\\ \\text{Find the cost price.}`
     
     const steps = []
     if (params.showSteps) {
@@ -384,7 +384,7 @@ export class ProfitLossGenerator extends BaseGenerator {
     const percent = isProfit ? profitPercent : values.lossPercent
     
     const questionText = `An item costs $${costPrice.toFixed(2)}. If it is sold at a ${percent.toFixed(1)}% ${type}, find the selling price.`
-    const questionLaTeX = `\\text{An item costs } \\$${costPrice.toFixed(2)}\\text{. If it is sold at a } ${percent.toFixed(1)}\\% \\text{ ${type}, find the selling price.}`
+    const questionLaTeX = `\\text{An item costs } \\$${costPrice.toFixed(2)}\\text{.} \\\\\\\\ \\text{If it is sold at a } ${percent.toFixed(1)}\\% \\text{ ${type},} \\\\\\\\ \\text{find the selling price.}`
     
     const steps = []
     if (params.showSteps) {
@@ -421,7 +421,7 @@ export class ProfitLossGenerator extends BaseGenerator {
     const { costPrice } = values
     
     const questionText = `An item costs $${costPrice.toFixed(2)}. At what price should it be sold to break even?`
-    const questionLaTeX = `\\text{An item costs } \\$${costPrice.toFixed(2)}\\text{. At what price should it be sold to break even?}`
+    const questionLaTeX = `\\text{An item costs } \\$${costPrice.toFixed(2)}\\text{.} \\\\\\\\ \\text{At what price should it be sold to break even?}`
     
     const steps = []
     if (params.showSteps) {
@@ -556,7 +556,7 @@ export class ProfitLossGenerator extends BaseGenerator {
         const typeText2 = isProfit ? 'profit' : 'loss'
         scenarios.push({
           question: `A ${item} costs $${costPrice.toFixed(2)}. If it is sold at a ${percent2.toFixed(1)}% ${typeText2}, what is the selling price?`,
-          questionLaTeX: `\\text{A ${item} costs } \\$${costPrice.toFixed(2)}\\text{. If it is sold at a } ${percent2.toFixed(1)}\\% \\text{ ${typeText2}, what is the selling price?}`,
+          questionLaTeX: `\\text{A ${item} costs } \\$${costPrice.toFixed(2)}\\text{.} \\\\\\\\ \\text{If it is sold at a } ${percent2.toFixed(1)}\\% \\text{ ${typeText2},} \\\\\\\\ \\text{what is the selling price?}`,
           type: 'pricing'
         })
         break

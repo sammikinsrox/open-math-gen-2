@@ -428,9 +428,10 @@ export class BudgetingGenerator extends BaseGenerator {
     switch (type) {
       case 'savings-calculation':
         const expenseList = expenses.map(e => `$${e.amount.toFixed(2)} on ${e.category}`).join(', ')
+        const expenseListLaTeX = expenses.map(e => `\\$${e.amount.toFixed(2)} \\text{ on ${e.category}}`).join(', \\\\\\\\ ')
         scenarios.push({
           question: `${name} earns $${income.toFixed(2)} per month. Their expenses are: ${expenseList}.\\n\\nHow much can ${name} save each month?`,
-          questionLaTeX: `\\text{${name} earns } \\$${income.toFixed(2)} \\text{ per month. Their expenses are: ${expenseList}.} \\\\\\\\ \\text{How much can ${name} save each month?}`,
+          questionLaTeX: `\\text{${name} earns } \\$${income.toFixed(2)} \\text{ per month.} \\\\\\\\ \\text{Their expenses are: ${expenseListLaTeX}.} \\\\\\\\ \\text{How much can ${name} save each month?}`,
           type: 'personal-budgeting'
         })
         break
@@ -439,7 +440,7 @@ export class BudgetingGenerator extends BaseGenerator {
         const expense = this.getRandomElement(expenses)
         scenarios.push({
           question: `${name} has a monthly income of $${income.toFixed(2)} and spends $${expense.amount.toFixed(2)} on ${expense.category}.\\n\\nWhat percentage of their income goes to ${expense.category}?`,
-          questionLaTeX: `\\text{${name} has a monthly income of } \\$${income.toFixed(2)} \\text{ and spends } \\$${expense.amount.toFixed(2)} \\text{ on ${expense.category}.} \\\\\\\\ \\text{What percentage of their income goes to ${expense.category}?}`,
+          questionLaTeX: `\\text{${name} has a monthly income of } \\$${income.toFixed(2)} \\\\\\\\ \\text{and spends } \\$${expense.amount.toFixed(2)} \\text{ on ${expense.category}.} \\\\\\\\ \\text{What percentage of their income goes to ${expense.category}?}`,
           type: 'expense-analysis'
         })
         break
@@ -448,7 +449,7 @@ export class BudgetingGenerator extends BaseGenerator {
         const savingsPercent = Math.floor(Math.random() * 20) + 10
         scenarios.push({
           question: `${name} earns $${income.toFixed(2)} monthly and wants to save ${savingsPercent}% for emergencies.\\n\\nHow much money will be left for other expenses?`,
-          questionLaTeX: `\\text{${name} earns } \\$${income.toFixed(2)} \\text{ monthly and wants to save } ${savingsPercent}\\% \\text{ for emergencies.} \\\\\\\\ \\text{How much money will be left for other expenses?}`,
+          questionLaTeX: `\\text{${name} earns } \\$${income.toFixed(2)} \\text{ monthly} \\\\\\\\ \\text{and wants to save } ${savingsPercent}\\% \\text{ for emergencies.} \\\\\\\\ \\text{How much money will be left for other expenses?}`,
           type: 'financial-planning'
         })
         break
@@ -456,7 +457,7 @@ export class BudgetingGenerator extends BaseGenerator {
       case 'deficit-surplus':
         scenarios.push({
           question: `${name}'s monthly income is $${income.toFixed(2)} and total expenses are $${totalExpenses.toFixed(2)}.\\n\\nDoes ${name} have a budget surplus or deficit, and by how much?`,
-          questionLaTeX: `\\text{${name}'s monthly income is } \\$${income.toFixed(2)} \\text{ and total expenses are } \\$${totalExpenses.toFixed(2)}\\text{.} \\\\\\\\ \\text{Does ${name} have a budget surplus or deficit, and by how much?}`,
+          questionLaTeX: `\\text{${name}'s monthly income is } \\$${income.toFixed(2)} \\\\\\\\ \\text{and total expenses are } \\$${totalExpenses.toFixed(2)}\\text{.} \\\\\\\\ \\text{Does ${name} have a budget surplus or deficit,} \\\\\\\\ \\text{and by how much?}`,
           type: 'budget-analysis'
         })
         break
@@ -465,7 +466,7 @@ export class BudgetingGenerator extends BaseGenerator {
         const budget2 = this.generateBudgetData(params)
         scenarios.push({
           question: `${name} has two budget options. Option A: Income $${income.toFixed(2)}, Expenses $${totalExpenses.toFixed(2)}. Option B: Income $${budget2.income.toFixed(2)}, Expenses $${budget2.totalExpenses.toFixed(2)}.\\n\\nWhich option allows more savings and by how much?`,
-          questionLaTeX: `\\text{${name} has two budget options. Option A: Income } \\$${income.toFixed(2)}\\text{, Expenses } \\$${totalExpenses.toFixed(2)}\\text{. Option B: Income } \\$${budget2.income.toFixed(2)}\\text{, Expenses } \\$${budget2.totalExpenses.toFixed(2)}\\text{.} \\\\\\\\ \\text{Which option allows more savings and by how much?}`,
+          questionLaTeX: `\\text{${name} has two budget options.} \\\\\\\\ \\text{Option A: Income } \\$${income.toFixed(2)}\\text{,} \\\\\\\\ \\text{Expenses } \\$${totalExpenses.toFixed(2)}\\text{.} \\\\\\\\ \\text{Option B: Income } \\$${budget2.income.toFixed(2)}\\text{,} \\\\\\\\ \\text{Expenses } \\$${budget2.totalExpenses.toFixed(2)}\\text{.} \\\\\\\\ \\text{Which option allows more savings} \\\\\\\\ \\text{and by how much?}`,
           type: 'budget-comparison'
         })
         break

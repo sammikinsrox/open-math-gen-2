@@ -211,38 +211,89 @@ export class MoneyOperationsGenerator extends BaseGenerator {
   }
 
   generateSubtractionProblem(params) {
-    let amount1 = this.generateMoneyAmount(params)
-    let amount2 = this.generateMoneyAmount(params)
-    
-    // Ensure positive result if required
-    if (params.ensurePositiveResults && amount1 < amount2) {
-      [amount1, amount2] = [amount2, amount1]
-    }
-    
-    const result = amount1 - amount2
-    
-    const questionText = `$${amount1.toFixed(2)} - $${amount2.toFixed(2)} = ?`
-    const questionLaTeX = `\\$${amount1.toFixed(2)} - \\$${amount2.toFixed(2)} = \\square`
-    
-    const steps = []
-    if (params.showSteps) {
-      steps.push(`\\$${amount1.toFixed(2)} - \\$${amount2.toFixed(2)}`)
-      steps.push(`= \\$${result.toFixed(2)}`)
-    }
-    
-    return {
-      question: questionText,
-      questionLaTeX: questionLaTeX,
-      answer: `$${result.toFixed(2)}`,
-      answerLaTeX: `\\$${result.toFixed(2)}`,
-      steps: steps,
-      metadata: {
-        operation: 'money-subtraction',
-        minuend: amount1,
-        subtrahend: amount2,
-        result: result,
-        difficulty: this.difficulty,
-        estimatedTime: '45 seconds'
+    if (params.maxTerms === 2) {
+      // Simple two-term subtraction
+      let amount1 = this.generateMoneyAmount(params)
+      let amount2 = this.generateMoneyAmount(params)
+      
+      // Ensure positive result if required
+      if (params.ensurePositiveResults && amount1 < amount2) {
+        [amount1, amount2] = [amount2, amount1]
+      }
+      
+      const result = amount1 - amount2
+      
+      const questionText = `$${amount1.toFixed(2)} - $${amount2.toFixed(2)} = ?`
+      const questionLaTeX = `\\$${amount1.toFixed(2)} - \\$${amount2.toFixed(2)} = \\square`
+      
+      const steps = []
+      if (params.showSteps) {
+        steps.push(`\\$${amount1.toFixed(2)} - \\$${amount2.toFixed(2)}`)
+        steps.push(`= \\$${result.toFixed(2)}`)
+      }
+      
+      return {
+        question: questionText,
+        questionLaTeX: questionLaTeX,
+        answer: `$${result.toFixed(2)}`,
+        answerLaTeX: `\\$${result.toFixed(2)}`,
+        steps: steps,
+        metadata: {
+          operation: 'money-subtraction',
+          minuend: amount1,
+          subtrahend: amount2,
+          result: result,
+          difficulty: this.difficulty,
+          estimatedTime: '45 seconds'
+        }
+      }
+    } else {
+      // Multi-term subtraction: start with a large amount and subtract multiple smaller amounts
+      const numSubtractions = Math.floor(Math.random() * (params.maxTerms - 1)) + 1 // 1 to (maxTerms-1) subtractions
+      const amounts = []
+      
+      // Generate subtraction amounts
+      for (let i = 0; i < numSubtractions; i++) {
+        amounts.push(this.generateMoneyAmount(params))
+      }
+      
+      // Calculate total subtractions
+      const totalSubtractions = amounts.reduce((sum, amount) => sum + amount, 0)
+      
+      // Generate starting amount that ensures positive result if required
+      let startingAmount
+      if (params.ensurePositiveResults) {
+        startingAmount = totalSubtractions + this.generateMoneyAmount(params)
+      } else {
+        startingAmount = this.generateMoneyAmount(params)
+      }
+      
+      const result = startingAmount - totalSubtractions
+      
+      const questionText = `$${startingAmount.toFixed(2)} - ${amounts.map(a => `$${a.toFixed(2)}`).join(' - ')} = ?`
+      const questionLaTeX = `\\$${startingAmount.toFixed(2)} - ${amounts.map(a => `\\$${a.toFixed(2)}`).join(' - ')} = \\square`
+      
+      const steps = []
+      if (params.showSteps) {
+        steps.push(`\\$${startingAmount.toFixed(2)} - ${amounts.map(a => `\\$${a.toFixed(2)}`).join(' - ')}`)
+        steps.push(`= \\$${startingAmount.toFixed(2)} - \\$${totalSubtractions.toFixed(2)}`)
+        steps.push(`= \\$${result.toFixed(2)}`)
+      }
+      
+      return {
+        question: questionText,
+        questionLaTeX: questionLaTeX,
+        answer: `$${result.toFixed(2)}`,
+        answerLaTeX: `\\$${result.toFixed(2)}`,
+        steps: steps,
+        metadata: {
+          operation: 'money-subtraction-multiple',
+          startingAmount: startingAmount,
+          subtractions: amounts,
+          result: result,
+          difficulty: this.difficulty,
+          estimatedTime: '60 seconds'
+        }
       }
     }
   }
@@ -325,33 +376,52 @@ export class MoneyOperationsGenerator extends BaseGenerator {
   }
 
   generateAdditionWordProblem(params) {
-    const amount1 = this.generateMoneyAmount(params)
-    const amount2 = this.generateMoneyAmount(params)
-    const total = amount1 + amount2
+    const numTerms = Math.floor(Math.random() * (params.maxTerms - 1)) + 2 // 2 to maxTerms
+    const amounts = []
     
-    const scenarios = [
-      {
-        question: `Sarah has $${amount1.toFixed(2)} and earns $${amount2.toFixed(2)} more.\\n\\nHow much money does she have now?`,
-        questionLaTeX: `\\text{Sarah has } \\$${amount1.toFixed(2)} \\text{ and earns } \\$${amount2.toFixed(2)} \\text{ more.} \\\\\\\\ \\text{How much money does she have now?}`,
-        type: 'earning'
-      },
-      {
-        question: `Tom bought a book for $${amount1.toFixed(2)} and a pen for $${amount2.toFixed(2)}.\\n\\nHow much did he spend in total?`,
-        questionLaTeX: `\\text{Tom bought a book for } \\$${amount1.toFixed(2)} \\text{ and a pen for } \\$${amount2.toFixed(2)}\\text{.} \\\\\\\\ \\text{How much did he spend in total?}`,
-        type: 'spending'
-      },
-      {
-        question: `A family budget includes $${amount1.toFixed(2)} for groceries and $${amount2.toFixed(2)} for utilities.\\n\\nWhat is the total for these expenses?`,
-        questionLaTeX: `\\text{A family budget includes } \\$${amount1.toFixed(2)} \\text{ for groceries and } \\$${amount2.toFixed(2)} \\text{ for utilities.} \\\\\\\\ \\text{What is the total for these expenses?}`,
-        type: 'budgeting'
+    for (let i = 0; i < numTerms; i++) {
+      amounts.push(this.generateMoneyAmount(params))
+    }
+    
+    const total = amounts.reduce((sum, amount) => sum + amount, 0)
+    
+    let scenario
+    if (numTerms === 2) {
+      const scenarios = [
+        {
+          question: `Sarah has $${amounts[0].toFixed(2)} and earns $${amounts[1].toFixed(2)} more.\\n\\nHow much money does she have now?`,
+          questionLaTeX: `\\text{Sarah has } \\$${amounts[0].toFixed(2)} \\text{ and earns } \\$${amounts[1].toFixed(2)} \\text{ more.} \\\\\\\\ \\text{How much money does she have now?}`,
+          type: 'earning'
+        },
+        {
+          question: `Tom bought a book for $${amounts[0].toFixed(2)} and a pen for $${amounts[1].toFixed(2)}.\\n\\nHow much did he spend in total?`,
+          questionLaTeX: `\\text{Tom bought a book for } \\$${amounts[0].toFixed(2)} \\text{ and a pen for } \\$${amounts[1].toFixed(2)}\\text{.} \\\\\\\\ \\text{How much did he spend in total?}`,
+          type: 'spending'
+        },
+        {
+          question: `A family budget includes $${amounts[0].toFixed(2)} for groceries and $${amounts[1].toFixed(2)} for utilities.\\n\\nWhat is the total for these expenses?`,
+          questionLaTeX: `\\text{A family budget includes } \\$${amounts[0].toFixed(2)} \\text{ for groceries and } \\$${amounts[1].toFixed(2)} \\text{ for utilities.} \\\\\\\\ \\text{What is the total for these expenses?}`,
+          type: 'budgeting'
+        }
+      ]
+      scenario = this.getRandomElement(scenarios)
+    } else {
+      // Multi-term scenarios
+      const items = ['groceries', 'utilities', 'rent', 'gas', 'entertainment', 'clothing', 'books', 'supplies']
+      const selectedItems = items.slice(0, numTerms)
+      const itemList = amounts.map((amount, i) => `$${amount.toFixed(2)} for ${selectedItems[i]}`).join(', ')
+      const itemListLaTeX = amounts.map((amount, i) => `\\$${amount.toFixed(2)} \\text{ for ${selectedItems[i]}}`).join(', ')
+      
+      scenario = {
+        question: `A family's monthly expenses include ${itemList}.\\n\\nWhat is the total for all these expenses?`,
+        questionLaTeX: `\\text{A family's monthly expenses include } ${itemListLaTeX}\\text{.} \\\\\\\\ \\text{What is the total for all these expenses?}`,
+        type: 'multiple-expenses'
       }
-    ]
-    
-    const scenario = this.getRandomElement(scenarios)
+    }
     
     const steps = []
     if (params.showSteps) {
-      steps.push(`\\$${amount1.toFixed(2)} + \\$${amount2.toFixed(2)}`)
+      steps.push(`${amounts.map(a => `\\$${a.toFixed(2)}`).join(' + ')}`)
       steps.push(`= \\$${total.toFixed(2)}`)
     } else {
       steps.push(`\\text{Total: } \\$${total.toFixed(2)}`)
@@ -366,7 +436,7 @@ export class MoneyOperationsGenerator extends BaseGenerator {
       metadata: {
         operation: 'money-addition-word',
         scenario: scenario.type,
-        amounts: [amount1, amount2],
+        amounts: amounts,
         result: total,
         difficulty: this.difficulty,
         estimatedTime: '60 seconds'
