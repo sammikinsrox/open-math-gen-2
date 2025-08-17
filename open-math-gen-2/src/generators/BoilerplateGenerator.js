@@ -31,7 +31,12 @@ export class BoilerplateGenerator extends BaseGenerator {
         maxValue: 100,
         allowNegatives: false,
         includeWordProblems: false,
-        allowDecimals: false
+        allowDecimals: false,
+        includeAddition: true,
+        includeSubtraction: true,
+        includeMultiplication: true,
+        includeDivision: true,
+        showSteps: true
       },
       
       // Parameter schema for validation and UI generation
@@ -74,6 +79,31 @@ export class BoilerplateGenerator extends BaseGenerator {
           type: 'boolean',
           label: 'Allow Decimals',
           description: 'Allow decimal values in problems'
+        },
+        includeAddition: {
+          type: 'boolean',
+          label: 'Include Addition',
+          description: 'Include addition problems'
+        },
+        includeSubtraction: {
+          type: 'boolean',
+          label: 'Include Subtraction',
+          description: 'Include subtraction problems'
+        },
+        includeMultiplication: {
+          type: 'boolean',
+          label: 'Include Multiplication',
+          description: 'Include multiplication problems'
+        },
+        includeDivision: {
+          type: 'boolean',
+          label: 'Include Division',
+          description: 'Include division problems'
+        },
+        showSteps: {
+          type: 'boolean',
+          label: 'Show Calculation Steps',
+          description: 'Show step-by-step calculations'
         }
       }
     })
@@ -93,11 +123,24 @@ export class BoilerplateGenerator extends BaseGenerator {
       throw new Error(`Invalid parameters: ${validation.errors.join(', ')}`)
     }
     
+    // Build array of enabled problem types
+    const enabledTypes = []
+    if (params.includeAddition) enabledTypes.push('addition')
+    if (params.includeSubtraction) enabledTypes.push('subtraction')
+    if (params.includeMultiplication) enabledTypes.push('multiplication')
+    if (params.includeDivision) enabledTypes.push('division')
+    
+    if (enabledTypes.length === 0) {
+      throw new Error('At least one operation type must be enabled')
+    }
+    
+    const problemType = this.getRandomElement(enabledTypes)
+    
     // Determine problem type
     if (params.includeWordProblems && Math.random() < 0.3) {
-      return this.generateWordProblem(params)
+      return this.generateWordProblem(problemType, params)
     } else {
-      return this.generateBasicProblem(params)
+      return this.generateBasicProblem(problemType, params)
     }
   }
 
@@ -106,45 +149,125 @@ export class BoilerplateGenerator extends BaseGenerator {
    * @param {Object} params - Generation parameters
    * @returns {Object} Problem object
    */
-  generateBasicProblem(params) {
+  generateBasicProblem(type, params) {
+    switch (type) {
+      case 'addition':
+        return this.generateAdditionProblem(params)
+      case 'subtraction':
+        return this.generateSubtractionProblem(params)
+      case 'multiplication':
+        return this.generateMultiplicationProblem(params)
+      case 'division':
+        return this.generateDivisionProblem(params)
+      default:
+        return this.generateAdditionProblem(params)
+    }
+  }
+  
+  generateAdditionProblem(params) {
     const num1 = this.generateValue(params)
     const num2 = this.generateValue(params)
-    const operations = ['+', '-', '×', '÷']
-    const operation = this.getRandomElement(operations)
+    const answer = num1 + num2
     
-    let answer
-    switch (operation) {
-      case '+':
-        answer = num1 + num2
-        break
-      case '-':
-        // Ensure positive result
-        answer = Math.abs(num1 - num2)
-        break
-      case '×':
-        answer = num1 * num2
-        break
-      case '÷':
-        // Ensure whole number result
-        answer = Math.floor(num1 / num2)
-        break
-      default:
-        answer = num1 + num2
+    const steps = []
+    if (params.showSteps) {
+      steps.push(`${num1} + ${num2} = ${answer}`)
     }
     
-    const steps = [
-      `${num1} ${operation} ${num2}`,
-      `= ${answer}`
-    ]
-    
     return {
-      question: `${num1} ${operation} ${num2} = ?`,
-      questionLaTeX: `${num1} ${operation === '×' ? '\\times' : operation === '÷' ? '\\div' : operation} ${num2} = \\square`,
+      question: `${num1} + ${num2} = ?`,
+      questionLaTeX: `${num1} + ${num2} = \\square`,
       answer: answer.toString(),
       answerLaTeX: answer.toString(),
       steps: steps,
       metadata: {
-        operation: operation,
+        operation: 'addition',
+        operands: [num1, num2],
+        result: answer,
+        difficulty: this.difficulty,
+        estimatedTime: '30 seconds'
+      }
+    }
+  }
+  
+  generateSubtractionProblem(params) {
+    let num1 = this.generateValue(params)
+    let num2 = this.generateValue(params)
+    
+    // Ensure positive result unless negatives are allowed
+    if (!params.allowNegatives && num2 > num1) {
+      [num1, num2] = [num2, num1]
+    }
+    
+    const answer = num1 - num2
+    
+    const steps = []
+    if (params.showSteps) {
+      steps.push(`${num1} - ${num2} = ${answer}`)
+    }
+    
+    return {
+      question: `${num1} - ${num2} = ?`,
+      questionLaTeX: `${num1} - ${num2} = \\square`,
+      answer: answer.toString(),
+      answerLaTeX: answer.toString(),
+      steps: steps,
+      metadata: {
+        operation: 'subtraction',
+        operands: [num1, num2],
+        result: answer,
+        difficulty: this.difficulty,
+        estimatedTime: '30 seconds'
+      }
+    }
+  }
+  
+  generateMultiplicationProblem(params) {
+    const num1 = this.generateValue(params)
+    const num2 = this.generateValue(params)
+    const answer = num1 * num2
+    
+    const steps = []
+    if (params.showSteps) {
+      steps.push(`${num1} \\times ${num2} = ${answer}`)
+    }
+    
+    return {
+      question: `${num1} × ${num2} = ?`,
+      questionLaTeX: `${num1} \\times ${num2} = \\square`,
+      answer: answer.toString(),
+      answerLaTeX: answer.toString(),
+      steps: steps,
+      metadata: {
+        operation: 'multiplication',
+        operands: [num1, num2],
+        result: answer,
+        difficulty: this.difficulty,
+        estimatedTime: '30 seconds'
+      }
+    }
+  }
+  
+  generateDivisionProblem(params) {
+    let num2 = this.generateValue(params)
+    if (num2 === 0) num2 = 1 // Avoid division by zero
+    
+    const answer = this.generateValue(params)
+    const num1 = answer * num2 // Ensure whole number result
+    
+    const steps = []
+    if (params.showSteps) {
+      steps.push(`${num1} \\div ${num2} = ${answer}`)
+    }
+    
+    return {
+      question: `${num1} ÷ ${num2} = ?`,
+      questionLaTeX: `${num1} \\div ${num2} = \\square`,
+      answer: answer.toString(),
+      answerLaTeX: answer.toString(),
+      steps: steps,
+      metadata: {
+        operation: 'division',
         operands: [num1, num2],
         result: answer,
         difficulty: this.difficulty,
@@ -158,51 +281,90 @@ export class BoilerplateGenerator extends BaseGenerator {
    * @param {Object} params - Generation parameters
    * @returns {Object} Problem object
    */
-  generateWordProblem(params) {
+  generateWordProblem(type, params) {
     const value1 = this.generateValue(params)
     const value2 = this.generateValue(params)
+    const names = ['Sarah', 'Mike', 'Emma', 'John', 'Lisa', 'Alex', 'Maria', 'David']
+    const name = this.getRandomElement(names)
     
-    const scenarios = [
-      {
-        question: `Sarah has ${value1} apples and buys ${value2} more apples.\\n\\nHow many apples does she have in total?`,
-        questionLaTeX: `\\text{Sarah has ${value1} apples and buys ${value2} more apples.} \\\\\\\\ \\text{How many apples does she have in total?}`,
-        answer: value1 + value2,
-        operation: 'addition'
-      },
-      {
-        question: `There are ${value1} students in a class and ${value2} students leave.\\n\\nHow many students remain?`,
-        questionLaTeX: `\\text{There are ${value1} students in a class and ${value2} students leave.} \\\\\\\\ \\text{How many students remain?}`,
-        answer: Math.abs(value1 - value2),
-        operation: 'subtraction'
-      },
-      {
-        question: `A box contains ${value1} items, and there are ${value2} such boxes.\\n\\nHow many items are there in total?`,
-        questionLaTeX: `\\text{A box contains ${value1} items, and there are ${value2} such boxes.} \\\\\\\\ \\text{How many items are there in total?}`,
-        answer: value1 * value2,
-        operation: 'multiplication'
-      }
-    ]
-    
+    const scenarios = this.getWordProblemScenarios(type, value1, value2, name, params)
     const scenario = this.getRandomElement(scenarios)
+    
+    const steps = []
+    if (params.showSteps) {
+      steps.push(`\\text{Given information from the problem}`)
+      steps.push(`\\text{Answer: } ${scenario.answer}`)
+    }
     
     return {
       question: scenario.question,
       questionLaTeX: scenario.questionLaTeX,
       answer: scenario.answer.toString(),
       answerLaTeX: scenario.answer.toString(),
-      steps: [
-        `\\text{Given information from the problem}`,
-        `\\text{Answer: } ${scenario.answer}`
-      ],
+      steps: steps,
       metadata: {
-        operation: `word-${scenario.operation}`,
-        scenario: 'word-problem',
+        operation: `word-${type}`,
+        scenario: scenario.type,
+        name: name,
         values: [value1, value2],
         result: scenario.answer,
         difficulty: this.difficulty,
         estimatedTime: '60 seconds'
       }
     }
+  }
+  
+  getWordProblemScenarios(type, value1, value2, name, params) {
+    const scenarios = []
+    
+    switch (type) {
+      case 'addition':
+        scenarios.push({
+          question: `${name} has ${value1} apples and buys ${value2} more apples.\\n\\nHow many apples does ${name} have in total?`,
+          questionLaTeX: `\\text{${name} has ${value1} apples and buys ${value2} more apples.} \\\\\\\\ \\text{How many apples does ${name} have in total?}`,
+          answer: value1 + value2,
+          type: 'shopping'
+        })
+        scenarios.push({
+          question: `There are ${value1} students in one classroom and ${value2} students in another.\\n\\nHow many students are there in total?`,
+          questionLaTeX: `\\text{There are ${value1} students in one classroom} \\\\\\\\ \\text{and ${value2} students in another.} \\\\\\\\ \\text{How many students are there in total?}`,
+          answer: value1 + value2,
+          type: 'counting'
+        })
+        break
+        
+      case 'subtraction':
+        const larger = Math.max(value1, value2)
+        const smaller = Math.min(value1, value2)
+        scenarios.push({
+          question: `${name} had ${larger} stickers and gave away ${smaller} stickers.\\n\\nHow many stickers does ${name} have left?`,
+          questionLaTeX: `\\text{${name} had ${larger} stickers and gave away ${smaller} stickers.} \\\\\\\\ \\text{How many stickers does ${name} have left?}`,
+          answer: larger - smaller,
+          type: 'giving-away'
+        })
+        break
+        
+      case 'multiplication':
+        scenarios.push({
+          question: `A box contains ${value1} items, and there are ${value2} such boxes.\\n\\nHow many items are there in total?`,
+          questionLaTeX: `\\text{A box contains ${value1} items,} \\\\\\\\ \\text{and there are ${value2} such boxes.} \\\\\\\\ \\text{How many items are there in total?}`,
+          answer: value1 * value2,
+          type: 'grouping'
+        })
+        break
+        
+      case 'division':
+        const total = value1 * value2
+        scenarios.push({
+          question: `${name} has ${total} candies and wants to share them equally among ${value2} friends.\\n\\nHow many candies will each friend get?`,
+          questionLaTeX: `\\text{${name} has ${total} candies and wants to share them} \\\\\\\\ \\text{equally among ${value2} friends.} \\\\\\\\ \\text{How many candies will each friend get?}`,
+          answer: value1,
+          type: 'sharing'
+        })
+        break
+    }
+    
+    return scenarios
   }
 
   /**

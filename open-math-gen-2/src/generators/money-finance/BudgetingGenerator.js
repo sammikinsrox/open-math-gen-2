@@ -189,7 +189,7 @@ export class BudgetingGenerator extends BaseGenerator {
       const expenseText = `\\$${e.amount.toFixed(2)} \\text{ on ${e.category}}`
       // Add line break after every second item (index 1, 3, 5, etc.)
       if ((index + 1) % 2 === 0 && index < expenses.length - 1) {
-        return expenseText + ', \\\\\\\\ '
+        return expenseText + ',} \\\\\\\\ \\text{'
       } else if (index < expenses.length - 1) {
         return expenseText + ', '
       } else {
@@ -264,7 +264,7 @@ export class BudgetingGenerator extends BaseGenerator {
     const remainingForExpenses = income - savingsAmount
     
     const questionText = `A person earns $${income.toFixed(2)} per month and wants to save ${savingsPercent}% of their income. How much money is left for expenses?`
-    const questionLaTeX = `\\text{A person earns } \\$${income.toFixed(2)} \\text{ per month and wants to save } ${savingsPercent}\\% \\text{ of their income. How much money is left for expenses?}`
+    const questionLaTeX = `\\text{A person earns } \\$${income.toFixed(2)} \\text{ per month} \\\\\\\\ \\text{and wants to save } ${savingsPercent}\\% \\text{ of their income.} \\\\\\\\ \\text{How much money is left for expenses?}`
     
     const steps = []
     if (params.showSteps) {
@@ -342,7 +342,7 @@ export class BudgetingGenerator extends BaseGenerator {
     const status = isDeficit ? 'deficit' : 'surplus'
     
     const questionText = `A budget has income of $${income.toFixed(2)} and expenses of $${totalExpenses.toFixed(2)}. Is this a surplus or deficit, and by how much?`
-    const questionLaTeX = `\\text{A budget has income of } \\$${income.toFixed(2)} \\text{ and expenses of } \\$${totalExpenses.toFixed(2)}\\text{. Is this a surplus or deficit, and by how much?}`
+    const questionLaTeX = `\\text{A budget has income of } \\$${income.toFixed(2)} \\text{ and expenses of } \\$${totalExpenses.toFixed(2)}\\text{.} \\\\\\\\ \\text{Is this a surplus or deficit, and by how much?}`
     
     const steps = []
     if (params.showSteps) {
@@ -444,7 +444,7 @@ export class BudgetingGenerator extends BaseGenerator {
           const expenseText = `\\$${e.amount.toFixed(2)} \\text{ on ${e.category}}`
           // Add line break after every second item (index 1, 3, 5, etc.)
           if ((index + 1) % 2 === 0 && index < expenses.length - 1) {
-            return expenseText + ', \\\\\\\\ '
+            return expenseText + ',} \\\\\\\\ \\text{'
           } else if (index < expenses.length - 1) {
             return expenseText + ', '
           } else {

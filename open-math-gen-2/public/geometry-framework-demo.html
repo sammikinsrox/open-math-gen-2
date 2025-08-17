@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GeometryRenderer Framework Demo</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f8f9fa;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            margin-bottom: 30px;
+            font-size: 1.2em;
+        }
+        
+        .controls {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        label {
+            font-weight: bold;
+            color: #495057;
+        }
+        
+        select, button {
+            padding: 8px 12px;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            background: white;
+            font-size: 14px;
+        }
+        
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        button:hover {
+            background: #0056b3;
+        }
+        
+        .demo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .demo-item {
+            background: #fff;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .demo-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #495057;
+            margin-bottom: 15px;
+        }
+        
+        .demo-description {
+            color: #6c757d;
+            margin-bottom: 15px;
+            font-size: 0.9em;
+        }
+        
+        .canvas-container {
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            background: #ffffff;
+            margin-bottom: 15px;
+        }
+        
+        .shape-info {
+            background: #f8f9fa;
+            border-radius: 4px;
+            padding: 10px;
+            text-align: left;
+            font-size: 0.85em;
+            color: #495057;
+        }
+        
+        .api-example {
+            background: #263238;
+            color: #a7ffeb;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            overflow-x: auto;
+        }
+        
+        .feature-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .feature-item {
+            background: #e8f4f8;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #17a2b8;
+        }
+        
+        .feature-title {
+            font-weight: bold;
+            color: #17a2b8;
+            margin-bottom: 5px;
+        }
+        
+        .theme-preview {
+            display: flex;
+            gap: 10px;
+            margin: 10px 0;
+            align-items: center;
+        }
+        
+        .theme-swatch {
+            width: 30px;
+            height: 30px;
+            border-radius: 4px;
+            border: 2px solid #dee2e6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>GeometryRenderer Framework</h1>
+        <p class="subtitle">A powerful D3-based framework for creating educational geometry diagrams</p>
+        
+        <div class="controls">
+            <div class="control-group">
+                <label for="theme-select">Theme:</label>
+                <select id="theme-select">
+                    <option value="educational">Educational</option>
+                    <option value="blueprint">Blueprint</option>
+                    <option value="dark">Dark Mode</option>
+                    <option value="minimal">Minimal</option>
+                    <option value="colorful">Colorful</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <button onclick="regenerateAll()">Regenerate All</button>
+                <button onclick="exportAllSVG()">Export SVG</button>
+            </div>
+        </div>
+        
+        <div class="demo-grid">
+            <div class="demo-item">
+                <div class="demo-title">Rectangle with Measurements</div>
+                <div class="demo-description">Rectangle with width, height, and diagonal measurements</div>
+                <div class="canvas-container">
+                    <div id="rectangle-demo"></div>
+                </div>
+                <div class="shape-info">
+                    <strong>Features:</strong> Width/height measurements, area calculation, perimeter display
+                </div>
+            </div>
+            
+            <div class="demo-item">
+                <div class="demo-title">Circle with Radius & Diameter</div>
+                <div class="demo-description">Circle showing radius, diameter, and center point</div>
+                <div class="canvas-container">
+                    <div id="circle-demo"></div>
+                </div>
+                <div class="shape-info">
+                    <strong>Features:</strong> Center point, radius measurement, diameter measurement, area display
+                </div>
+            </div>
+            
+            <div class="demo-item">
+                <div class="demo-title">Triangle with Height</div>
+                <div class="demo-description">Triangle with base, height, and side measurements</div>
+                <div class="canvas-container">
+                    <div id="triangle-demo"></div>
+                </div>
+                <div class="shape-info">
+                    <strong>Features:</strong> Base measurement, height line, side measurements, area calculation
+                </div>
+            </div>
+            
+            <div class="demo-item">
+                <div class="demo-title">Multiple Shapes</div>
+                <div class="demo-description">Multiple shapes with different measurements in one canvas</div>
+                <div class="canvas-container">
+                    <div id="multi-demo"></div>
+                </div>
+                <div class="shape-info">
+                    <strong>Features:</strong> Multiple shapes, coordinate system, varied measurements
+                </div>
+            </div>
+        </div>
+        
+        <div class="feature-list">
+            <div class="feature-item">
+                <div class="feature-title">Smart Measurements</div>
+                Automatic measurement line positioning with arrows, labels, and smart text rotation
+            </div>
+            <div class="feature-item">
+                <div class="feature-title">Multiple Themes</div>
+                5 built-in themes plus support for custom themes and real-time theme switching
+            </div>
+            <div class="feature-item">
+                <div class="feature-title">Shape Library</div>
+                Rectangles, circles, triangles with plans for polygons, arcs, and complex shapes
+            </div>
+            <div class="feature-item">
+                <div class="feature-title">Grid System</div>
+                Optional background grids with coordinate axes and snap-to-grid functionality
+            </div>
+            <div class="feature-item">
+                <div class="feature-title">SVG Export</div>
+                Export diagrams as SVG for use in worksheets, presentations, and documentation
+            </div>
+            <div class="feature-item">
+                <div class="feature-title">Math Integration</div>
+                Designed to integrate with math problem generators for automatic diagram creation
+            </div>
+        </div>
+        
+        <h2>API Example</h2>
+        <div class="api-example">// Create a renderer
+const renderer = new GeometryRenderer('#container', {
+  width: 400, 
+  height: 300,
+  theme: 'educational',
+  showGrid: true
+});
+
+// Create and add shapes
+const rect = new Rectangle(120, 80)
+  .center()
+  .addMeasurement('width', { side: 'bottom', offset: 25 })
+  .addMeasurement('height', { side: 'right', offset: 25 });
+
+const circle = new Circle(50)
+  .setPosition(100, 50)
+  .showCenter()
+  .addMeasurement('radius', { angle: 0 })
+  .addMeasurement('diameter', { angle: 90, offset: 30 });
+
+// Add to renderer and render
+renderer.add(rect).add(circle).render();</div>
+        
+        <h2>Integration with Math Generators</h2>
+        <p>This framework is designed to integrate seamlessly with the existing math problem generators. Each generator can create visual diagrams automatically:</p>
+        
+        <div class="api-example">// In a geometry generator
+generateProblem(parameters) {
+  const renderer = new GeometryRenderer('#diagram', {
+    width: 300, height: 200, theme: 'educational'
+  });
+  
+  const rect = Rectangle.square(parameters.sideLength)
+    .center()
+    .addMeasurement('width')
+    .addMeasurement('area');
+  
+  renderer.add(rect);
+  
+  return {
+    question: `What is the area of a square with side length ${parameters.sideLength}?`,
+    diagram: renderer.exportSVG(),
+    answer: rect.getArea()
+  };
+}</div>
+    </div>
+
+    <script type="module">
+        // Import the framework (this would normally be from npm or local modules)
+        // For demo purposes, we'll implement a simplified version inline
+        
+        class SimpleGeometryRenderer {
+            constructor(selector, options = {}) {
+                this.container = d3.select(selector);
+                this.options = {
+                    width: 350,
+                    height: 250,
+                    showGrid: true,
+                    theme: 'educational',
+                    ...options
+                };
+                this.shapes = [];
+                this.currentTheme = this.getTheme(this.options.theme);
+                this.init();
+            }
+            
+            getTheme(name) {
+                const themes = {
+                    educational: {
+                        background: '#ffffff',
+                        shape: { fill: 'rgba(52, 152, 219, 0.3)', stroke: '#2980b9', strokeWidth: 2 },
+                        measurement: { color: '#e74c3c', fontSize: '14px' },
+                        grid: { color: '#dee2e6', opacity: 0.5 }
+                    },
+                    blueprint: {
+                        background: '#1e3a8a',
+                        shape: { fill: 'rgba(255, 255, 255, 0.1)', stroke: '#ffffff', strokeWidth: 2 },
+                        measurement: { color: '#ffffff', fontSize: '12px' },
+                        grid: { color: 'rgba(255, 255, 255, 0.3)', opacity: 1 }
+                    },
+                    dark: {
+                        background: '#1a1a1a',
+                        shape: { fill: 'rgba(139, 69, 19, 0.3)', stroke: '#8b4513', strokeWidth: 2 },
+                        measurement: { color: '#ff6b6b', fontSize: '14px' },
+                        grid: { color: '#444444', opacity: 0.6 }
+                    },
+                    minimal: {
+                        background: '#ffffff',
+                        shape: { fill: 'none', stroke: '#333333', strokeWidth: 1.5 },
+                        measurement: { color: '#666666', fontSize: '12px' },
+                        grid: { color: '#f0f0f0', opacity: 1 }
+                    },
+                    colorful: {
+                        background: '#f8f9fa',
+                        shape: { fill: 'rgba(75, 192, 192, 0.4)', stroke: '#4bc0c0', strokeWidth: 3 },
+                        measurement: { color: '#ff6384', fontSize: '14px' },
+                        grid: { color: '#e0e0e0', opacity: 0.7 }
+                    }
+                };
+                return themes[name] || themes.educational;
+            }
+            
+            init() {
+                this.container.selectAll('*').remove();
+                
+                this.svg = this.container
+                    .append('svg')
+                    .attr('width', this.options.width)
+                    .attr('height', this.options.height)
+                    .style('background-color', this.currentTheme.background)
+                    .style('border', '1px solid #dee2e6')
+                    .style('border-radius', '4px');
+                
+                if (this.options.showGrid) {
+                    this.addGrid();
+                }
+                
+                this.shapeLayer = this.svg.append('g').attr('class', 'shapes');
+                this.measurementLayer = this.svg.append('g').attr('class', 'measurements');
+            }
+            
+            addGrid() {
+                const gridSize = 20;
+                for (let x = 0; x <= this.options.width; x += gridSize) {
+                    this.svg.append('line')
+                        .attr('x1', x).attr('y1', 0)
+                        .attr('x2', x).attr('y2', this.options.height)
+                        .attr('stroke', this.currentTheme.grid.color)
+                        .attr('stroke-width', 0.5)
+                        .attr('opacity', this.currentTheme.grid.opacity);
+                }
+                for (let y = 0; y <= this.options.height; y += gridSize) {
+                    this.svg.append('line')
+                        .attr('x1', 0).attr('y1', y)
+                        .attr('x2', this.options.width).attr('y2', y)
+                        .attr('stroke', this.currentTheme.grid.color)
+                        .attr('stroke-width', 0.5)
+                        .attr('opacity', this.currentTheme.grid.opacity);
+                }
+            }
+            
+            setTheme(themeName) {
+                this.currentTheme = this.getTheme(themeName);
+                this.init();
+                this.render();
+                return this;
+            }
+            
+            add(shape) {
+                this.shapes.push(shape);
+                shape.renderer = this;
+                return this;
+            }
+            
+            render() {
+                this.shapeLayer.selectAll('*').remove();
+                this.measurementLayer.selectAll('*').remove();
+                
+                this.shapes.forEach(shape => {
+                    shape.render(this.shapeLayer, this.measurementLayer, this.currentTheme);
+                });
+                return this;
+            }
+            
+            exportSVG() {
+                return new XMLSerializer().serializeToString(this.svg.node());
+            }
+        }
+        
+        // Simple shape classes for demo
+        class DemoRectangle {
+            constructor(width, height, x = 0, y = 0) {
+                this.width = width;
+                this.height = height;
+                this.x = x;
+                this.y = y;
+                this.measurements = [];
+            }
+            
+            center() {
+                this.x = (350 - this.width) / 2;
+                this.y = (250 - this.height) / 2;
+                return this;
+            }
+            
+            addMeasurement(type, options = {}) {
+                this.measurements.push({ type, options });
+                return this;
+            }
+            
+            render(shapeLayer, measurementLayer, theme) {
+                // Draw rectangle
+                shapeLayer.append('rect')
+                    .attr('x', this.x)
+                    .attr('y', this.y)
+                    .attr('width', this.width)
+                    .attr('height', this.height)
+                    .attr('fill', theme.shape.fill)
+                    .attr('stroke', theme.shape.stroke)
+                    .attr('stroke-width', theme.shape.strokeWidth);
+                
+                // Draw measurements
+                this.measurements.forEach(m => {
+                    if (m.type === 'width') {
+                        this.addMeasurementLine(measurementLayer, 
+                            this.x, this.y + this.height, 
+                            this.x + this.width, this.y + this.height,
+                            `${this.width} units`, 25, theme);
+                    } else if (m.type === 'height') {
+                        this.addMeasurementLine(measurementLayer,
+                            this.x + this.width, this.y,
+                            this.x + this.width, this.y + this.height,
+                            `${this.height} units`, 25, theme);
+                    }
+                });
+            }
+            
+            addMeasurementLine(layer, x1, y1, x2, y2, text, offset, theme) {
+                const length = Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
+                const unitX = (x2 - x1) / length;
+                const unitY = (y2 - y1) / length;
+                const perpX = -unitY * offset;
+                const perpY = unitX * offset;
+                
+                const dx1 = x1 + perpX, dy1 = y1 + perpY;
+                const dx2 = x2 + perpX, dy2 = y2 + perpY;
+                
+                // Extension lines
+                layer.append('line')
+                    .attr('x1', x1).attr('y1', y1)
+                    .attr('x2', dx1).attr('y2', dy1)
+                    .attr('stroke', theme.measurement.color)
+                    .attr('stroke-width', 1);
+                    
+                layer.append('line')
+                    .attr('x1', x2).attr('y1', y2)
+                    .attr('x2', dx2).attr('y2', dy2)
+                    .attr('stroke', theme.measurement.color)
+                    .attr('stroke-width', 1);
+                
+                // Main line
+                layer.append('line')
+                    .attr('x1', dx1).attr('y1', dy1)
+                    .attr('x2', dx2).attr('y2', dy2)
+                    .attr('stroke', theme.measurement.color)
+                    .attr('stroke-width', 2);
+                
+                // Arrows
+                const arrowSize = 6;
+                layer.append('polygon')
+                    .attr('points', `${dx1},${dy1} ${dx1 + arrowSize * unitX - arrowSize * perpY/offset},${dy1 + arrowSize * unitY + arrowSize * perpX/offset} ${dx1 + arrowSize * unitX + arrowSize * perpY/offset},${dy1 + arrowSize * unitY - arrowSize * perpX/offset}`)
+                    .attr('fill', theme.measurement.color);
+                    
+                layer.append('polygon')
+                    .attr('points', `${dx2},${dy2} ${dx2 - arrowSize * unitX - arrowSize * perpY/offset},${dy2 - arrowSize * unitY + arrowSize * perpX/offset} ${dx2 - arrowSize * unitX + arrowSize * perpY/offset},${dy2 - arrowSize * unitY - arrowSize * perpX/offset}`)
+                    .attr('fill', theme.measurement.color);
+                
+                // Text with proper offset from dimension line
+                const textX = (dx1 + dx2) / 2;
+                const textY = (dy1 + dy2) / 2;
+                const labelOffset = 20; // Consistent offset for all labels
+                
+                // Calculate the angle of the dimension line in degrees
+                let lineAngle = Math.atan2(dy2 - dy1, dx2 - dx1) * 180 / Math.PI;
+                
+                // Determine text positioning based on offset direction
+                let textOffsetDirection = offset > 0 ? 90 : 90; // Always position consistently
+                let textRotation = lineAngle;
+                
+                // Keep text right-side-up by flipping if it would be upside down
+                if (lineAngle > 90 || lineAngle < -90) {
+                    textRotation = lineAngle + 180;
+                    textOffsetDirection = -textOffsetDirection;
+                }
+                
+                // Calculate perpendicular direction for text offset
+                const perpAngle = (lineAngle + textOffsetDirection) * Math.PI / 180;
+                const offsetX = labelOffset * Math.cos(perpAngle);
+                const offsetY = labelOffset * Math.sin(perpAngle);
+                
+                // Position label offset from the dimension line
+                const finalTextX = textX + offsetX;
+                const finalTextY = textY + offsetY;
+                
+                layer.append('text')
+                    .attr('x', finalTextX)
+                    .attr('y', finalTextY)
+                    .attr('text-anchor', 'middle')
+                    .attr('dominant-baseline', 'middle')
+                    .attr('fill', theme.measurement.color)
+                    .attr('font-family', "'Courier New', monospace")
+                    .attr('font-size', theme.measurement.fontSize)
+                    .attr('font-weight', 'bold')
+                    .attr('transform', `rotate(${textRotation}, ${finalTextX}, ${finalTextY})`)
+                    .text(text);
+            }
+        }
+        
+        class DemoCircle {
+            constructor(radius, x = 0, y = 0) {
+                this.radius = radius;
+                this.x = x;
+                this.y = y;
+                this.measurements = [];
+                this.showCenterPoint = false;
+            }
+            
+            center() {
+                this.x = 350 / 2;
+                this.y = 250 / 2;
+                return this;
+            }
+            
+            showCenter() {
+                this.showCenterPoint = true;
+                return this;
+            }
+            
+            addMeasurement(type, options = {}) {
+                this.measurements.push({ type, options });
+                return this;
+            }
+            
+            render(shapeLayer, measurementLayer, theme) {
+                // Draw circle
+                shapeLayer.append('circle')
+                    .attr('cx', this.x)
+                    .attr('cy', this.y)
+                    .attr('r', this.radius)
+                    .attr('fill', theme.shape.fill)
+                    .attr('stroke', theme.shape.stroke)
+                    .attr('stroke-width', theme.shape.strokeWidth);
+                
+                // Center point
+                if (this.showCenterPoint) {
+                    shapeLayer.append('circle')
+                        .attr('cx', this.x)
+                        .attr('cy', this.y)
+                        .attr('r', 3)
+                        .attr('fill', theme.shape.stroke);
+                }
+                
+                // Measurements
+                this.measurements.forEach(m => {
+                    if (m.type === 'radius') {
+                        const angle = (m.options.angle || 0) * Math.PI / 180;
+                        const endX = this.x + this.radius * Math.cos(angle);
+                        const endY = this.y + this.radius * Math.sin(angle);
+                        
+                        measurementLayer.append('line')
+                            .attr('x1', this.x).attr('y1', this.y)
+                            .attr('x2', endX).attr('y2', endY)
+                            .attr('stroke', theme.shape.stroke)
+                            .attr('stroke-width', 2);
+                        
+                        this.addMeasurementLine(measurementLayer, this.x, this.y, endX, endY, `r = ${this.radius}`, 15, theme);
+                    }
+                    
+                    if (m.type === 'diameter') {
+                        const y = this.y + this.radius + 20;
+                        this.addMeasurementLine(measurementLayer, 
+                            this.x - this.radius, y, 
+                            this.x + this.radius, y,
+                            `d = ${this.radius * 2}`, 25, theme);
+                    }
+                });
+            }
+            
+            addMeasurementLine(layer, x1, y1, x2, y2, text, offset, theme) {
+                const length = Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
+                const unitX = (x2 - x1) / length;
+                const unitY = (y2 - y1) / length;
+                const perpX = -unitY * offset;
+                const perpY = unitX * offset;
+                
+                const dx1 = x1 + perpX, dy1 = y1 + perpY;
+                const dx2 = x2 + perpX, dy2 = y2 + perpY;
+                
+                // Extension lines
+                layer.append('line')
+                    .attr('x1', x1).attr('y1', y1)
+                    .attr('x2', dx1).attr('y2', dy1)
+                    .attr('stroke', theme.measurement.color)
+                    .attr('stroke-width', 1);
+                    
+                layer.append('line')
+                    .attr('x1', x2).attr('y1', y2)
+                    .attr('x2', dx2).attr('y2', dy2)
+                    .attr('stroke', theme.measurement.color)
+                    .attr('stroke-width', 1);
+                
+                // Main line
+                layer.append('line')
+                    .attr('x1', dx1).attr('y1', dy1)
+                    .attr('x2', dx2).attr('y2', dy2)
+                    .attr('stroke', theme.measurement.color)
+                    .attr('stroke-width', 2);
+                
+                // Arrows
+                const arrowSize = 6;
+                layer.append('polygon')
+                    .attr('points', `${dx1},${dy1} ${dx1 + arrowSize * unitX - arrowSize * perpY/offset},${dy1 + arrowSize * unitY + arrowSize * perpX/offset} ${dx1 + arrowSize * unitX + arrowSize * perpY/offset},${dy1 + arrowSize * unitY - arrowSize * perpX/offset}`)
+                    .attr('fill', theme.measurement.color);
+                    
+                layer.append('polygon')
+                    .attr('points', `${dx2},${dy2} ${dx2 - arrowSize * unitX - arrowSize * perpY/offset},${dy2 - arrowSize * unitY + arrowSize * perpX/offset} ${dx2 - arrowSize * unitX + arrowSize * perpY/offset},${dy2 - arrowSize * unitY - arrowSize * perpX/offset}`)
+                    .attr('fill', theme.measurement.color);
+                
+                // Text with proper offset from dimension line
+                const textX = (dx1 + dx2) / 2;
+                const textY = (dy1 + dy2) / 2;
+                const labelOffset = 20; // Consistent offset for all labels
+                
+                // Calculate the angle of the dimension line in degrees
+                let lineAngle = Math.atan2(dy2 - dy1, dx2 - dx1) * 180 / Math.PI;
+                
+                // Determine text positioning based on offset direction
+                let textOffsetDirection = offset > 0 ? 90 : 90; // Always position consistently
+                let textRotation = lineAngle;
+                
+                // Keep text right-side-up by flipping if it would be upside down
+                if (lineAngle > 90 || lineAngle < -90) {
+                    textRotation = lineAngle + 180;
+                    textOffsetDirection = -textOffsetDirection;
+                }
+                
+                // Calculate perpendicular direction for text offset
+                const perpAngle = (lineAngle + textOffsetDirection) * Math.PI / 180;
+                const offsetX = labelOffset * Math.cos(perpAngle);
+                const offsetY = labelOffset * Math.sin(perpAngle);
+                
+                // Position label offset from the dimension line
+                const finalTextX = textX + offsetX;
+                const finalTextY = textY + offsetY;
+                
+                layer.append('text')
+                    .attr('x', finalTextX)
+                    .attr('y', finalTextY)
+                    .attr('text-anchor', 'middle')
+                    .attr('dominant-baseline', 'middle')
+                    .attr('fill', theme.measurement.color)
+                    .attr('font-family', "'Courier New', monospace")
+                    .attr('font-size', theme.measurement.fontSize)
+                    .attr('font-weight', 'bold')
+                    .attr('transform', `rotate(${textRotation}, ${finalTextX}, ${finalTextY})`)
+                    .text(text);
+            }
+        }
+        
+        class DemoTriangle {
+            constructor(base, height, x = 0, y = 0) {
+                this.base = base;
+                this.height = height;
+                this.x = x;
+                this.y = y;
+                this.measurements = [];
+                this.showHeightLine = false;
+            }
+            
+            center() {
+                this.x = (350 - this.base) / 2;
+                this.y = (250 + this.height) / 2;
+                return this;
+            }
+            
+            showHeight() {
+                this.showHeightLine = true;
+                return this;
+            }
+            
+            addMeasurement(type, options = {}) {
+                this.measurements.push({ type, options });
+                return this;
+            }
+            
+            render(shapeLayer, measurementLayer, theme) {
+                const x1 = this.x;
+                const y1 = this.y;
+                const x2 = this.x + this.base;
+                const y2 = this.y;
+                const x3 = this.x + this.base / 2;
+                const y3 = this.y - this.height;
+                
+                // Draw triangle
+                shapeLayer.append('polygon')
+                    .attr('points', `${x1},${y1} ${x2},${y2} ${x3},${y3}`)
+                    .attr('fill', theme.shape.fill)
+                    .attr('stroke', theme.shape.stroke)
+                    .attr('stroke-width', theme.shape.strokeWidth);
+                
+                // Height line
+                if (this.showHeightLine) {
+                    shapeLayer.append('line')
+                        .attr('x1', x3).attr('y1', y3)
+                        .attr('x2', x3).attr('y2', y1)
+                        .attr('stroke', theme.shape.stroke)
+                        .attr('stroke-width', 2)
+                        .attr('stroke-dasharray', '5,5');
+                }
+                
+                // Measurements
+                this.measurements.forEach(m => {
+                    if (m.type === 'base') {
+                        this.addMeasurementLine(measurementLayer, 
+                            x1, y1, 
+                            x2, y2,
+                            `${this.base} units`, 25, theme);
+                    }
+                    
+                    if (m.type === 'height') {
+                        this.addMeasurementLine(measurementLayer,
+                            x3, y3,
+                            x3, y1,
+                            `${this.height} units`, 25, theme);
+                    }
+                });
+            }
+            
+            addMeasurementLine(layer, x1, y1, x2, y2, text, offset, theme) {
+                const length = Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
+                const unitX = (x2 - x1) / length;
+                const unitY = (y2 - y1) / length;
+                const perpX = -unitY * offset;
+                const perpY = unitX * offset;
+                
+                const dx1 = x1 + perpX, dy1 = y1 + perpY;
+                const dx2 = x2 + perpX, dy2 = y2 + perpY;
+                
+                // Extension lines
+                layer.append('line')
+                    .attr('x1', x1).attr('y1', y1)
+                    .attr('x2', dx1).attr('y2', dy1)
+                    .attr('stroke', theme.measurement.color)
+                    .attr('stroke-width', 1);
+                    
+                layer.append('line')
+                    .attr('x1', x2).attr('y1', y2)
+                    .attr('x2', dx2).attr('y2', dy2)
+                    .attr('stroke', theme.measurement.color)
+                    .attr('stroke-width', 1);
+                
+                // Main line
+                layer.append('line')
+                    .attr('x1', dx1).attr('y1', dy1)
+                    .attr('x2', dx2).attr('y2', dy2)
+                    .attr('stroke', theme.measurement.color)
+                    .attr('stroke-width', 2);
+                
+                // Arrows
+                const arrowSize = 6;
+                layer.append('polygon')
+                    .attr('points', `${dx1},${dy1} ${dx1 + arrowSize * unitX - arrowSize * perpY/offset},${dy1 + arrowSize * unitY + arrowSize * perpX/offset} ${dx1 + arrowSize * unitX + arrowSize * perpY/offset},${dy1 + arrowSize * unitY - arrowSize * perpX/offset}`)
+                    .attr('fill', theme.measurement.color);
+                    
+                layer.append('polygon')
+                    .attr('points', `${dx2},${dy2} ${dx2 - arrowSize * unitX - arrowSize * perpY/offset},${dy2 - arrowSize * unitY + arrowSize * perpX/offset} ${dx2 - arrowSize * unitX + arrowSize * perpY/offset},${dy2 - arrowSize * unitY - arrowSize * perpX/offset}`)
+                    .attr('fill', theme.measurement.color);
+                
+                // Text with proper offset from dimension line
+                const textX = (dx1 + dx2) / 2;
+                const textY = (dy1 + dy2) / 2;
+                const labelOffset = 20; // Consistent offset for all labels
+                
+                // Calculate the angle of the dimension line in degrees
+                let lineAngle = Math.atan2(dy2 - dy1, dx2 - dx1) * 180 / Math.PI;
+                
+                // Determine text positioning based on offset direction
+                let textOffsetDirection = offset > 0 ? 90 : 90; // Always position consistently
+                let textRotation = lineAngle;
+                
+                // Keep text right-side-up by flipping if it would be upside down
+                if (lineAngle > 90 || lineAngle < -90) {
+                    textRotation = lineAngle + 180;
+                    textOffsetDirection = -textOffsetDirection;
+                }
+                
+                // Calculate perpendicular direction for text offset
+                const perpAngle = (lineAngle + textOffsetDirection) * Math.PI / 180;
+                const offsetX = labelOffset * Math.cos(perpAngle);
+                const offsetY = labelOffset * Math.sin(perpAngle);
+                
+                // Position label offset from the dimension line
+                const finalTextX = textX + offsetX;
+                const finalTextY = textY + offsetY;
+                
+                layer.append('text')
+                    .attr('x', finalTextX)
+                    .attr('y', finalTextY)
+                    .attr('text-anchor', 'middle')
+                    .attr('dominant-baseline', 'middle')
+                    .attr('fill', theme.measurement.color)
+                    .attr('font-family', "'Courier New', monospace")
+                    .attr('font-size', theme.measurement.fontSize)
+                    .attr('font-weight', 'bold')
+                    .attr('transform', `rotate(${textRotation}, ${finalTextX}, ${finalTextY})`)
+                    .text(text);
+            }
+        }
+        
+        // Global renderers
+        let renderers = {};
+        
+        function createDemos() {
+            // Rectangle demo
+            renderers.rectangle = new SimpleGeometryRenderer('#rectangle-demo');
+            const rect = new DemoRectangle(120, 80).center()
+                .addMeasurement('width')
+                .addMeasurement('height');
+            renderers.rectangle.add(rect).render();
+            
+            // Circle demo
+            renderers.circle = new SimpleGeometryRenderer('#circle-demo');
+            const circle = new DemoCircle(60).center().showCenter()
+                .addMeasurement('radius', { angle: 0 })
+                .addMeasurement('diameter');
+            renderers.circle.add(circle).render();
+            
+            // Triangle demo
+            renderers.triangle = new SimpleGeometryRenderer('#triangle-demo');
+            const triangle = new DemoTriangle(100, 87).center().showHeight()
+                .addMeasurement('base')
+                .addMeasurement('height');
+            renderers.triangle.add(triangle).render();
+            
+            // Multi-shape demo
+            renderers.multi = new SimpleGeometryRenderer('#multi-demo');
+            const smallRect = new DemoRectangle(60, 40, 50, 50)
+                .addMeasurement('width');
+            const smallCircle = new DemoCircle(30, 250, 100)
+                .addMeasurement('radius', { angle: 45 });
+            const smallTriangle = new DemoTriangle(50, 43, 150, 150)
+                .addMeasurement('base');
+            
+            renderers.multi.add(smallRect).add(smallCircle).add(smallTriangle).render();
+        }
+        
+        // Global functions for controls
+        window.regenerateAll = function() {
+            createDemos();
+        };
+        
+        window.exportAllSVG = function() {
+            Object.keys(renderers).forEach(key => {
+                const svg = renderers[key].exportSVG();
+                const blob = new Blob([svg], { type: 'image/svg+xml' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `${key}-demo.svg`;
+                a.click();
+                URL.revokeObjectURL(url);
+            });
+        };
+        
+        // Theme selector
+        document.getElementById('theme-select').addEventListener('change', function() {
+            const theme = this.value;
+            Object.values(renderers).forEach(renderer => {
+                renderer.setTheme(theme);
+            });
+        });
+        
+        // Initialize demos
+        createDemos();
+    </script>
+</body>
+</html>
