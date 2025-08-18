@@ -1,4 +1,5 @@
 import { BaseGenerator } from '../BaseGenerator.js'
+import { ParameterSchemaV2 } from '../ParameterSchemaV2.js'
 
 /**
  * Properties Generator
@@ -8,6 +9,8 @@ import { BaseGenerator } from '../BaseGenerator.js'
  */
 export class PropertiesGenerator extends BaseGenerator {
   constructor() {
+    const schemaV2 = new ParameterSchemaV2()
+    
     super({
       name: 'Properties & Classification',
       description: 'Geometric properties, shape classification, and attribute identification with visual diagrams',
@@ -44,108 +47,344 @@ export class PropertiesGenerator extends BaseGenerator {
         complexityLevel: 'basic'
       },
       
-      // Parameter schema for validation and UI generation
-      parameterSchema: {
-        problemCount: {
-          type: 'number',
-          label: 'Number of Problems',
-          description: 'How many problems to generate',
-          min: 1,
-          max: 50,
-          required: true
+      // Enhanced Parameter Schema V2 with beautiful categorization
+      parameterSchema: schemaV2.createSchema({
+        categories: {
+          general: schemaV2.createCategory({
+            id: 'general',
+            label: 'General Settings',
+            description: 'Basic configuration options',
+            icon: 'settings',
+            color: 'blue',
+            order: 1,
+            parameters: {
+              problemCount: schemaV2.createParameter({
+                type: 'number',
+                label: 'Number of Problems',
+                description: 'How many problems to generate for this problem set',
+                min: 1,
+                max: 50,
+                required: true,
+                slider: true,
+                presets: [5, 10, 15, 20],
+                order: 1
+              }),
+              complexityLevel: schemaV2.createParameter({
+                type: 'select',
+                label: 'Complexity Level',
+                description: 'Determines which shapes and properties are included',
+                variant: 'cards',
+                options: [
+                  { 
+                    value: 'basic', 
+                    label: 'Basic',
+                    description: 'Common shapes (triangle, square, circle, etc.)'
+                  },
+                  { 
+                    value: 'intermediate', 
+                    label: 'Intermediate',
+                    description: 'Includes rhombus, parallelogram, octagon'
+                  },
+                  { 
+                    value: 'advanced', 
+                    label: 'Advanced',
+                    description: 'Complex polygons (decagon, dodecagon)'
+                  }
+                ],
+                order: 2
+              })
+            }
+          }),
+          
+          problemTypes: schemaV2.createCategory({
+            id: 'problemTypes',
+            label: 'Problem Types',
+            description: 'Choose which types of problems to include',
+            icon: 'quiz',
+            color: 'green',
+            order: 2,
+            parameters: {
+              includeShapeClassification: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Shape Classification',
+                description: 'Identify and classify geometric shapes',
+                helpText: 'What type of shape is this?',
+                order: 1
+              }),
+              includePropertyIdentification: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Property Identification',
+                description: 'Count specific properties of shapes',
+                helpText: 'How many sides/angles/vertices does this shape have?',
+                order: 2
+              }),
+              includeComparison: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Shape Comparison',
+                description: 'Compare properties between different shapes',
+                helpText: 'Which shape has more sides?',
+                order: 3
+              }),
+              includePolygonTypes: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Polygon Naming',
+                description: 'Name polygons by their number of sides',
+                helpText: 'What is a 5-sided polygon called?',
+                order: 4
+              }),
+              includeAngleProperties: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Angle Properties',
+                description: 'Questions about angles in shapes',
+                helpText: 'Sum of interior angles, angle counting',
+                order: 5
+              }),
+              includeSideProperties: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Side Properties',
+                description: 'Questions about sides of shapes',
+                helpText: 'Side counting and relationships',
+                order: 6
+              })
+            }
+          }),
+          
+          advancedTypes: schemaV2.createCategory({
+            id: 'advancedTypes',
+            label: 'Advanced Problem Types',
+            description: 'More challenging classification problems',
+            icon: 'school',
+            color: 'purple',
+            order: 3,
+            expanded: false,
+            parameters: {
+              includeQuadrilaterals: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Quadrilateral Classification',
+                description: 'Classify specific types of quadrilaterals',
+                helpText: 'Square, rectangle, rhombus, parallelogram, trapezoid',
+                order: 1
+              }),
+              includeTriangleTypes: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Triangle Classification',
+                description: 'Classify triangles by sides and angles',
+                helpText: 'Equilateral, isosceles, scalene, right triangles',
+                order: 2
+              }),
+              includeRegularIrregular: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Regular vs Irregular',
+                description: 'Distinguish between regular and irregular polygons',
+                helpText: 'All sides and angles equal vs. not equal',
+                order: 3
+              }),
+              includeConvexConcave: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Convex vs Concave',
+                description: 'Identify convex and concave polygons',
+                helpText: 'All interior angles < 180° vs. some > 180°',
+                order: 4
+              })
+            }
+          }),
+          
+          presentation: schemaV2.createCategory({
+            id: 'presentation',
+            label: 'Presentation & Format',
+            description: 'Control how problems are displayed',
+            icon: 'palette',
+            color: 'orange',
+            order: 4,
+            parameters: {
+              showVisualDiagrams: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Visual Diagrams',
+                description: 'Include geometric diagrams with problems',
+                helpText: 'Highly recommended for better understanding',
+                order: 1
+              }),
+              includeMultipleChoice: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Multiple Choice Format',
+                description: 'Present some problems as multiple choice',
+                helpText: 'Easier for younger students',
+                order: 2
+              })
+            }
+          }),
+          
+          diagrams: schemaV2.createCategory({
+            id: 'diagrams',
+            label: 'Diagram Settings',
+            description: 'Customize the appearance of diagrams',
+            icon: 'image',
+            color: 'gray',
+            order: 5,
+            expanded: false,
+            parameters: {
+              diagramSize: schemaV2.createParameter({
+                type: 'select',
+                label: 'Diagram Size',
+                description: 'Size of the geometric diagrams',
+                variant: 'radio',
+                options: [
+                  { value: 'small', label: 'Small (200px)' },
+                  { value: 'medium', label: 'Medium (300px)' },
+                  { value: 'large', label: 'Large (400px)' }
+                ],
+                dependsOn: [{
+                  parameter: 'showVisualDiagrams',
+                  type: 'equals',
+                  value: true
+                }],
+                order: 1
+              }),
+              diagramTheme: schemaV2.createParameter({
+                type: 'select',
+                label: 'Diagram Theme',
+                description: 'Visual style for diagrams',
+                variant: 'cards',
+                options: [
+                  { 
+                    value: 'educational', 
+                    label: 'Educational',
+                    description: 'Clean and clear for learning'
+                  },
+                  { 
+                    value: 'colorful', 
+                    label: 'Colorful',
+                    description: 'Bright and engaging colors'
+                  },
+                  { 
+                    value: 'minimal', 
+                    label: 'Minimal',
+                    description: 'Simple black and white'
+                  },
+                  { 
+                    value: 'blueprint', 
+                    label: 'Blueprint',
+                    description: 'Technical blueprint style'
+                  }
+                ],
+                dependsOn: [{
+                  parameter: 'showVisualDiagrams',
+                  type: 'equals',
+                  value: true
+                }],
+                order: 2
+              })
+            }
+          })
         },
-        includeShapeClassification: {
-          type: 'boolean',
-          label: 'Shape Classification',
-          description: 'Classify shapes by their properties'
-        },
-        includePropertyIdentification: {
-          type: 'boolean',
-          label: 'Property Identification',
-          description: 'Identify specific properties of shapes'
-        },
-        includeComparison: {
-          type: 'boolean',
-          label: 'Shape Comparison',
-          description: 'Compare properties between shapes'
-        },
-        includePolygonTypes: {
-          type: 'boolean',
-          label: 'Polygon Types',
-          description: 'Classify polygons by number of sides'
-        },
-        includeAngleProperties: {
-          type: 'boolean',
-          label: 'Angle Properties',
-          description: 'Properties related to angles in shapes'
-        },
-        includeSideProperties: {
-          type: 'boolean',
-          label: 'Side Properties',
-          description: 'Properties related to sides of shapes'
-        },
-        includeRegularIrregular: {
-          type: 'boolean',
-          label: 'Regular vs Irregular',
-          description: 'Distinguish between regular and irregular polygons'
-        },
-        includeConvexConcave: {
-          type: 'boolean',
-          label: 'Convex vs Concave',
-          description: 'Distinguish between convex and concave polygons'
-        },
-        includeQuadrilaterals: {
-          type: 'boolean',
-          label: 'Quadrilateral Types',
-          description: 'Classification of quadrilaterals'
-        },
-        includeTriangleTypes: {
-          type: 'boolean',
-          label: 'Triangle Types',
-          description: 'Classification of triangles'
-        },
-        includeMultipleChoice: {
-          type: 'boolean',
-          label: 'Multiple Choice Format',
-          description: 'Present some problems as multiple choice'
-        },
-        showVisualDiagrams: {
-          type: 'boolean',
-          label: 'Show Visual Diagrams',
-          description: 'Include geometric diagrams'
-        },
-        diagramSize: {
-          type: 'select',
-          label: 'Diagram Size',
-          description: 'Size of the geometric diagrams',
-          options: [
-            { value: 'small', label: 'Small' },
-            { value: 'medium', label: 'Medium' },
-            { value: 'large', label: 'Large' }
-          ]
-        },
-        diagramTheme: {
-          type: 'select',
-          label: 'Diagram Theme',
-          description: 'Visual style for diagrams',
-          options: [
-            { value: 'educational', label: 'Educational' },
-            { value: 'blueprint', label: 'Blueprint' },
-            { value: 'minimal', label: 'Minimal' },
-            { value: 'colorful', label: 'Colorful' }
-          ]
-        },
-        complexityLevel: {
-          type: 'select',
-          label: 'Complexity Level',
-          description: 'Complexity of properties and classification',
-          options: [
-            { value: 'basic', label: 'Basic (common shapes)' },
-            { value: 'intermediate', label: 'Intermediate (more properties)' },
-            { value: 'advanced', label: 'Advanced (complex classification)' }
-          ]
-        }
-      }
+        
+        // Preset configurations for quick setup
+        presets: [
+          schemaV2.createPreset({
+            id: 'beginner',
+            label: 'Beginner Friendly',
+            description: 'Simple shape identification for younger students',
+            icon: 'child_care',
+            category: 'difficulty',
+            values: {
+              problemCount: 10,
+              complexityLevel: 'basic',
+              includeShapeClassification: true,
+              includePropertyIdentification: true,
+              includeComparison: false,
+              includePolygonTypes: true,
+              includeAngleProperties: false,
+              includeSideProperties: true,
+              includeQuadrilaterals: false,
+              includeTriangleTypes: false,
+              includeRegularIrregular: false,
+              includeConvexConcave: false,
+              showVisualDiagrams: true,
+              includeMultipleChoice: false,
+              diagramSize: 'large',
+              diagramTheme: 'colorful'
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'comprehensive',
+            label: 'Comprehensive Review',
+            description: 'All problem types for thorough practice',
+            icon: 'quiz',
+            category: 'scope',
+            values: {
+              problemCount: 20,
+              complexityLevel: 'intermediate',
+              includeShapeClassification: true,
+              includePropertyIdentification: true,
+              includeComparison: true,
+              includePolygonTypes: true,
+              includeAngleProperties: true,
+              includeSideProperties: true,
+              includeQuadrilaterals: true,
+              includeTriangleTypes: true,
+              includeRegularIrregular: false,
+              includeConvexConcave: false,
+              showVisualDiagrams: true,
+              includeMultipleChoice: false,
+              diagramSize: 'medium',
+              diagramTheme: 'educational'
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'advanced',
+            label: 'Advanced Challenge',
+            description: 'Complex shapes and properties for advanced students',
+            icon: 'school',
+            category: 'difficulty',
+            values: {
+              problemCount: 15,
+              complexityLevel: 'advanced',
+              includeShapeClassification: true,
+              includePropertyIdentification: true,
+              includeComparison: true,
+              includePolygonTypes: true,
+              includeAngleProperties: true,
+              includeSideProperties: true,
+              includeQuadrilaterals: true,
+              includeTriangleTypes: true,
+              includeRegularIrregular: true,
+              includeConvexConcave: true,
+              showVisualDiagrams: true,
+              includeMultipleChoice: false,
+              diagramSize: 'medium',
+              diagramTheme: 'minimal'
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'visual-focus',
+            label: 'Visual Learning',
+            description: 'Emphasis on diagrams and visual identification',
+            icon: 'visibility',
+            category: 'style',
+            values: {
+              problemCount: 12,
+              complexityLevel: 'basic',
+              includeShapeClassification: true,
+              includePropertyIdentification: false,
+              includeComparison: true,
+              includePolygonTypes: true,
+              includeAngleProperties: false,
+              includeSideProperties: false,
+              includeQuadrilaterals: true,
+              includeTriangleTypes: true,
+              includeRegularIrregular: false,
+              includeConvexConcave: false,
+              showVisualDiagrams: true,
+              includeMultipleChoice: false,
+              diagramSize: 'large',
+              diagramTheme: 'colorful'
+            }
+          })
+        ]
+      })
     })
   }
 

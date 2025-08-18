@@ -154,9 +154,20 @@ export class BaseGenerator {
    * @returns {Object} Parameter options for form generation
    */
   getParameterOptions() {
+    // Check if this is the new Schema V2 format
+    if (this.parameterSchema && typeof this.parameterSchema === 'object' && this.parameterSchema.version === 2) {
+      return this.parameterSchema
+    }
+    
+    // Legacy Schema V1 format
     const options = {}
     
-    for (const [key, schema] of Object.entries(this.parameterSchema)) {
+    for (const [key, schema] of Object.entries(this.parameterSchema || {})) {
+      // Skip Schema V2 properties
+      if (key === 'version' || key === 'categories' || typeof schema === 'function') {
+        continue
+      }
+      
       options[key] = {
         label: schema.label || key,
         description: schema.description || '',

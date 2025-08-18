@@ -2,6 +2,7 @@
 import { ref, computed, watch } from 'vue'
 import MathExpression from './MathExpression.vue'
 import GeometryDiagram from './GeometryDiagram.vue'
+import ParameterConfigV2 from './ParameterConfigV2.vue'
 
 const props = defineProps({
   generator: {
@@ -18,6 +19,7 @@ const emit = defineEmits(['add-problem-set', 'cancel'])
 
 const generatorInfo = computed(() => props.generator.getInfo())
 const parameterOptions = computed(() => props.generator.getParameterOptions())
+const isSchemaV2 = computed(() => parameterOptions.value?.version === 2)
 const parameters = ref(
   props.editingProblemSet 
     ? { ...props.editingProblemSet.parameters }
@@ -25,6 +27,7 @@ const parameters = ref(
 )
 const previewProblems = ref([])
 const isGeneratingPreview = ref(false)
+const validationResult = ref({ isValid: true, errors: [], warnings: [] })
 
 // Generate preview problems when parameters change
 watch(parameters, generatePreview, { deep: true, immediate: true })
@@ -45,14 +48,25 @@ async function generatePreview() {
 }
 
 const addProblemSet = () => {
-  // Validate parameters
-  const validation = props.generator.validateParameters(parameters.value)
+  // Validate parameters (use V2 validation if available)
+  let validation
+  if (isSchemaV2.value) {
+    validation = validationResult.value
+  } else {
+    validation = props.generator.validateParameters(parameters.value)
+  }
+  
   if (!validation.isValid) {
     alert(`Invalid parameters: ${validation.errors.join(', ')}`)
     return
   }
   
   emit('add-problem-set', props.generator, parameters.value)
+}
+
+// Handle validation changes from V2 schema
+const handleValidationChange = (validation) => {
+  validationResult.value = validation
 }
 
 const cancel = () => {
@@ -144,11 +158,30 @@ const shouldShowParameter = (paramKey) => {
       </div>
     </div>
 
+    <!-- Debug Info (remove this later) -->
+    <div class="mb-4 p-3 bg-red-900/20 border border-red-500/30 rounded-lg">
+      <h4 class="text-red-300 font-medium mb-2">Debug Info</h4>
+      <p class="text-xs text-red-200">Schema V2 detected: {{ isSchemaV2 }}</p>
+      <p class="text-xs text-red-200">Parameter options version: {{ parameterOptions?.version }}</p>
+      <p class="text-xs text-red-200">Has categories: {{ !!parameterOptions?.categories }}</p>
+      <p class="text-xs text-red-200">Generator name: {{ generatorInfo?.name }}</p>
+    </div>
+
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
       
       <!-- Configuration Panel -->
       <div class="space-y-6">
-        <div class="bg-slate-800/30 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-6">
+        <!-- Enhanced Parameter Schema V2 -->
+        <div v-if="isSchemaV2" class="bg-slate-800/30 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-6">
+          <ParameterConfigV2 
+            :schema="parameterOptions"
+            v-model="parameters"
+            @validation-change="handleValidationChange"
+          />
+        </div>
+        
+        <!-- Legacy Parameter Schema V1 -->
+        <div v-else class="bg-slate-800/30 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-6">
           <h3 class="text-xl font-semibold text-white mb-6">Parameters</h3>
           
           <div class="space-y-6">
