@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, nextTick } from 'vue'
 import MathExpression from './MathExpression.vue'
 import GeometryDiagram from './GeometryDiagram.vue'
 import ParameterConfigV2 from './ParameterConfigV2.vue'
@@ -28,9 +28,21 @@ const parameters = ref(
 const previewProblems = ref([])
 const isGeneratingPreview = ref(false)
 const validationResult = ref({ isValid: true, errors: [], warnings: [] })
+let previewTimeout = null
+let isUpdatingFromV2 = false
+
+// Debounced preview generation for better performance
+const schedulePreviewUpdate = () => {
+  if (isUpdatingFromV2) return // Prevent loops from V2 updates
+  
+  if (previewTimeout) {
+    clearTimeout(previewTimeout)
+  }
+  previewTimeout = setTimeout(generatePreview, 300) // 300ms debounce
+}
 
 // Generate preview problems when parameters change
-watch(parameters, generatePreview, { deep: true, immediate: true })
+watch(parameters, schedulePreviewUpdate, { deep: true, immediate: true })
 
 async function generatePreview() {
   if (isGeneratingPreview.value) return
@@ -67,6 +79,25 @@ const addProblemSet = () => {
 // Handle validation changes from V2 schema
 const handleValidationChange = (validation) => {
   validationResult.value = validation
+}
+
+// Handle parameter changes from V2 component
+const handleParameterChange = (newParams) => {
+  isUpdatingFromV2 = true
+  
+  // Only update if values actually changed to prevent unnecessary updates
+  const hasChanges = Object.keys(newParams).some(key => 
+    parameters.value[key] !== newParams[key]
+  )
+  
+  if (hasChanges) {
+    Object.assign(parameters.value, newParams)
+  }
+  
+  // Reset flag after Vue's next tick to allow the update to complete
+  nextTick(() => {
+    isUpdatingFromV2 = false
+  })
 }
 
 const cancel = () => {
@@ -158,14 +189,6 @@ const shouldShowParameter = (paramKey) => {
       </div>
     </div>
 
-    <!-- Debug Info (remove this later) -->
-    <div class="mb-4 p-3 bg-red-900/20 border border-red-500/30 rounded-lg">
-      <h4 class="text-red-300 font-medium mb-2">Debug Info</h4>
-      <p class="text-xs text-red-200">Schema V2 detected: {{ isSchemaV2 }}</p>
-      <p class="text-xs text-red-200">Parameter options version: {{ parameterOptions?.version }}</p>
-      <p class="text-xs text-red-200">Has categories: {{ !!parameterOptions?.categories }}</p>
-      <p class="text-xs text-red-200">Generator name: {{ generatorInfo?.name }}</p>
-    </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
       
@@ -175,8 +198,9 @@ const shouldShowParameter = (paramKey) => {
         <div v-if="isSchemaV2" class="bg-slate-800/30 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-6">
           <ParameterConfigV2 
             :schema="parameterOptions"
-            v-model="parameters"
+            :modelValue="parameters"
             @validation-change="handleValidationChange"
+            @update:modelValue="handleParameterChange"
           />
         </div>
         
@@ -271,8 +295,8 @@ const shouldShowParameter = (paramKey) => {
         </div>
       </div>
 
-      <!-- Preview Panel -->
-      <div class="space-y-6">
+      <!-- Preview Panel (Sticky) -->
+      <div class="space-y-6 sticky top-20 max-h-[calc(100vh-6rem)] overflow-y-auto">
         <div class="bg-slate-800/30 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-6">
           <div class="flex items-center justify-between mb-6">
             <h3 class="text-xl font-semibold text-white">Preview</h3>
@@ -337,31 +361,6 @@ const shouldShowParameter = (paramKey) => {
           <div v-else class="text-center py-8">
             <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-slate-300 mx-auto mb-3"></div>
             <p class="text-slate-300">Generating preview...</p>
-          </div>
-        </div>
-
-        <!-- Quick Actions -->
-        <div class="bg-slate-800/20 backdrop-blur-sm border border-slate-700/30 rounded-xl p-4">
-          <h4 class="text-lg font-semibold text-white mb-3">Quick Actions</h4>
-          <div class="space-y-2">
-            <button 
-              @click="parameters.problemCount = 5"
-              class="w-full text-left text-sm text-slate-300 hover:text-white p-2 rounded hover:bg-slate-700/30 transition-colors"
-            >
-<span class="material-icons mr-2">edit</span>Quick Set: 5 problems
-            </button>
-            <button 
-              @click="parameters.problemCount = 10"
-              class="w-full text-left text-sm text-slate-300 hover:text-white p-2 rounded hover:bg-slate-700/30 transition-colors"
-            >
-<span class="material-icons mr-2">description</span>Standard Set: 10 problems
-            </button>
-            <button 
-              @click="parameters.problemCount = 20"
-              class="w-full text-left text-sm text-slate-300 hover:text-white p-2 rounded hover:bg-slate-700/30 transition-colors"
-            >
-<span class="material-icons mr-2">auto_stories</span>Extended Set: 20 problems
-            </button>
           </div>
         </div>
       </div>

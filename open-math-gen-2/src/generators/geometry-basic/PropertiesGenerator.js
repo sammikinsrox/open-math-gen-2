@@ -603,22 +603,37 @@ export class PropertiesGenerator extends BaseGenerator {
   }
   
   generateQuadrilateralsProblem(params) {
-    const quadrilaterals = [
-      { name: 'square', properties: 'all sides equal, all angles 90°' },
-      { name: 'rectangle', properties: 'opposite sides equal, all angles 90°' },
-      { name: 'parallelogram', properties: 'opposite sides parallel and equal' },
-      { name: 'rhombus', properties: 'all sides equal, opposite sides parallel' },
-      { name: 'trapezoid', properties: 'one pair of parallel sides' }
-    ]
+    const quadrilateralsByLevel = {
+      basic: [
+        { name: 'square', properties: 'all sides equal, all angles 90°', description: 'Most regular quadrilateral' },
+        { name: 'rectangle', properties: 'opposite sides equal, all angles 90°', description: 'Four right angles' }
+      ],
+      intermediate: [
+        { name: 'square', properties: 'all sides equal, all angles 90°', description: 'Most regular quadrilateral' },
+        { name: 'rectangle', properties: 'opposite sides equal, all angles 90°', description: 'Four right angles' },
+        { name: 'parallelogram', properties: 'opposite sides parallel and equal', description: 'Two pairs of parallel sides' },
+        { name: 'rhombus', properties: 'all sides equal, opposite sides parallel', description: 'Diamond shape' }
+      ],
+      advanced: [
+        { name: 'square', properties: 'all sides equal, all angles 90°', description: 'Most regular quadrilateral' },
+        { name: 'rectangle', properties: 'opposite sides equal, all angles 90°', description: 'Four right angles' },
+        { name: 'parallelogram', properties: 'opposite sides parallel and equal', description: 'Two pairs of parallel sides' },
+        { name: 'rhombus', properties: 'all sides equal, opposite sides parallel', description: 'Diamond shape' },
+        { name: 'trapezoid', properties: 'one pair of parallel sides', description: 'Only one pair parallel' },
+        { name: 'kite', properties: 'two pairs of adjacent equal sides', description: 'Kite-like shape' }
+      ]
+    }
     
-    const quad = this.getRandomElement(quadrilaterals)
+    const availableQuads = quadrilateralsByLevel[params.complexityLevel] || quadrilateralsByLevel.basic
+    const quad = this.getRandomElement(availableQuads)
     
-    const questions = [
+    const questionTypes = [
       `Which quadrilateral has ${quad.properties}?`,
-      `What type of quadrilateral is described: ${quad.properties}?`
+      `What type of quadrilateral is described: ${quad.properties}?`,
+      `A quadrilateral with ${quad.properties} is called a what?`
     ]
     
-    const question = this.getRandomElement(questions)
+    const question = this.getRandomElement(questionTypes)
     
     const problem = {
       question: question,
@@ -626,9 +641,9 @@ export class PropertiesGenerator extends BaseGenerator {
       answer: quad.name,
       answerLaTeX: `\\text{${quad.name}}`,
       steps: [
-        `\\text{A quadrilateral has 4 sides}`,
+        `\\text{A quadrilateral has 4 sides and 4 angles}`,
         `\\text{Properties given: ${quad.properties}}`,
-        `\\text{This describes a ${quad.name}}`
+        `\\text{This describes a ${quad.name} (${quad.description})}`
       ],
       metadata: {
         problemType: 'quadrilaterals',
@@ -688,15 +703,37 @@ export class PropertiesGenerator extends BaseGenerator {
   }
   
   generatePolygonTypesProblem(params) {
-    const polygons = [
-      { name: 'triangle', sides: 3 },
-      { name: 'quadrilateral', sides: 4 },
-      { name: 'pentagon', sides: 5 },
-      { name: 'hexagon', sides: 6 },
-      { name: 'octagon', sides: 8 }
-    ]
+    // Respect complexity level for polygon types
+    const polygonsByLevel = {
+      basic: [
+        { name: 'triangle', sides: 3 },
+        { name: 'quadrilateral', sides: 4 },
+        { name: 'pentagon', sides: 5 },
+        { name: 'hexagon', sides: 6 }
+      ],
+      intermediate: [
+        { name: 'triangle', sides: 3 },
+        { name: 'quadrilateral', sides: 4 },
+        { name: 'pentagon', sides: 5 },
+        { name: 'hexagon', sides: 6 },
+        { name: 'octagon', sides: 8 },
+        { name: 'heptagon', sides: 7 }
+      ],
+      advanced: [
+        { name: 'triangle', sides: 3 },
+        { name: 'quadrilateral', sides: 4 },
+        { name: 'pentagon', sides: 5 },
+        { name: 'hexagon', sides: 6 },
+        { name: 'heptagon', sides: 7 },
+        { name: 'octagon', sides: 8 },
+        { name: 'nonagon', sides: 9 },
+        { name: 'decagon', sides: 10 },
+        { name: 'dodecagon', sides: 12 }
+      ]
+    }
     
-    const polygon = this.getRandomElement(polygons)
+    const availablePolygons = polygonsByLevel[params.complexityLevel] || polygonsByLevel.basic
+    const polygon = this.getRandomElement(availablePolygons)
     
     const problem = {
       question: `What is a polygon with ${polygon.sides} sides called?`,
@@ -725,27 +762,57 @@ export class PropertiesGenerator extends BaseGenerator {
       shapeData = this.getRandomShapeData(params.complexityLevel)
     }
     
-    const angleQuestions = [
-      { question: `How many angles does a ${shapeData.name} have?`, answer: shapeData.vertices },
-      { question: `What is the sum of interior angles in a ${shapeData.name}?`, answer: (shapeData.sides - 2) * 180 }
-    ]
+    // Different question types based on complexity level
+    const angleQuestionsByLevel = {
+      basic: [
+        { question: `How many angles does a ${shapeData.name} have?`, answer: shapeData.vertices, difficulty: 'easy' }
+      ],
+      intermediate: [
+        { question: `How many angles does a ${shapeData.name} have?`, answer: shapeData.vertices, difficulty: 'easy' },
+        { question: `What is the sum of interior angles in a ${shapeData.name}?`, answer: (shapeData.sides - 2) * 180, difficulty: 'medium' }
+      ],
+      advanced: [
+        { question: `How many angles does a ${shapeData.name} have?`, answer: shapeData.vertices, difficulty: 'easy' },
+        { question: `What is the sum of interior angles in a ${shapeData.name}?`, answer: (shapeData.sides - 2) * 180, difficulty: 'medium' },
+        { question: `What is the measure of each interior angle in a regular ${shapeData.name}?`, answer: Math.round((shapeData.sides - 2) * 180 / shapeData.sides), difficulty: 'hard' }
+      ]
+    }
     
-    const selected = this.getRandomElement(angleQuestions)
+    const availableQuestions = angleQuestionsByLevel[params.complexityLevel] || angleQuestionsByLevel.basic
+    const selected = this.getRandomElement(availableQuestions)
+    
+    let steps = []
+    if (selected.answer === shapeData.vertices) {
+      steps = [
+        `\\text{A ${shapeData.name} has ${shapeData.sides} sides}`,
+        `\\text{Each side meets at a vertex to form an angle}`,
+        `\\text{Therefore, it has ${selected.answer} angles}`
+      ]
+    } else if (selected.question.includes('sum of interior angles')) {
+      steps = [
+        `\\text{Use the formula: Sum = (n - 2) × 180°}`,
+        `\\text{For a ${shapeData.name}: (${shapeData.sides} - 2) × 180°}`,
+        `\\text{= ${shapeData.sides - 2} × 180° = ${selected.answer}°}`
+      ]
+    } else if (selected.question.includes('each interior angle')) {
+      steps = [
+        `\\text{Sum of interior angles = (${shapeData.sides} - 2) × 180° = ${(shapeData.sides - 2) * 180}°}`,
+        `\\text{Each angle in regular ${shapeData.name} = ${(shapeData.sides - 2) * 180}° ÷ ${shapeData.sides}}`,
+        `\\text{= ${selected.answer}°}`
+      ]
+    }
     
     const problem = {
       question: selected.question,
       questionLaTeX: `\\text{${selected.question}}`,
       answer: selected.answer.toString(),
       answerLaTeX: selected.answer.toString(),
-      steps: [
-        `\\text{A ${shapeData.name} has ${shapeData.sides} sides}`,
-        `\\text{Answer: ${selected.answer}}`
-      ],
+      steps: steps,
       metadata: {
         problemType: 'angleProperties',
         shape: shapeData,
-        difficulty: 'medium',
-        estimatedTime: '30 seconds'
+        difficulty: selected.difficulty,
+        estimatedTime: selected.difficulty === 'easy' ? '30 seconds' : selected.difficulty === 'medium' ? '45 seconds' : '60 seconds'
       }
     }
     
@@ -776,14 +843,43 @@ export class PropertiesGenerator extends BaseGenerator {
   }
   
   generateRegularIrregularProblem(params) {
-    const shapes = [
-      { name: 'square', isRegular: true },
-      { name: 'rectangle', isRegular: false },
-      { name: 'equilateral triangle', isRegular: true },
-      { name: 'scalene triangle', isRegular: false }
-    ]
+    const shapesByLevel = {
+      basic: [
+        { name: 'square', isRegular: true },
+        { name: 'rectangle', isRegular: false },
+        { name: 'equilateral triangle', isRegular: true },
+        { name: 'scalene triangle', isRegular: false },
+        { name: 'regular pentagon', isRegular: true },
+        { name: 'regular hexagon', isRegular: true }
+      ],
+      intermediate: [
+        { name: 'square', isRegular: true },
+        { name: 'rectangle', isRegular: false },
+        { name: 'rhombus', isRegular: false },
+        { name: 'equilateral triangle', isRegular: true },
+        { name: 'isosceles triangle', isRegular: false },
+        { name: 'scalene triangle', isRegular: false },
+        { name: 'regular pentagon', isRegular: true },
+        { name: 'regular hexagon', isRegular: true },
+        { name: 'regular octagon', isRegular: true }
+      ],
+      advanced: [
+        { name: 'square', isRegular: true },
+        { name: 'rectangle', isRegular: false },
+        { name: 'rhombus', isRegular: false },
+        { name: 'parallelogram', isRegular: false },
+        { name: 'equilateral triangle', isRegular: true },
+        { name: 'isosceles triangle', isRegular: false },
+        { name: 'scalene triangle', isRegular: false },
+        { name: 'regular pentagon', isRegular: true },
+        { name: 'regular hexagon', isRegular: true },
+        { name: 'regular octagon', isRegular: true },
+        { name: 'regular decagon', isRegular: true }
+      ]
+    }
     
-    const shape = this.getRandomElement(shapes)
+    const availableShapes = shapesByLevel[params.complexityLevel] || shapesByLevel.basic
+    const shape = this.getRandomElement(availableShapes)
     const answer = shape.isRegular ? 'regular' : 'irregular'
     
     const problem = {
@@ -793,6 +889,7 @@ export class PropertiesGenerator extends BaseGenerator {
       answerLaTeX: `\\text{${answer}}`,
       steps: [
         `\\text{A regular polygon has all sides and angles equal}`,
+        `\\text{An irregular polygon has unequal sides or angles}`,
         `\\text{A ${shape.name} is ${answer}}`
       ],
       metadata: {
@@ -807,20 +904,47 @@ export class PropertiesGenerator extends BaseGenerator {
   }
   
   generateConvexConcaveProblem(params) {
-    // For basic level, all shapes are convex
-    const answer = 'convex'
+    // Create examples based on complexity level
+    const convexConcaveShapes = {
+      basic: [
+        { name: 'triangle', type: 'convex', reason: 'all interior angles are less than 180°' },
+        { name: 'square', type: 'convex', reason: 'all interior angles are exactly 90°' },
+        { name: 'rectangle', type: 'convex', reason: 'all interior angles are exactly 90°' },
+        { name: 'regular pentagon', type: 'convex', reason: 'all interior angles are less than 180°' }
+      ],
+      intermediate: [
+        { name: 'triangle', type: 'convex', reason: 'all interior angles are less than 180°' },
+        { name: 'square', type: 'convex', reason: 'all interior angles are exactly 90°' },
+        { name: 'rectangle', type: 'convex', reason: 'all interior angles are exactly 90°' },
+        { name: 'regular hexagon', type: 'convex', reason: 'all interior angles are 120°' },
+        { name: 'regular octagon', type: 'convex', reason: 'all interior angles are 135°' }
+      ],
+      advanced: [
+        { name: 'triangle', type: 'convex', reason: 'all interior angles are less than 180°' },
+        { name: 'square', type: 'convex', reason: 'all interior angles are exactly 90°' },
+        { name: 'rectangle', type: 'convex', reason: 'all interior angles are exactly 90°' },
+        { name: 'regular hexagon', type: 'convex', reason: 'all interior angles are 120°' },
+        { name: 'regular octagon', type: 'convex', reason: 'all interior angles are 135°' },
+        { name: 'star shape', type: 'concave', reason: 'some interior angles are greater than 180°' }
+      ]
+    }
+    
+    const availableShapes = convexConcaveShapes[params.complexityLevel] || convexConcaveShapes.basic
+    const shape = this.getRandomElement(availableShapes)
     
     const problem = {
-      question: `Is this polygon convex or concave?`,
-      questionLaTeX: `\\text{Is this polygon convex or concave?}`,
-      answer: answer,
-      answerLaTeX: `\\text{${answer}}`,
+      question: `Is a ${shape.name} convex or concave?`,
+      questionLaTeX: `\\text{Is a ${shape.name} convex or concave?}`,
+      answer: shape.type,
+      answerLaTeX: `\\text{${shape.type}}`,
       steps: [
-        `\\text{A convex polygon has all interior angles less than 180°}`,
-        `\\text{This polygon is ${answer}}`
+        `\\text{A convex polygon has all interior angles < 180°}`,
+        `\\text{A concave polygon has at least one interior angle > 180°}`,
+        `\\text{A ${shape.name} is ${shape.type} because ${shape.reason}}`
       ],
       metadata: {
         problemType: 'convexConcave',
+        shape: shape,
         difficulty: 'hard',
         estimatedTime: '45 seconds'
       }
@@ -846,9 +970,11 @@ export class PropertiesGenerator extends BaseGenerator {
         { name: 'rhombus', sides: 4, vertices: 4, type: 'polygon' },
         { name: 'parallelogram', sides: 4, vertices: 4, type: 'polygon' },
         { name: 'trapezoid', sides: 4, vertices: 4, type: 'polygon' },
+        { name: 'heptagon', sides: 7, vertices: 7, type: 'polygon' },
         { name: 'octagon', sides: 8, vertices: 8, type: 'polygon' }
       ],
       advanced: [
+        { name: 'nonagon', sides: 9, vertices: 9, type: 'polygon' },
         { name: 'decagon', sides: 10, vertices: 10, type: 'polygon' },
         { name: 'dodecagon', sides: 12, vertices: 12, type: 'polygon' }
       ]
@@ -894,6 +1020,11 @@ export class PropertiesGenerator extends BaseGenerator {
         properties.parallelSides = 1
         properties.equalSides = 0
         break
+      case 'kite':
+        properties.rightAngles = 0
+        properties.parallelSides = 0
+        properties.equalSides = 2 // Two pairs of adjacent equal sides
+        break
       case 'triangle':
         properties.rightAngles = 0
         properties.parallelSides = 0
@@ -901,10 +1032,19 @@ export class PropertiesGenerator extends BaseGenerator {
         break
       case 'pentagon':
       case 'hexagon':
+      case 'heptagon':
       case 'octagon':
+      case 'nonagon':
+      case 'decagon':
+      case 'dodecagon':
         properties.rightAngles = 0
         properties.parallelSides = 0
         properties.equalSides = shapeData.sides // Regular polygons have all equal sides
+        break
+      case 'circle':
+        properties.rightAngles = 0
+        properties.parallelSides = 0
+        properties.equalSides = 0
         break
     }
     
@@ -918,7 +1058,16 @@ export class PropertiesGenerator extends BaseGenerator {
       'triangle': { name: 'triangle', sides: 3, vertices: 3, type: 'polygon' },
       'rhombus': { name: 'rhombus', sides: 4, vertices: 4, type: 'polygon' },
       'parallelogram': { name: 'parallelogram', sides: 4, vertices: 4, type: 'polygon' },
-      'trapezoid': { name: 'trapezoid', sides: 4, vertices: 4, type: 'polygon' }
+      'trapezoid': { name: 'trapezoid', sides: 4, vertices: 4, type: 'polygon' },
+      'pentagon': { name: 'pentagon', sides: 5, vertices: 5, type: 'polygon' },
+      'hexagon': { name: 'hexagon', sides: 6, vertices: 6, type: 'polygon' },
+      'heptagon': { name: 'heptagon', sides: 7, vertices: 7, type: 'polygon' },
+      'octagon': { name: 'octagon', sides: 8, vertices: 8, type: 'polygon' },
+      'nonagon': { name: 'nonagon', sides: 9, vertices: 9, type: 'polygon' },
+      'decagon': { name: 'decagon', sides: 10, vertices: 10, type: 'polygon' },
+      'dodecagon': { name: 'dodecagon', sides: 12, vertices: 12, type: 'polygon' },
+      'kite': { name: 'kite', sides: 4, vertices: 4, type: 'polygon' },
+      'circle': { name: 'circle', sides: 0, vertices: 0, type: 'circle' }
     }
     
     return shapeDatabase[name] || { name: name, sides: 4, vertices: 4, type: 'polygon' }

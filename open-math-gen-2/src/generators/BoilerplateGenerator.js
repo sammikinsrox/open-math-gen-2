@@ -1,4 +1,5 @@
 import { BaseGenerator } from './BaseGenerator.js'
+import { ParameterSchemaV2 } from './ParameterSchemaV2.js'
 
 /**
  * Boilerplate Generator Template
@@ -8,6 +9,8 @@ import { BaseGenerator } from './BaseGenerator.js'
  */
 export class BoilerplateGenerator extends BaseGenerator {
   constructor() {
+    const schemaV2 = new ParameterSchemaV2()
+    
     super({
       name: 'Boilerplate Generator',
       description: 'A template generator for creating mathematical problems',
@@ -36,76 +39,261 @@ export class BoilerplateGenerator extends BaseGenerator {
         includeSubtraction: true,
         includeMultiplication: true,
         includeDivision: true,
-        showSteps: true
+        showSteps: true,
+        complexityLevel: 'basic'
       },
       
-      // Parameter schema for validation and UI generation
-      parameterSchema: {
-        problemCount: {
-          type: 'number',
-          label: 'Number of Problems',
-          description: 'How many problems to generate',
-          min: 1,
-          max: 100,
-          required: true
+      // Enhanced Parameter Schema V2 with beautiful categorization
+      parameterSchema: schemaV2.createSchema({
+        categories: {
+          general: schemaV2.createCategory({
+            id: 'general',
+            label: 'General Settings',
+            description: 'Basic configuration options',
+            icon: 'settings',
+            color: 'blue',
+            order: 1,
+            parameters: {
+              problemCount: schemaV2.createParameter({
+                type: 'number',
+                label: 'Number of Problems',
+                description: 'How many problems to generate for this problem set',
+                min: 1,
+                max: 50,
+                required: true,
+                slider: true,
+                presets: [5, 10, 15, 20],
+                order: 1
+              }),
+              complexityLevel: schemaV2.createParameter({
+                type: 'select',
+                label: 'Complexity Level',
+                description: 'Determines the difficulty and range of numbers',
+                variant: 'cards',
+                options: [
+                  { 
+                    value: 'basic', 
+                    label: 'Basic',
+                    description: 'Simple numbers (1-20) and operations'
+                  },
+                  { 
+                    value: 'intermediate', 
+                    label: 'Intermediate',
+                    description: 'Medium numbers (1-100) with mixed operations'
+                  },
+                  { 
+                    value: 'advanced', 
+                    label: 'Advanced',
+                    description: 'Large numbers (1-1000) and complex problems'
+                  }
+                ],
+                order: 2
+              })
+            }
+          }),
+          
+          operations: schemaV2.createCategory({
+            id: 'operations',
+            label: 'Operation Types',
+            description: 'Choose which mathematical operations to include',
+            icon: 'calculate',
+            color: 'green',
+            order: 2,
+            parameters: {
+              includeAddition: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Addition',
+                description: 'Include addition problems (a + b = ?)',
+                helpText: 'Basic addition operations',
+                order: 1
+              }),
+              includeSubtraction: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Subtraction',
+                description: 'Include subtraction problems (a - b = ?)',
+                helpText: 'Basic subtraction operations',
+                order: 2
+              }),
+              includeMultiplication: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Multiplication',
+                description: 'Include multiplication problems (a × b = ?)',
+                helpText: 'Basic multiplication operations',
+                order: 3
+              }),
+              includeDivision: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Division',
+                description: 'Include division problems (a ÷ b = ?)',
+                helpText: 'Basic division operations',
+                order: 4
+              })
+            }
+          }),
+          
+          numberSettings: schemaV2.createCategory({
+            id: 'numberSettings',
+            label: 'Number Settings',
+            description: 'Configure the range and types of numbers',
+            icon: 'tag',
+            color: 'purple',
+            order: 3,
+            expanded: false,
+            parameters: {
+              minValue: schemaV2.createParameter({
+                type: 'number',
+                label: 'Minimum Value',
+                description: 'Smallest number to use in problems',
+                min: -1000,
+                max: 1000,
+                required: true,
+                presets: [1, 5, 10, 20],
+                order: 1
+              }),
+              maxValue: schemaV2.createParameter({
+                type: 'number',
+                label: 'Maximum Value',
+                description: 'Largest number to use in problems',
+                min: -1000,
+                max: 1000,
+                required: true,
+                presets: [20, 50, 100, 500],
+                order: 2
+              }),
+              allowNegatives: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Allow Negative Numbers',
+                description: 'Include negative numbers in problems',
+                helpText: 'Adds complexity with negative results',
+                order: 3
+              }),
+              allowDecimals: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Allow Decimals',
+                description: 'Allow decimal values in problems',
+                helpText: 'Use decimal numbers (e.g., 3.5, 2.25)',
+                order: 4
+              })
+            }
+          }),
+          
+          presentation: schemaV2.createCategory({
+            id: 'presentation',
+            label: 'Presentation & Format',
+            description: 'Control how problems are displayed',
+            icon: 'palette',
+            color: 'orange',
+            order: 4,
+            parameters: {
+              includeWordProblems: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Include Word Problems',
+                description: 'Include real-world story problems',
+                helpText: 'More engaging but takes longer to solve',
+                order: 1
+              }),
+              showSteps: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Show Solution Steps',
+                description: 'Include step-by-step calculation process',
+                helpText: 'Helps students understand the method',
+                order: 2
+              })
+            }
+          })
         },
-        minValue: {
-          type: 'number',
-          label: 'Minimum Value',
-          description: 'Smallest number to use in problems',
-          min: -1000,
-          max: 1000,
-          required: true
-        },
-        maxValue: {
-          type: 'number',
-          label: 'Maximum Value',
-          description: 'Largest number to use in problems',
-          min: -1000,
-          max: 1000,
-          required: true
-        },
-        allowNegatives: {
-          type: 'boolean',
-          label: 'Allow Negative Numbers',
-          description: 'Include negative numbers in problems'
-        },
-        includeWordProblems: {
-          type: 'boolean',
-          label: 'Include Word Problems',
-          description: 'Include real-world word problems'
-        },
-        allowDecimals: {
-          type: 'boolean',
-          label: 'Allow Decimals',
-          description: 'Allow decimal values in problems'
-        },
-        includeAddition: {
-          type: 'boolean',
-          label: 'Include Addition',
-          description: 'Include addition problems'
-        },
-        includeSubtraction: {
-          type: 'boolean',
-          label: 'Include Subtraction',
-          description: 'Include subtraction problems'
-        },
-        includeMultiplication: {
-          type: 'boolean',
-          label: 'Include Multiplication',
-          description: 'Include multiplication problems'
-        },
-        includeDivision: {
-          type: 'boolean',
-          label: 'Include Division',
-          description: 'Include division problems'
-        },
-        showSteps: {
-          type: 'boolean',
-          label: 'Show Calculation Steps',
-          description: 'Show step-by-step calculations'
-        }
-      }
+        
+        // Preset configurations for quick setup
+        presets: [
+          schemaV2.createPreset({
+            id: 'beginner',
+            label: 'Beginner Friendly',
+            description: 'Simple addition and subtraction for young learners',
+            icon: 'child_care',
+            category: 'difficulty',
+            values: {
+              problemCount: 10,
+              complexityLevel: 'basic',
+              minValue: 1,
+              maxValue: 20,
+              allowNegatives: false,
+              allowDecimals: false,
+              includeAddition: true,
+              includeSubtraction: true,
+              includeMultiplication: false,
+              includeDivision: false,
+              includeWordProblems: false,
+              showSteps: true
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'comprehensive',
+            label: 'All Operations',
+            description: 'Practice all four basic operations',
+            icon: 'quiz',
+            category: 'scope',
+            values: {
+              problemCount: 20,
+              complexityLevel: 'intermediate',
+              minValue: 1,
+              maxValue: 100,
+              allowNegatives: false,
+              allowDecimals: false,
+              includeAddition: true,
+              includeSubtraction: true,
+              includeMultiplication: true,
+              includeDivision: true,
+              includeWordProblems: true,
+              showSteps: true
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'advanced',
+            label: 'Advanced Challenge',
+            description: 'Complex problems with larger numbers',
+            icon: 'school',
+            category: 'difficulty',
+            values: {
+              problemCount: 15,
+              complexityLevel: 'advanced',
+              minValue: 10,
+              maxValue: 1000,
+              allowNegatives: true,
+              allowDecimals: true,
+              includeAddition: true,
+              includeSubtraction: true,
+              includeMultiplication: true,
+              includeDivision: true,
+              includeWordProblems: true,
+              showSteps: false
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'word-problems',
+            label: 'Story Problems',
+            description: 'Focus on real-world word problems',
+            icon: 'menu_book',
+            category: 'style',
+            values: {
+              problemCount: 12,
+              complexityLevel: 'intermediate',
+              minValue: 1,
+              maxValue: 50,
+              allowNegatives: false,
+              allowDecimals: false,
+              includeAddition: true,
+              includeSubtraction: true,
+              includeMultiplication: true,
+              includeDivision: true,
+              includeWordProblems: true,
+              showSteps: true
+            }
+          })
+        ]
+      })
     })
   }
 
@@ -373,8 +561,24 @@ export class BoilerplateGenerator extends BaseGenerator {
    * @returns {number} Generated value
    */
   generateValue(params) {
-    const min = params.allowNegatives ? params.minValue : Math.max(0, params.minValue)
-    const max = params.maxValue
+    // Apply complexity level overrides for better defaults
+    let min = params.minValue
+    let max = params.maxValue
+    
+    if (params.complexityLevel === 'basic') {
+      min = Math.max(1, Math.min(min, 20))
+      max = Math.min(max, 20)
+    } else if (params.complexityLevel === 'intermediate') {
+      min = Math.max(1, Math.min(min, 100))
+      max = Math.min(max, 100)
+    } else if (params.complexityLevel === 'advanced') {
+      max = Math.max(max, 100)
+    }
+    
+    // Respect negative number setting
+    if (!params.allowNegatives && min < 0) {
+      min = Math.max(0, min)
+    }
     
     if (params.allowDecimals) {
       const value = min + Math.random() * (max - min)

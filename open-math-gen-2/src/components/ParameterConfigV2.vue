@@ -21,10 +21,6 @@ const values = ref({ ...props.modelValue })
 
 // Initialize expanded categories
 const categorizedParams = computed(() => {
-  console.log('ParameterConfigV2 - Schema received:', props.schema)
-  console.log('ParameterConfigV2 - Schema version:', props.schema?.version)
-  console.log('ParameterConfigV2 - Has categories:', !!props.schema?.categories)
-  
   if (props.schema.version === 2) {
     return schemaV2.getCategorizedParameters(props.schema, values.value)
   }
@@ -68,24 +64,24 @@ const isCategoryExpanded = (categoryId) => {
 
 const getCategoryColor = (category) => {
   const colors = {
-    blue: 'border-blue-200 bg-blue-50',
-    green: 'border-green-200 bg-green-50',
-    purple: 'border-purple-200 bg-purple-50',
-    orange: 'border-orange-200 bg-orange-50',
-    red: 'border-red-200 bg-red-50',
-    gray: 'border-gray-200 bg-gray-50'
+    blue: 'border-slate-600/50 bg-slate-800/30',
+    green: 'border-slate-600/50 bg-slate-800/30',
+    purple: 'border-slate-600/50 bg-slate-800/30',
+    orange: 'border-orange-500/50 bg-orange-500/10',
+    red: 'border-slate-600/50 bg-slate-800/30',
+    gray: 'border-slate-600/50 bg-slate-800/30'
   }
   return colors[category.color] || colors.blue
 }
 
 const getCategoryIconColor = (category) => {
   const colors = {
-    blue: 'text-blue-600',
-    green: 'text-green-600',
-    purple: 'text-purple-600',
-    orange: 'text-orange-600',
-    red: 'text-red-600',
-    gray: 'text-gray-600'
+    blue: 'text-blue-400',
+    green: 'text-green-400', 
+    purple: 'text-purple-400',
+    orange: 'text-orange-400',
+    red: 'text-red-400',
+    gray: 'text-slate-400'
   }
   return colors[category.color] || colors.blue
 }
@@ -138,14 +134,14 @@ const getParameterComponent = (param) => {
           v-for="preset in schema.presets"
           :key="preset.id"
           @click="applyPreset(preset)"
-          class="text-left p-4 rounded-xl border-2 border-slate-600 bg-slate-700/30 hover:bg-slate-700/50 hover:border-slate-500 transition-all group"
+          class="text-left p-4 rounded-xl border-2 border-slate-700/50 bg-slate-800/30 hover:bg-orange-500/10 hover:border-orange-500/50 transition-all group backdrop-blur-sm"
         >
           <div class="flex items-start space-x-3">
-            <span class="material-icons text-slate-400 group-hover:text-white">
+            <span class="material-icons text-slate-400 group-hover:text-orange-400">
               {{ preset.icon }}
             </span>
             <div>
-              <h5 class="font-medium text-white group-hover:text-blue-300">{{ preset.label }}</h5>
+              <h5 class="font-medium text-white group-hover:text-orange-300">{{ preset.label }}</h5>
               <p class="text-xs text-slate-400 mt-1">{{ preset.description }}</p>
             </div>
           </div>
@@ -163,7 +159,7 @@ const getParameterComponent = (param) => {
         <!-- Category Header -->
         <button
           @click="toggleCategory(category.id)"
-          class="w-full flex items-center justify-between p-4 rounded-xl border-2 transition-all duration-200 hover:shadow-md"
+          class="w-full flex items-center justify-between p-4 rounded-xl border-2 transition-all duration-200 hover:border-orange-500/70 backdrop-blur-sm"
           :class="[
             getCategoryColor(category),
             isCategoryExpanded(category.id) ? 'rounded-b-none border-b-0' : ''
@@ -177,12 +173,12 @@ const getParameterComponent = (param) => {
               {{ category.icon }}
             </span>
             <div class="text-left">
-              <h4 class="font-semibold text-slate-800">{{ category.label }}</h4>
-              <p class="text-sm text-slate-600">{{ category.description }}</p>
+              <h4 class="font-semibold text-white">{{ category.label }}</h4>
+              <p class="text-sm text-slate-300">{{ category.description }}</p>
             </div>
           </div>
           <span 
-            class="material-icons text-slate-600 transition-transform duration-200"
+            class="material-icons text-slate-400 transition-transform duration-200"
             :class="{ 'rotate-180': isCategoryExpanded(category.id) }"
           >
             expand_more
@@ -192,8 +188,7 @@ const getParameterComponent = (param) => {
         <!-- Category Content -->
         <div 
           v-show="isCategoryExpanded(category.id)"
-          class="border-2 border-t-0 rounded-b-xl p-6 bg-white"
-          :class="getCategoryColor(category).replace('bg-', 'border-').replace('-50', '-200')"
+          class="border-2 border-t-0 rounded-b-xl p-6 bg-slate-900/50 backdrop-blur-sm border-slate-600/50"
         >
           <div class="grid gap-6">
             <!-- Parameters -->
@@ -205,11 +200,11 @@ const getParameterComponent = (param) => {
               <!-- Boolean/Switch Parameters -->
               <div v-if="param.type === 'boolean'" class="flex items-center justify-between">
                 <div class="flex-1">
-                  <label class="block text-sm font-medium text-slate-700 mb-1">
+                  <label class="block text-sm font-medium text-white mb-1">
                     {{ param.label }}
-                    <span v-if="param.required" class="text-red-500 ml-1">*</span>
+                    <span v-if="param.required" class="text-orange-400 ml-1">*</span>
                   </label>
-                  <p v-if="param.description" class="text-xs text-slate-500 mb-2">
+                  <p v-if="param.description" class="text-xs text-slate-300 mb-2">
                     {{ param.description }}
                   </p>
                 </div>
@@ -221,18 +216,18 @@ const getParameterComponent = (param) => {
                       :checked="values[param.id]"
                       @change="updateValue(param.id, $event.target.checked)"
                     >
-                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                    <div class="w-11 h-6 bg-slate-600 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-orange-500/30 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-orange-500"></div>
                   </label>
                 </div>
               </div>
 
               <!-- Number Parameters -->
               <div v-else-if="param.type === 'number'" class="space-y-2">
-                <label class="block text-sm font-medium text-slate-700">
+                <label class="block text-sm font-medium text-white">
                   {{ param.label }}
-                  <span v-if="param.required" class="text-red-500 ml-1">*</span>
+                  <span v-if="param.required" class="text-orange-400 ml-1">*</span>
                 </label>
-                <p v-if="param.description" class="text-xs text-slate-500">
+                <p v-if="param.description" class="text-xs text-slate-300">
                   {{ param.description }}
                 </p>
                 
@@ -244,8 +239,8 @@ const getParameterComponent = (param) => {
                     @click="updateValue(param.id, preset)"
                     class="px-3 py-1 text-xs rounded-md border transition-colors"
                     :class="values[param.id] === preset 
-                      ? 'bg-blue-100 border-blue-300 text-blue-700' 
-                      : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100'"
+                      ? 'bg-orange-500/20 border-orange-400 text-orange-300' 
+                      : 'bg-slate-700/30 border-slate-600 text-slate-300 hover:bg-slate-700/50'"
                   >
                     {{ preset }}{{ param.unit ? ` ${param.unit}` : '' }}
                   </button>
@@ -260,11 +255,11 @@ const getParameterComponent = (param) => {
                     :step="param.step || 1"
                     :value="values[param.id]"
                     @input="updateValue(param.id, Number($event.target.value))"
-                    class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
+                    class="w-full h-2 bg-slate-600 rounded-lg appearance-none cursor-pointer slider"
                   >
-                  <div class="flex justify-between text-xs text-slate-500">
+                  <div class="flex justify-between text-xs text-slate-400">
                     <span>{{ param.min }}{{ param.unit ? ` ${param.unit}` : '' }}</span>
-                    <span class="font-medium text-slate-700">
+                    <span class="font-medium text-orange-400">
                       {{ values[param.id] }}{{ param.unit ? ` ${param.unit}` : '' }}
                     </span>
                     <span>{{ param.max }}{{ param.unit ? ` ${param.unit}` : '' }}</span>
@@ -278,18 +273,18 @@ const getParameterComponent = (param) => {
                     :step="param.step || 1"
                     :value="values[param.id]"
                     @input="updateValue(param.id, Number($event.target.value))"
-                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    class="w-full px-3 py-2 border border-slate-600 rounded-lg bg-slate-700/50 text-white focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
                   >
                 </div>
               </div>
 
               <!-- Select Parameters -->
               <div v-else-if="param.type === 'select'" class="space-y-2">
-                <label class="block text-sm font-medium text-slate-700">
+                <label class="block text-sm font-medium text-white">
                   {{ param.label }}
-                  <span v-if="param.required" class="text-red-500 ml-1">*</span>
+                  <span v-if="param.required" class="text-orange-400 ml-1">*</span>
                 </label>
-                <p v-if="param.description" class="text-xs text-slate-500">
+                <p v-if="param.description" class="text-xs text-slate-300">
                   {{ param.description }}
                 </p>
 
@@ -299,13 +294,13 @@ const getParameterComponent = (param) => {
                     v-for="option in param.options"
                     :key="option.value"
                     @click="updateValue(param.id, option.value)"
-                    class="p-3 text-left border-2 rounded-lg transition-all hover:shadow-sm"
+                    class="p-3 text-left border-2 rounded-lg transition-all backdrop-blur-sm"
                     :class="values[param.id] === option.value
-                      ? 'border-blue-500 bg-blue-50 text-blue-900'
-                      : 'border-gray-200 bg-white hover:border-gray-300'"
+                      ? 'border-orange-500 bg-orange-500/20 text-orange-200'
+                      : 'border-slate-600 bg-slate-800/30 text-slate-200 hover:border-orange-400/50 hover:bg-slate-700/50'"
                   >
                     <div class="font-medium text-sm">{{ option.label }}</div>
-                    <div v-if="option.description" class="text-xs text-slate-500 mt-1">
+                    <div v-if="option.description" class="text-xs text-slate-400 mt-1">
                       {{ option.description }}
                     </div>
                   </button>
@@ -324,9 +319,9 @@ const getParameterComponent = (param) => {
                       :value="option.value"
                       :checked="values[param.id] === option.value"
                       @change="updateValue(param.id, option.value)"
-                      class="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                      class="w-4 h-4 text-orange-500 bg-slate-700 border-slate-600 focus:ring-orange-500"
                     >
-                    <span class="text-sm text-slate-700">{{ option.label }}</span>
+                    <span class="text-sm text-slate-200">{{ option.label }}</span>
                   </label>
                 </div>
 
@@ -335,7 +330,7 @@ const getParameterComponent = (param) => {
                   v-else
                   :value="values[param.id]"
                   @change="updateValue(param.id, $event.target.value)"
-                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  class="w-full px-3 py-2 border border-slate-600 rounded-lg bg-slate-700/50 text-white focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
                 >
                   <option value="">Select {{ param.label.toLowerCase() }}</option>
                   <option
@@ -350,11 +345,11 @@ const getParameterComponent = (param) => {
 
               <!-- Multiselect Parameters -->
               <div v-else-if="param.type === 'multiselect'" class="space-y-2">
-                <label class="block text-sm font-medium text-slate-700">
+                <label class="block text-sm font-medium text-white">
                   {{ param.label }}
-                  <span v-if="param.required" class="text-red-500 ml-1">*</span>
+                  <span v-if="param.required" class="text-orange-400 ml-1">*</span>
                 </label>
-                <p v-if="param.description" class="text-xs text-slate-500">
+                <p v-if="param.description" class="text-xs text-slate-300">
                   {{ param.description }}
                 </p>
 
@@ -362,13 +357,13 @@ const getParameterComponent = (param) => {
                 <div v-if="param.allowSelectAll" class="flex space-x-2 mb-3">
                   <button
                     @click="updateValue(param.id, param.options.map(opt => opt.value))"
-                    class="text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded hover:bg-blue-200"
+                    class="text-xs px-2 py-1 bg-orange-500/20 text-orange-300 rounded hover:bg-orange-500/30"
                   >
                     Select All
                   </button>
                   <button
                     @click="updateValue(param.id, [])"
-                    class="text-xs px-2 py-1 bg-gray-100 text-gray-700 rounded hover:bg-gray-200"
+                    class="text-xs px-2 py-1 bg-slate-700/50 text-slate-300 rounded hover:bg-slate-600/50"
                   >
                     Clear All
                   </button>
@@ -379,7 +374,7 @@ const getParameterComponent = (param) => {
                   <label
                     v-for="option in param.options"
                     :key="option.value"
-                    class="flex items-center space-x-2 cursor-pointer p-2 rounded hover:bg-gray-50"
+                    class="flex items-center space-x-2 cursor-pointer p-2 rounded hover:bg-slate-700/30"
                   >
                     <input
                       type="checkbox"
@@ -392,14 +387,14 @@ const getParameterComponent = (param) => {
                           updateValue(param.id, currentValues.filter(v => v !== option.value));
                         }
                       }"
-                      class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                      class="w-4 h-4 text-orange-500 bg-slate-700 border-slate-600 rounded focus:ring-orange-500"
                     >
-                    <span class="text-sm text-slate-700">{{ option.label }}</span>
+                    <span class="text-sm text-slate-200">{{ option.label }}</span>
                   </label>
                 </div>
 
                 <!-- Selection count -->
-                <div class="text-xs text-slate-500">
+                <div class="text-xs text-slate-400">
                   {{ (values[param.id] || []).length }} of {{ param.options.length }} selected
                 </div>
               </div>
@@ -424,7 +419,7 @@ const getParameterComponent = (param) => {
   appearance: none;
   width: 1.25rem;
   height: 1.25rem;
-  background-color: #2563eb;
+  background-color: #f97316;
   border-radius: 9999px;
   cursor: pointer;
 }
@@ -432,7 +427,7 @@ const getParameterComponent = (param) => {
 .slider::-moz-range-thumb {
   width: 1.25rem;
   height: 1.25rem;
-  background-color: #2563eb;
+  background-color: #f97316;
   border-radius: 9999px;
   cursor: pointer;
   border: 0;
