@@ -34,16 +34,16 @@ export class AreaGenerator extends BaseGenerator {
         includeCircles: false,
         includeParallelograms: false,
         includeTrapezoids: false,
-        includeWordProblems: true,
+        // includeWordProblems: true,
         minSideLength: 3,
         maxSideLength: 25,
         allowDecimals: false,
         decimalPlaces: 1,
         units: 'mixed',
         showFormulas: true,
-        showSteps: true,
+        // showSteps: true,
         showVisualDiagrams: true,
-        includeGridDiagrams: false,
+        // includeGridDiagrams: false,
         diagramSize: 'medium',
         diagramTheme: 'educational'
       },
@@ -78,21 +78,21 @@ export class AreaGenerator extends BaseGenerator {
           label: 'Include Circles',
           description: 'Include circle area problems'
         },
-        includeParallelograms: {
-          type: 'boolean',
-          label: 'Include Parallelograms',
-          description: 'Include parallelogram area problems'
-        },
-        includeTrapezoids: {
-          type: 'boolean',
-          label: 'Include Trapezoids',
-          description: 'Include trapezoid area problems'
-        },
-        includeWordProblems: {
-          type: 'boolean',
-          label: 'Include Word Problems',
-          description: 'Include real-world area problems'
-        },
+        // includeParallelograms: {
+        //   type: 'boolean',
+        //   label: 'Include Parallelograms',
+        //   description: 'Include parallelogram area problems'
+        // },
+        // includeTrapezoids: {
+        //   type: 'boolean',
+        //   label: 'Include Trapezoids',
+        //   description: 'Include trapezoid area problems'
+        // },
+        // includeWordProblems: {
+        //   type: 'boolean',
+        //   label: 'Include Word Problems',
+        //   description: 'Include real-world area problems'
+        // },
         minSideLength: {
           type: 'number',
           label: 'Minimum Side Length',
@@ -137,21 +137,21 @@ export class AreaGenerator extends BaseGenerator {
           label: 'Show Formulas',
           description: 'Include area formulas in problems'
         },
-        showSteps: {
-          type: 'boolean',
-          label: 'Show Steps',
-          description: 'Show step-by-step calculations'
-        },
+        // showSteps: {
+        //   type: 'boolean',
+        //   label: 'Show Steps',
+        //   description: 'Show step-by-step calculations'
+        // },
         showVisualDiagrams: {
           type: 'boolean',
           label: 'Show Visual Diagrams',
           description: 'Include geometric diagrams with measurements'
         },
-        includeGridDiagrams: {
-          type: 'boolean',
-          label: 'Include Grid Diagrams',
-          description: 'Show unit square grids for visualization'
-        },
+        // includeGridDiagrams: {
+        //   type: 'boolean',
+        //   label: 'Include Grid Diagrams',
+        //   description: 'Show unit square grids for visualization'
+        // },
         diagramSize: {
           type: 'select',
           label: 'Diagram Size',
@@ -197,8 +197,8 @@ export class AreaGenerator extends BaseGenerator {
     if (params.includeSquares) enabledShapes.push('square')
     if (params.includeTriangles) enabledShapes.push('triangle')
     if (params.includeCircles) enabledShapes.push('circle')
-    if (params.includeParallelograms) enabledShapes.push('parallelogram')
-    if (params.includeTrapezoids) enabledShapes.push('trapezoid')
+    // if (params.includeParallelograms) enabledShapes.push('parallelogram')
+    // if (params.includeTrapezoids) enabledShapes.push('trapezoid')
     
     if (enabledShapes.length === 0) {
       throw new Error('At least one shape type must be enabled')
@@ -208,11 +208,11 @@ export class AreaGenerator extends BaseGenerator {
     const unit = this.getUnit(params)
     
     // Determine if this should be a word problem
-    if (params.includeWordProblems && Math.random() < 0.4) {
-      return this.generateWordProblem(shape, unit, params)
-    } else {
+    // if (params.includeWordProblems && Math.random() < 0.4) {
+    //   return this.generateWordProblem(shape, unit, params)
+    // } else {
       return this.generateBasicProblem(shape, unit, params)
-    }
+    // }
   }
 
   /**
@@ -232,10 +232,10 @@ export class AreaGenerator extends BaseGenerator {
         return this.generateTriangleProblem(unit, params)
       case 'circle':
         return this.generateCircleProblem(unit, params)
-      case 'parallelogram':
-        return this.generateParallelogramProblem(unit, params)
-      case 'trapezoid':
-        return this.generateTrapezoidProblem(unit, params)
+      // case 'parallelogram':
+      //   return this.generateParallelogramProblem(unit, params)
+      // case 'trapezoid':
+      //   return this.generateTrapezoidProblem(unit, params)
       default:
         return this.generateRectangleProblem(unit, params)
     }
@@ -250,10 +250,10 @@ export class AreaGenerator extends BaseGenerator {
     if (params.showFormulas) {
       steps.push('\\text{Area of rectangle: } A = l \\times w')
     }
-    if (params.showSteps) {
-      steps.push(`A = ${this.formatNumber(length)} \\times ${this.formatNumber(width)}`)
-      steps.push(`A = ${this.formatNumber(area)} \\text{ ${unit}}^2`)
-    }
+    // if (params.showSteps) {
+    //   steps.push(`A = ${this.formatNumber(length)} \\times ${this.formatNumber(width)}`)
+    //   steps.push(`A = ${this.formatNumber(area)} \\text{ ${unit}}^2`)
+    // }
     
     const problem = {
       question: `Find the area of a rectangle with length ${this.formatNumber(length)} ${unit} and width ${this.formatNumber(width)} ${unit}.`,
@@ -287,10 +287,10 @@ export class AreaGenerator extends BaseGenerator {
     if (params.showFormulas) {
       steps.push('\\text{Area of square: } A = s^2')
     }
-    if (params.showSteps) {
-      steps.push(`A = ${this.formatNumber(side)}^2`)
-      steps.push(`A = ${this.formatNumber(area)} \\text{ ${unit}}^2`)
-    }
+    // if (params.showSteps) {
+    //   steps.push(`A = ${this.formatNumber(side)}^2`)
+    //   steps.push(`A = ${this.formatNumber(area)} \\text{ ${unit}}^2`)
+    // }
     
     const problem = {
       question: `Find the area of a square with side length ${this.formatNumber(side)} ${unit}.`,
@@ -325,11 +325,11 @@ export class AreaGenerator extends BaseGenerator {
     if (params.showFormulas) {
       steps.push('\\text{Area of triangle: } A = \\frac{1}{2} \\times b \\times h')
     }
-    if (params.showSteps) {
-      steps.push(`A = \\frac{1}{2} \\times ${this.formatNumber(base)} \\times ${this.formatNumber(height)}`)
-      steps.push(`A = \\frac{${this.formatNumber(base * height)}}{2}`)
-      steps.push(`A = ${this.formatNumber(area)} \\text{ ${unit}}^2`)
-    }
+    // if (params.showSteps) {
+    //   steps.push(`A = \\frac{1}{2} \\times ${this.formatNumber(base)} \\times ${this.formatNumber(height)}`)
+    //   steps.push(`A = \\frac{${this.formatNumber(base * height)}}{2}`)
+    //   steps.push(`A = ${this.formatNumber(area)} \\text{ ${unit}}^2`)
+    // }
     
     const problem = {
       question: `Find the area of a triangle with base ${this.formatNumber(base)} ${unit} and height ${this.formatNumber(height)} ${unit}.`,
@@ -388,6 +388,91 @@ export class AreaGenerator extends BaseGenerator {
     // Add visual diagram
     if (params.showVisualDiagrams) {
       problem.diagram = this.generateDiagram('circle', { radius }, unit, params)
+    }
+    
+    return problem
+  }
+
+  generateParallelogramProblem(unit, params) {
+    const base = this.generateMeasurement(params)
+    const height = this.generateMeasurement(params)
+    const area = base * height
+    
+    const steps = []
+    if (params.showFormulas) {
+      steps.push('\\text{Area of parallelogram: } A = b \\times h')
+    }
+    if (params.showSteps) {
+      steps.push(`A = ${this.formatNumber(base)} \\times ${this.formatNumber(height)}`)
+      steps.push(`A = ${this.formatNumber(area)} \\text{ ${unit}}^2`)
+    }
+    
+    const problem = {
+      question: `Find the area of a parallelogram with base ${this.formatNumber(base)} ${unit} and height ${this.formatNumber(height)} ${unit}.`,
+      questionLaTeX: `\\text{Find the area of a parallelogram with base ${this.formatNumber(base)} ${unit} and height ${this.formatNumber(height)} ${unit}.}`,
+      answer: `${this.formatNumber(area)} ${unit}²`,
+      answerLaTeX: `${this.formatNumber(area)} \\text{ ${unit}}^2`,
+      steps: steps,
+      metadata: {
+        shape: 'parallelogram',
+        measurements: { base, height },
+        unit: unit,
+        area: area,
+        difficulty: 'medium',
+        estimatedTime: '45 seconds'
+      }
+    }
+    
+    // Add visual diagram
+    if (params.showVisualDiagrams) {
+      problem.diagram = this.generateDiagram('parallelogram', { base, height }, unit, params)
+    }
+    
+    return problem
+  }
+
+  generateTrapezoidProblem(unit, params) {
+    const base1 = this.generateMeasurement(params)
+    let base2 = this.generateMeasurement(params)
+    
+    // Ensure bases are different for variety
+    while (base2 === base1) {
+      base2 = this.generateMeasurement(params)
+    }
+    
+    const height = this.generateMeasurement(params)
+    const area = 0.5 * (base1 + base2) * height
+    
+    const steps = []
+    if (params.showFormulas) {
+      steps.push('\\text{Area of trapezoid: } A = \\frac{1}{2} \\times (b_1 + b_2) \\times h')
+    }
+    if (params.showSteps) {
+      steps.push(`A = \\frac{1}{2} \\times (${this.formatNumber(base1)} + ${this.formatNumber(base2)}) \\times ${this.formatNumber(height)}`)
+      steps.push(`A = \\frac{1}{2} \\times ${this.formatNumber(base1 + base2)} \\times ${this.formatNumber(height)}`)
+      steps.push(`A = \\frac{${this.formatNumber((base1 + base2) * height)}}{2}`)
+      steps.push(`A = ${this.formatNumber(area)} \\text{ ${unit}}^2`)
+    }
+    
+    const problem = {
+      question: `Find the area of a trapezoid with parallel bases of ${this.formatNumber(base1)} ${unit} and ${this.formatNumber(base2)} ${unit}, and height ${this.formatNumber(height)} ${unit}.`,
+      questionLaTeX: `\\text{Find the area of a trapezoid with parallel bases of ${this.formatNumber(base1)} ${unit} and ${this.formatNumber(base2)} ${unit}, and height ${this.formatNumber(height)} ${unit}.}`,
+      answer: `${this.formatNumber(area)} ${unit}²`,
+      answerLaTeX: `${this.formatNumber(area)} \\text{ ${unit}}^2`,
+      steps: steps,
+      metadata: {
+        shape: 'trapezoid',
+        measurements: { base1, base2, height },
+        unit: unit,
+        area: area,
+        difficulty: 'hard',
+        estimatedTime: '60 seconds'
+      }
+    }
+    
+    // Add visual diagram
+    if (params.showVisualDiagrams) {
+      problem.diagram = this.generateDiagram('trapezoid', { base1, base2, height }, unit, params)
     }
     
     return problem
@@ -521,7 +606,8 @@ export class AreaGenerator extends BaseGenerator {
    * @returns {Object} Diagram configuration
    */
   generateDiagram(shape, measurements, unit, params) {
-    const size = getDiagramSize('standard', params.diagramSize)
+    // Use wider dimensions for area diagrams since they include measurements
+    const size = getDiagramSize('wide', params.diagramSize)
     
     return {
       type: 'geometry-renderer',
@@ -554,10 +640,10 @@ export class AreaGenerator extends BaseGenerator {
         return ['base', 'height']
       case 'circle':
         return ['radius']
-      case 'parallelogram':
-        return ['base', 'height']
-      case 'trapezoid':
-        return ['base1', 'base2', 'height']
+      // case 'parallelogram':
+      //   return ['base', 'height']
+      // case 'trapezoid':
+      //   return ['base1', 'base2', 'height']
       default:
         return ['area']
     }

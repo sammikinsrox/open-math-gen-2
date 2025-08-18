@@ -38,9 +38,9 @@ export class AnglesGenerator extends BaseGenerator {
         minAngle: 10,
         maxAngle: 170,
         allowReflex: false,
-        showAngleMarks: true,
+        // showAngleMarks: true,
         showMeasurements: true,
-        includeWordProblems: false,
+        // includeWordProblems: false,
         showVisualDiagrams: true,
         diagramSize: 'medium',
         diagramTheme: 'educational'
@@ -115,21 +115,21 @@ export class AnglesGenerator extends BaseGenerator {
           label: 'Allow Reflex Angles',
           description: 'Include angles greater than 180°'
         },
-        showAngleMarks: {
-          type: 'boolean',
-          label: 'Show Angle Marks',
-          description: 'Display angle arc marks in diagrams'
-        },
+        // showAngleMarks: {
+        //   type: 'boolean',
+        //   label: 'Show Angle Marks',
+        //   description: 'Display angle arc marks in diagrams'
+        // },
         showMeasurements: {
           type: 'boolean',
           label: 'Show Measurements',
           description: 'Display angle measurements in diagrams'
         },
-        includeWordProblems: {
-          type: 'boolean',
-          label: 'Include Word Problems',
-          description: 'Include real-world angle problems'
-        },
+        // includeWordProblems: {
+        //   type: 'boolean',
+        //   label: 'Include Word Problems',
+        //   description: 'Include real-world angle problems'
+        // },
         showVisualDiagrams: {
           type: 'boolean',
           label: 'Show Visual Diagrams',
@@ -364,6 +364,78 @@ export class AnglesGenerator extends BaseGenerator {
     return problem
   }
   
+  generateVerticalAnglesProblem(params) {
+    const angle1 = this.generateAngle(params)
+    const angle2 = angle1 // Vertical angles are equal
+    const angle3 = this.generateAngle(params)
+    const angle4 = angle3 // Vertical angles are equal
+    
+    const problem = {
+      question: `Two lines intersect forming vertical angles. If one angle measures ${angle1}°, what is the measure of its vertical angle?`,
+      questionLaTeX: `\\text{Two lines intersect forming vertical angles.} \\\\\\\\ \\text{If one angle measures ${angle1}°, what is the measure of its vertical angle?}`,
+      answer: `${angle2}°`,
+      answerLaTeX: `${angle2}°`,
+      steps: [
+        `\\text{Vertical angles are formed when two lines intersect}`,
+        `\\text{Vertical angles are always equal}`,
+        `\\text{Therefore, the vertical angle also measures ${angle2}°}`
+      ],
+      metadata: {
+        problemType: 'vertical',
+        angle1: angle1,
+        angle2: angle2,
+        angle3: angle3,
+        angle4: angle4,
+        difficulty: 'medium',
+        estimatedTime: '40 seconds'
+      }
+    }
+    
+    if (params.showVisualDiagrams) {
+      problem.diagram = this.generateVerticalAnglesDiagram(angle1, angle2, angle3, angle4, params)
+    }
+    
+    return problem
+  }
+  
+  generateAngleAdditionProblem(params) {
+    // Generate two adjacent angles that form a larger angle
+    const angle1 = this.generateAngle({ ...params, maxAngle: 80 })
+    const angle2 = this.generateAngle({ ...params, maxAngle: 80 })
+    const totalAngle = angle1 + angle2
+    
+    // Ensure the total angle is reasonable
+    if (totalAngle > params.maxAngle) {
+      return this.generateAngleAdditionProblem(params) // Regenerate
+    }
+    
+    const problem = {
+      question: `Two adjacent angles measure ${angle1}° and ${angle2}°. What is the measure of the angle they form together?`,
+      questionLaTeX: `\\text{Two adjacent angles measure ${angle1}° and ${angle2}°.} \\\\\\\\ \\text{What is the measure of the angle they form together?}`,
+      answer: `${totalAngle}°`,
+      answerLaTeX: `${totalAngle}°`,
+      steps: [
+        `\\text{Adjacent angles can be added together}`,
+        `\\text{Total angle = ${angle1}° + ${angle2}°}`,
+        `\\text{Total angle = ${totalAngle}°}`
+      ],
+      metadata: {
+        problemType: 'addition',
+        angle1: angle1,
+        angle2: angle2,
+        totalAngle: totalAngle,
+        difficulty: 'medium',
+        estimatedTime: '35 seconds'
+      }
+    }
+    
+    if (params.showVisualDiagrams) {
+      problem.diagram = this.generateAngleAdditionDiagram(angle1, angle2, totalAngle, params)
+    }
+    
+    return problem
+  }
+
   generateShapeAnglesProblem(params) {
     const shapes = ['triangle', 'quadrilateral']
     const shape = this.getRandomElement(shapes)
@@ -551,6 +623,56 @@ export class AnglesGenerator extends BaseGenerator {
         center: true
       },
       svgId: `triangle-angles-${angles.join('-')}-${Date.now()}`
+    }
+  }
+  
+  generateVerticalAnglesDiagram(angle1, angle2, angle3, angle4, params) {
+    const sizes = {
+      small: { width: 200, height: 150 },
+      medium: { width: 300, height: 200 },
+      large: { width: 400, height: 250 }
+    }
+    
+    const size = sizes[params.diagramSize] || sizes.medium
+    
+    return {
+      type: 'geometry-renderer',
+      shape: 'vertical-angles',
+      measurements: { angle1, angle2, angle3, angle4 },
+      config: {
+        width: size.width,
+        height: size.height,
+        theme: params.diagramTheme,
+        showMeasurements: params.showMeasurements,
+        showAngleMarks: params.showAngleMarks,
+        center: true
+      },
+      svgId: `vertical-angles-${angle1}-${angle3}-${Date.now()}`
+    }
+  }
+  
+  generateAngleAdditionDiagram(angle1, angle2, totalAngle, params) {
+    const sizes = {
+      small: { width: 250, height: 150 },
+      medium: { width: 350, height: 200 },
+      large: { width: 450, height: 250 }
+    }
+    
+    const size = sizes[params.diagramSize] || sizes.medium
+    
+    return {
+      type: 'geometry-renderer',
+      shape: 'angle-addition',
+      measurements: { angle1, angle2, totalAngle },
+      config: {
+        width: size.width,
+        height: size.height,
+        theme: params.diagramTheme,
+        showMeasurements: params.showMeasurements,
+        showAngleMarks: params.showAngleMarks,
+        center: true
+      },
+      svgId: `angle-addition-${angle1}-${angle2}-${Date.now()}`
     }
   }
 

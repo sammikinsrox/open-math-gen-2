@@ -34,8 +34,8 @@ export class SymmetryGenerator extends BaseGenerator {
         includeIdentification: true,
         includeDrawing: false,
         includeShapes: true,
-        includeLetters: true,
-        includePatterns: false,
+        // includeLetters: true,
+        // includePatterns: false,
         showVisualDiagrams: true,
         diagramSize: 'medium',
         diagramTheme: 'educational',
@@ -87,16 +87,16 @@ export class SymmetryGenerator extends BaseGenerator {
           label: 'Include Geometric Shapes',
           description: 'Use geometric shapes for symmetry'
         },
-        includeLetters: {
-          type: 'boolean',
-          label: 'Include Letters',
-          description: 'Use letters for symmetry identification'
-        },
-        includePatterns: {
-          type: 'boolean',
-          label: 'Include Patterns',
-          description: 'Use patterns and designs'
-        },
+        // includeLetters: {
+        //   type: 'boolean',
+        //   label: 'Include Letters',
+        //   description: 'Use letters for symmetry identification'
+        // },
+        // includePatterns: {
+        //   type: 'boolean',
+        //   label: 'Include Patterns',
+        //   description: 'Use patterns and designs'
+        // },
         showVisualDiagrams: {
           type: 'boolean',
           label: 'Show Visual Diagrams',
@@ -198,15 +198,19 @@ export class SymmetryGenerator extends BaseGenerator {
     const subject = this.getSymmetrySubject(params)
     const symmetryData = this.getSymmetryData(subject.type, subject.name)
     
+    const isInfinite = symmetryData.lineSymmetry === 999
+    const answer = isInfinite ? 'Infinite' : symmetryData.lineSymmetry.toString()
+    const count = isInfinite ? 'infinite' : symmetryData.lineSymmetry
+    
     const problem = {
       question: `How many lines of symmetry does this ${subject.type} have?`,
       questionLaTeX: `\\text{How many lines of symmetry does this ${subject.type} have?}`,
-      answer: symmetryData.lineSymmetry.toString(),
-      answerLaTeX: symmetryData.lineSymmetry.toString(),
+      answer: answer,
+      answerLaTeX: isInfinite ? '\\text{Infinite}' : symmetryData.lineSymmetry.toString(),
       steps: [
         `\\text{A line of symmetry divides a shape into two identical halves}`,
         `\\text{Count each line that creates mirror images}`,
-        `\\text{Total lines of symmetry: ${symmetryData.lineSymmetry}}`
+        `\\text{Total lines of symmetry: ${count}}`
       ],
       metadata: {
         problemType: 'lineSymmetry',
@@ -229,18 +233,22 @@ export class SymmetryGenerator extends BaseGenerator {
     const symmetryData = this.getSymmetryData(subject.type, subject.name)
     
     const hasRotational = symmetryData.rotationalOrder > 1
+    const isInfinite = symmetryData.rotationalOrder === 999
+    
     const question = hasRotational ? 
       `What is the order of rotational symmetry for this ${subject.type}?` :
       `Does this ${subject.type} have rotational symmetry?`
     
     const answer = hasRotational ? 
-      symmetryData.rotationalOrder.toString() : 
+      (isInfinite ? 'Infinite' : symmetryData.rotationalOrder.toString()) : 
       'No'
+    
+    const order = isInfinite ? 'infinite' : symmetryData.rotationalOrder
     
     const steps = hasRotational ? [
       `\\text{Rotational symmetry means the shape looks the same after rotation}`,
       `\\text{Count how many times it matches during a full 360° turn}`,
-      `\\text{Order of rotational symmetry: ${symmetryData.rotationalOrder}}`
+      `\\text{Order of rotational symmetry: ${order}}`
     ] : [
       `\\text{Rotational symmetry means the shape looks the same after rotation}`,
       `\\text{This shape does not have rotational symmetry}`
@@ -250,7 +258,7 @@ export class SymmetryGenerator extends BaseGenerator {
       question: question,
       questionLaTeX: `\\text{${question}}`,
       answer: answer,
-      answerLaTeX: `\\text{${answer}}`,
+      answerLaTeX: isInfinite && hasRotational ? '\\text{Infinite}' : `\\text{${answer}}`,
       steps: steps,
       metadata: {
         problemType: 'rotationalSymmetry',
@@ -373,7 +381,11 @@ export class SymmetryGenerator extends BaseGenerator {
   }
   
   generateDrawingProblem(params) {
-    const subject = this.getSymmetrySubject(params)
+    // Get a subject that's not a circle (infinite symmetry lines)
+    let subject = this.getSymmetrySubject(params)
+    while (subject.name === 'circle') {
+      subject = this.getSymmetrySubject(params)
+    }
     const symmetryData = this.getSymmetryData(subject.type, subject.name)
     
     const problem = {
@@ -420,33 +432,33 @@ export class SymmetryGenerator extends BaseGenerator {
       )
     }
     
-    if (params.includeLetters) {
-      subjects.push(
-        { type: 'letter', name: 'A' },
-        { type: 'letter', name: 'B' },
-        { type: 'letter', name: 'C' },
-        { type: 'letter', name: 'D' },
-        { type: 'letter', name: 'E' },
-        { type: 'letter', name: 'H' },
-        { type: 'letter', name: 'I' },
-        { type: 'letter', name: 'M' },
-        { type: 'letter', name: 'O' },
-        { type: 'letter', name: 'T' },
-        { type: 'letter', name: 'U' },
-        { type: 'letter', name: 'V' },
-        { type: 'letter', name: 'W' },
-        { type: 'letter', name: 'X' },
-        { type: 'letter', name: 'Y' }
-      )
-    }
+    // if (params.includeLetters) {
+    //   subjects.push(
+    //     { type: 'letter', name: 'A' },
+    //     { type: 'letter', name: 'B' },
+    //     { type: 'letter', name: 'C' },
+    //     { type: 'letter', name: 'D' },
+    //     { type: 'letter', name: 'E' },
+    //     { type: 'letter', name: 'H' },
+    //     { type: 'letter', name: 'I' },
+    //     { type: 'letter', name: 'M' },
+    //     { type: 'letter', name: 'O' },
+    //     { type: 'letter', name: 'T' },
+    //     { type: 'letter', name: 'U' },
+    //     { type: 'letter', name: 'V' },
+    //     { type: 'letter', name: 'W' },
+    //     { type: 'letter', name: 'X' },
+    //     { type: 'letter', name: 'Y' }
+    //   )
+    // }
     
-    if (params.includePatterns) {
-      subjects.push(
-        { type: 'pattern', name: 'star' },
-        { type: 'pattern', name: 'flower' },
-        { type: 'pattern', name: 'snowflake' }
-      )
-    }
+    // if (params.includePatterns) {
+    //   subjects.push(
+    //     { type: 'pattern', name: 'star' },
+    //     { type: 'pattern', name: 'flower' },
+    //     { type: 'pattern', name: 'snowflake' }
+    //   )
+    // }
     
     return this.getRandomElement(subjects)
   }
@@ -460,7 +472,7 @@ export class SymmetryGenerator extends BaseGenerator {
         'square': { lineSymmetry: 4, rotationalOrder: 4 },
         'rectangle': { lineSymmetry: 2, rotationalOrder: 2 },
         'triangle': { lineSymmetry: 3, rotationalOrder: 3 },
-        'circle': { lineSymmetry: 0, rotationalOrder: 0 }, // Infinite, but simplified
+        'circle': { lineSymmetry: 999, rotationalOrder: 999 }, // Infinite symmetry
         'hexagon': { lineSymmetry: 6, rotationalOrder: 6 },
         'pentagon': { lineSymmetry: 5, rotationalOrder: 5 },
         'diamond': { lineSymmetry: 2, rotationalOrder: 2 }

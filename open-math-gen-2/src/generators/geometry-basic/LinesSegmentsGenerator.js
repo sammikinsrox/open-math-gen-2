@@ -35,7 +35,7 @@ export class LinesSegmentsGenerator extends BaseGenerator {
         includeRays: false,
         includeMeasurement: false,
         includeLineRelationships: true,
-        includeWordProblems: false,
+        // includeWordProblems: false,
         showVisualDiagrams: true,
         diagramSize: 'medium',
         diagramTheme: 'educational',
@@ -92,11 +92,11 @@ export class LinesSegmentsGenerator extends BaseGenerator {
           label: 'Line Relationships',
           description: 'Identify relationships between lines'
         },
-        includeWordProblems: {
-          type: 'boolean',
-          label: 'Include Word Problems',
-          description: 'Include real-world line problems'
-        },
+        // includeWordProblems: {
+        //   type: 'boolean',
+        //   label: 'Include Word Problems',
+        //   description: 'Include real-world line problems'
+        // },
         showVisualDiagrams: {
           type: 'boolean',
           label: 'Show Visual Diagrams',
@@ -296,7 +296,11 @@ export class LinesSegmentsGenerator extends BaseGenerator {
     ]
     
     const question = this.getRandomElement(questions)
-    const pairCount = Math.floor(Math.random() * 3) + 1 // 1-3 pairs
+    
+    // Limit pair count based on diagram size to ensure all pairs are visible
+    const maxPairs = params.diagramSize === 'small' ? 2 : 
+                     params.diagramSize === 'large' ? 3 : 2; // medium = 2
+    const pairCount = Math.floor(Math.random() * maxPairs) + 1
     
     let answer = ''
     let steps = []
@@ -309,11 +313,29 @@ export class LinesSegmentsGenerator extends BaseGenerator {
         `\\text{Total pairs: ${pairCount}}`
       ]
     } else if (question.includes('Which')) {
-      answer = 'Lines AB and CD'
-      steps = [
-        `\\text{Parallel lines never intersect}`,
-        `\\text{Lines AB and CD are parallel}`
-      ]
+      // Generate answer based on actual diagram labeling (A, B, C, D...)
+      if (pairCount === 1) {
+        answer = 'Lines A and B'
+        steps = [
+          `\\text{Parallel lines never intersect}`,
+          `\\text{Lines A and B are parallel}`
+        ]
+      } else if (pairCount === 2) {
+        answer = 'Lines A and B, Lines C and D'
+        steps = [
+          `\\text{Parallel lines never intersect}`,
+          `\\text{Lines A and B are parallel}`,
+          `\\text{Lines C and D are parallel}`
+        ]
+      } else {
+        answer = 'Lines A and B, Lines C and D, Lines E and F'
+        steps = [
+          `\\text{Parallel lines never intersect}`,
+          `\\text{Lines A and B are parallel}`,
+          `\\text{Lines C and D are parallel}`,
+          `\\text{Lines E and F are parallel}`
+        ]
+      }
     } else {
       answer = 'parallel'
       steps = [
@@ -647,6 +669,57 @@ export class LinesSegmentsGenerator extends BaseGenerator {
         center: true
       },
       svgId: `intersecting-lines-${lineCount}-${Date.now()}`
+    }
+  }
+  
+  generateRaysDiagram(rayCount, params) {
+    const sizes = {
+      small: { width: 250, height: 200 },
+      medium: { width: 350, height: 250 },
+      large: { width: 450, height: 300 }
+    }
+    
+    const size = sizes[params.diagramSize] || sizes.medium
+    
+    return {
+      type: 'geometry-renderer',
+      shape: 'rays-figure',
+      rayCount: rayCount,
+      config: {
+        width: size.width,
+        height: size.height,
+        theme: params.diagramTheme,
+        showLabels: true,
+        showArrows: true,
+        center: true
+      },
+      svgId: `rays-figure-${rayCount}-${Date.now()}`
+    }
+  }
+  
+  generateMeasurementDiagram(length, unit, params) {
+    const sizes = {
+      small: { width: 250, height: 150 },
+      medium: { width: 350, height: 200 },
+      large: { width: 450, height: 250 }
+    }
+    
+    const size = sizes[params.diagramSize] || sizes.medium
+    
+    return {
+      type: 'geometry-renderer',
+      shape: 'line-segment',
+      measurements: { length },
+      unit: unit,
+      config: {
+        width: size.width,
+        height: size.height,
+        theme: params.diagramTheme,
+        showMeasurements: true,
+        showRuler: true,
+        center: true
+      },
+      svgId: `line-segment-${length}-${Date.now()}`
     }
   }
 

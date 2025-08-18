@@ -257,7 +257,14 @@ export class PropertiesGenerator extends BaseGenerator {
   generatePropertyIdProblem(params) {
     const shapeData = this.getRandomShapeData(params.complexityLevel)
     const properties = this.getShapeProperties(shapeData)
-    const propertyKey = this.getRandomElement(Object.keys(properties))
+    
+    // For circles, only ask about sides and vertices
+    let validProperties = Object.keys(properties)
+    if (shapeData.name === 'circle') {
+      validProperties = ['sides', 'vertices']
+    }
+    
+    const propertyKey = this.getRandomElement(validProperties)
     const propertyValue = properties[propertyKey]
     
     const propertyQuestions = {
@@ -473,7 +480,11 @@ export class PropertiesGenerator extends BaseGenerator {
   }
   
   generateAnglePropertiesProblem(params) {
-    const shapeData = this.getRandomShapeData(params.complexityLevel)
+    let shapeData = this.getRandomShapeData(params.complexityLevel)
+    // Exclude circles from angle properties
+    while (shapeData.name === 'circle') {
+      shapeData = this.getRandomShapeData(params.complexityLevel)
+    }
     
     const angleQuestions = [
       { question: `How many angles does a ${shapeData.name} have?`, answer: shapeData.vertices },
@@ -627,7 +638,7 @@ export class PropertiesGenerator extends BaseGenerator {
       case 'rectangle':
         properties.rightAngles = 4
         properties.parallelSides = 2
-        properties.equalSides = 0
+        properties.equalSides = 2 // 2 pairs of equal sides
         break
       case 'rhombus':
         properties.rightAngles = 0
@@ -637,7 +648,24 @@ export class PropertiesGenerator extends BaseGenerator {
       case 'parallelogram':
         properties.rightAngles = 0
         properties.parallelSides = 2
+        properties.equalSides = 2 // 2 pairs of equal sides
+        break
+      case 'trapezoid':
+        properties.rightAngles = 0
+        properties.parallelSides = 1
         properties.equalSides = 0
+        break
+      case 'triangle':
+        properties.rightAngles = 0
+        properties.parallelSides = 0
+        properties.equalSides = 0
+        break
+      case 'pentagon':
+      case 'hexagon':
+      case 'octagon':
+        properties.rightAngles = 0
+        properties.parallelSides = 0
+        properties.equalSides = shapeData.sides // Regular polygons have all equal sides
         break
     }
     

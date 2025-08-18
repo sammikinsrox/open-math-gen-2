@@ -281,8 +281,8 @@ const shouldShowParameter = (paramKey) => {
               </div>
               
               <!-- Answer (shown for preview) -->
-              <div class="text-sm text-slate-600 border-t pt-2">
-                <strong>Answer: </strong>
+              <div class="text-sm text-slate-600 border-t pt-2 flex items-baseline">
+                <strong class="mr-1">Answer:</strong>
                 <MathExpression 
                   v-if="problem.answerLaTeX" 
                   :expression="problem.answerLaTeX" 

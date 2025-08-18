@@ -757,7 +757,7 @@ const fontSizeClasses = computed(() => {
 .worksheet-diagram {
   margin: 1rem 0;
   display: flex;
-  justify-content: center;
+  justify-content: left;
   width: 100%;
 }
 

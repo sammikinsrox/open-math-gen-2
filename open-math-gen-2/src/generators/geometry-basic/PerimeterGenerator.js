@@ -437,7 +437,8 @@ export class PerimeterGenerator extends BaseGenerator {
    * @returns {Object} Diagram configuration
    */
   generateDiagram(shape, measurements, unit, params) {
-    const size = getDiagramSize('standard', params.diagramSize)
+    // Use wider dimensions for perimeter diagrams since they include measurements
+    const size = getDiagramSize('wide', params.diagramSize)
     
     return {
       type: 'geometry-renderer',

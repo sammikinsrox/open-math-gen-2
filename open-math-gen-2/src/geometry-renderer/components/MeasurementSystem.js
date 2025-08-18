@@ -106,14 +106,24 @@ export class MeasurementSystem {
     // Calculate the angle of the dimension line in degrees
     let lineAngle = Math.atan2(dy2 - dy1, dx2 - dx1) * 180 / Math.PI;
     
-    // Determine text positioning based on offset direction
-    let textOffsetDirection = offset > 0 ? 90 : 90; // Always position consistently
+    // Determine text positioning based on line orientation
+    let textOffsetDirection;
     let textRotation = lineAngle;
+    
+    // For horizontal or nearly horizontal lines, position text above the line
+    if (Math.abs(lineAngle) < 30 || Math.abs(lineAngle) > 150) {
+      textOffsetDirection = -90; // Above the line for horizontal measurements
+    } else {
+      textOffsetDirection = offset > 0 ? 90 : -90; // Standard positioning for non-horizontal
+    }
     
     // Keep text right-side-up by flipping if it would be upside down
     if (lineAngle > 90 || lineAngle < -90) {
       textRotation = lineAngle + 180;
-      textOffsetDirection = -textOffsetDirection;
+      // Don't flip the offset direction for horizontal lines to keep them above
+      if (!(Math.abs(lineAngle) < 30 || Math.abs(lineAngle) > 150)) {
+        textOffsetDirection = -textOffsetDirection;
+      }
     }
     
     // Calculate perpendicular direction for text offset
