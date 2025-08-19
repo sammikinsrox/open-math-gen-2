@@ -1,4 +1,5 @@
 import { BaseGenerator } from '../BaseGenerator.js'
+import { ParameterSchemaV2 } from '../ParameterSchemaV2.js'
 
 /**
  * Comparing Fractions Generator
@@ -6,6 +7,8 @@ import { BaseGenerator } from '../BaseGenerator.js'
  */
 export class ComparingFractionsGenerator extends BaseGenerator {
   constructor() {
+    const schemaV2 = new ParameterSchemaV2()
+    
     super({
       name: 'Comparing Fractions',
       description: 'Generate problems involving comparing fractions using greater than, less than, and equal to symbols',
@@ -36,81 +39,297 @@ export class ComparingFractionsGenerator extends BaseGenerator {
         forceCommonDenominators: false
       },
       
-      parameterSchema: {
-        problemCount: {
-          type: 'number',
-          label: 'Number of Problems',
-          description: 'How many fraction comparison problems to generate',
-          min: 1,
-          max: 100,
-          required: true
+      // Enhanced Parameter Schema V2 with beautiful categorization
+      parameterSchema: schemaV2.createSchema({
+        categories: {
+          general: schemaV2.createCategory({
+            id: 'general',
+            label: 'General Settings',
+            description: 'Basic configuration options',
+            icon: 'settings',
+            color: 'blue',
+            order: 1,
+            parameters: {
+              problemCount: schemaV2.createParameter({
+                type: 'number',
+                label: 'Number of Problems',
+                description: 'How many fraction comparison problems to generate',
+                min: 1,
+                max: 50,
+                required: true,
+                slider: true,
+                presets: [5, 8, 10, 15],
+                order: 1
+              })
+            }
+          }),
+          
+          comparisonTypes: schemaV2.createCategory({
+            id: 'comparisonTypes',
+            label: 'Comparison Types',
+            description: 'Choose which types of comparison problems to include',
+            icon: 'compare',
+            color: 'green',
+            order: 2,
+            parameters: {
+              includeTwoFractions: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Two Fractions',
+                description: 'Compare two fractions using <, >, or =',
+                helpText: 'Example: 2/3 ___ 3/4 (Answer: <)',
+                order: 1
+              }),
+              includeThreeFractions: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Three Fractions',
+                description: 'Order three fractions from smallest to largest',
+                helpText: 'Example: Order 1/2, 2/3, 3/5 from least to greatest',
+                order: 2
+              }),
+              includeFractionDecimal: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Fraction vs Decimal',
+                description: 'Compare fractions with decimal numbers',
+                helpText: 'Example: 3/4 ___ 0.8 (Answer: <)',
+                order: 3
+              })
+            }
+          }),
+          
+          denominatorTypes: schemaV2.createCategory({
+            id: 'denominatorTypes',
+            label: 'Denominator Types',
+            description: 'Control the difficulty based on denominators',
+            icon: 'pie_chart',
+            color: 'purple',
+            order: 3,
+            parameters: {
+              includeLikeDenominators: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Like Denominators',
+                description: 'Include problems with same denominators (easier)',
+                helpText: 'Examples: 2/5 vs 3/5, 1/8 vs 7/8',
+                order: 1
+              }),
+              includeUnlikeDenominators: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Unlike Denominators',
+                description: 'Include problems with different denominators (harder)',
+                helpText: 'Examples: 1/3 vs 2/5, 3/4 vs 5/6',
+                order: 2
+              })
+            }
+          }),
+          
+          fractionProperties: schemaV2.createCategory({
+            id: 'fractionProperties',
+            label: 'Fraction Properties',
+            description: 'Control the types of fractions included',
+            icon: 'layers',
+            color: 'orange',
+            order: 4,
+            parameters: {
+              includeMixedNumbers: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Include Mixed Numbers',
+                description: 'Include mixed numbers in comparison problems',
+                helpText: 'Examples: 1 1/2 vs 2/3, 2 1/4 vs 2.5',
+                order: 1
+              })
+            }
+          }),
+          
+          numberRanges: schemaV2.createCategory({
+            id: 'numberRanges',
+            label: 'Number Ranges',
+            description: 'Control the size of numerators and denominators',
+            icon: 'tag',
+            color: 'teal',
+            order: 5,
+            parameters: {
+              maxNumerator: schemaV2.createParameter({
+                type: 'number',
+                label: 'Maximum Numerator',
+                description: 'Largest numerator to use in fractions',
+                min: 1,
+                max: 20,
+                required: true,
+                slider: true,
+                presets: [8, 12, 15, 20],
+                helpText: 'Top number in fractions',
+                order: 1
+              }),
+              maxDenominator: schemaV2.createParameter({
+                type: 'number',
+                label: 'Maximum Denominator',
+                description: 'Largest denominator to use in fractions',
+                min: 2,
+                max: 20,
+                required: true,
+                slider: true,
+                presets: [8, 10, 12, 16],
+                helpText: 'Bottom number in fractions',
+                order: 2
+              })
+            }
+          }),
+          
+          displayOptions: schemaV2.createCategory({
+            id: 'displayOptions',
+            label: 'Display Options',
+            description: 'Control how solutions are presented',
+            icon: 'visibility',
+            color: 'pink',
+            order: 6,
+            parameters: {
+              showWorkSteps: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Show Work Steps',
+                description: 'Show steps for finding common denominators',
+                helpText: 'Displays the process of converting to equivalent fractions',
+                order: 1
+              }),
+              forceCommonDenominators: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Force Common Denominators',
+                description: 'Always use common denominators in solution steps',
+                helpText: 'Shows common denominator method even for like denominators',
+                order: 2
+              })
+            }
+          })
         },
-        includeTwoFractions: {
-          type: 'boolean',
-          label: 'Include Two Fractions',
-          description: 'Include comparing two fractions (2/3 vs 3/4)'
-        },
-        includeThreeFractions: {
-          type: 'boolean',
-          label: 'Include Three Fractions',
-          description: 'Include ordering three fractions'
-        },
-        includeFractionDecimal: {
-          type: 'boolean',
-          label: 'Include Fraction vs Decimal',
-          description: 'Include comparing fractions and decimals'
-        },
-        maxNumerator: {
-          type: 'number',
-          label: 'Maximum Numerator',
-          description: 'Largest numerator to use',
-          min: 1,
-          max: 25,
-          required: true
-        },
-        maxDenominator: {
-          type: 'number',
-          label: 'Maximum Denominator',
-          description: 'Largest denominator to use',
-          min: 2,
-          max: 25,
-          required: true
-        },
-        includeLikeDenominators: {
-          type: 'boolean',
-          label: 'Include Like Denominators',
-          description: 'Include problems with same denominators (easier)'
-        },
-        includeUnlikeDenominators: {
-          type: 'boolean',
-          label: 'Include Unlike Denominators',
-          description: 'Include problems with different denominators (harder)'
-        },
-        includeMixedNumbers: {
-          type: 'boolean',
-          label: 'Include Mixed Numbers',
-          description: 'Include mixed numbers in comparison problems'
-        },
-        showWorkSteps: {
-          type: 'boolean',
-          label: 'Show Work Steps',
-          description: 'Show steps for finding common denominators'
-        },
-        forceCommonDenominators: {
-          type: 'boolean',
-          label: 'Force Common Denominators',
-          description: 'Always use common denominators in solution steps'
-        }
-      }
+        
+        // Preset configurations for quick setup
+        presets: [
+          schemaV2.createPreset({
+            id: 'like-denominators-only',
+            label: 'Like Denominators Only',
+            description: 'Simple comparisons with same denominators',
+            icon: 'looks_one',
+            category: 'difficulty',
+            values: {
+              problemCount: 10,
+              includeTwoFractions: true,
+              includeThreeFractions: false,
+              includeFractionDecimal: false,
+              maxNumerator: 10,
+              maxDenominator: 12,
+              includeLikeDenominators: true,
+              includeUnlikeDenominators: false,
+              includeMixedNumbers: false,
+              showWorkSteps: false,
+              forceCommonDenominators: false
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'unlike-denominators-practice',
+            label: 'Unlike Denominators Practice',
+            description: 'Practice with different denominators requiring common denominators',
+            icon: 'compare_arrows',
+            category: 'difficulty',
+            values: {
+              problemCount: 12,
+              includeTwoFractions: true,
+              includeThreeFractions: false,
+              includeFractionDecimal: false,
+              maxNumerator: 12,
+              maxDenominator: 12,
+              includeLikeDenominators: false,
+              includeUnlikeDenominators: true,
+              includeMixedNumbers: false,
+              showWorkSteps: true,
+              forceCommonDenominators: true
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'ordering-practice',
+            label: 'Ordering Practice',
+            description: 'Practice ordering three fractions from least to greatest',
+            icon: 'sort',
+            category: 'scope',
+            values: {
+              problemCount: 8,
+              includeTwoFractions: false,
+              includeThreeFractions: true,
+              includeFractionDecimal: false,
+              maxNumerator: 10,
+              maxDenominator: 10,
+              includeLikeDenominators: true,
+              includeUnlikeDenominators: true,
+              includeMixedNumbers: false,
+              showWorkSteps: true,
+              forceCommonDenominators: false
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'mixed-numbers-comparisons',
+            label: 'Mixed Numbers Comparisons',
+            description: 'Compare fractions, mixed numbers, and decimals',
+            icon: 'layers',
+            category: 'scope',
+            values: {
+              problemCount: 10,
+              includeTwoFractions: true,
+              includeThreeFractions: false,
+              includeFractionDecimal: true,
+              maxNumerator: 8,
+              maxDenominator: 8,
+              includeLikeDenominators: true,
+              includeUnlikeDenominators: true,
+              includeMixedNumbers: true,
+              showWorkSteps: true,
+              forceCommonDenominators: false
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'comprehensive-comparisons',
+            label: 'Comprehensive Comparisons',
+            description: 'Mixed practice with all comparison types',
+            icon: 'all_inclusive',
+            category: 'scope',
+            values: {
+              problemCount: 15,
+              includeTwoFractions: true,
+              includeThreeFractions: true,
+              includeFractionDecimal: true,
+              maxNumerator: 15,
+              maxDenominator: 12,
+              includeLikeDenominators: true,
+              includeUnlikeDenominators: true,
+              includeMixedNumbers: true,
+              showWorkSteps: true,
+              forceCommonDenominators: false
+            }
+          })
+        ]
+      })
     })
   }
 
   generateProblem(parameters = {}) {
     const params = { ...this.defaultParameters, ...parameters }
     
-    const validation = this.validateParameters(params)
+    // Validate parameters using Parameter Schema V2
+    const validation = this.parameterSchema.validate(params)
     if (!validation.isValid) {
       throw new Error(`Invalid parameters: ${validation.errors.join(', ')}`)
+    }
+    
+    // Additional custom validation
+    const customErrors = []
+    if (!params.includeLikeDenominators && !params.includeUnlikeDenominators) {
+      customErrors.push('At least one denominator type must be enabled')
+    }
+    if (!params.includeTwoFractions && !params.includeThreeFractions && !params.includeFractionDecimal) {
+      customErrors.push('At least one comparison type must be enabled')
+    }
+    if (customErrors.length > 0) {
+      throw new Error(`Invalid parameters: ${customErrors.join(', ')}`)
     }
     
     // Build array of enabled comparison types

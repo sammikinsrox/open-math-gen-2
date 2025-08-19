@@ -1,4 +1,5 @@
 import { BaseGenerator } from '../BaseGenerator.js'
+import { ParameterSchemaV2 } from '../ParameterSchemaV2.js'
 
 /**
  * Length Generator
@@ -6,6 +7,8 @@ import { BaseGenerator } from '../BaseGenerator.js'
  */
 export class LengthGenerator extends BaseGenerator {
   constructor() {
+    const schemaV2 = new ParameterSchemaV2()
+    
     super({
       name: 'Length',
       description: 'Generate problems involving length measurements, conversions, and calculations',
@@ -33,63 +36,234 @@ export class LengthGenerator extends BaseGenerator {
         maxValue: 100
       },
       
-      parameterSchema: {
-        problemCount: {
-          type: 'number',
-          label: 'Number of Problems',
-          description: 'How many length problems to generate',
-          min: 1,
-          max: 100,
-          required: true
+      // Enhanced Parameter Schema V2 with beautiful categorization
+      parameterSchema: schemaV2.createSchema({
+        categories: {
+          general: schemaV2.createCategory({
+            id: 'general',
+            label: 'General Settings',
+            description: 'Basic configuration options',
+            icon: 'settings',
+            color: 'blue',
+            order: 1,
+            parameters: {
+              problemCount: schemaV2.createParameter({
+                type: 'number',
+                label: 'Number of Problems',
+                description: 'How many length problems to generate',
+                min: 1,
+                max: 50,
+                required: true,
+                slider: true,
+                presets: [5, 8, 10, 15],
+                order: 1
+              })
+            }
+          }),
+          
+          problemTypes: schemaV2.createCategory({
+            id: 'problemTypes',
+            label: 'Problem Types',
+            description: 'Choose which types of length problems to include',
+            icon: 'straighten',
+            color: 'green',
+            order: 2,
+            parameters: {
+              includeBasicMeasurement: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Basic Measurement',
+                description: 'Problems about measuring and identifying lengths',
+                helpText: 'Examples: "How long is this line?", "Choose the longer object"',
+                order: 1
+              }),
+              includeConversion: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Unit Conversions',
+                description: 'Convert between different length units',
+                helpText: 'Examples: Convert 3 feet to inches, 2 meters to centimeters',
+                order: 2
+              }),
+              includeArithmetic: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Length Arithmetic',
+                description: 'Add and subtract length measurements',
+                helpText: 'Examples: 5 cm + 3 cm = ?, 2 ft - 8 in = ?',
+                order: 3
+              })
+            }
+          }),
+          
+          unitSystems: schemaV2.createCategory({
+            id: 'unitSystems',
+            label: 'Unit Systems',
+            description: 'Choose which measurement systems to use',
+            icon: 'public',
+            color: 'purple',
+            order: 3,
+            parameters: {
+              useMetricUnits: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Metric Units',
+                description: 'Include metric length units',
+                helpText: 'Units: millimeters (mm), centimeters (cm), meters (m), kilometers (km)',
+                order: 1
+              }),
+              useImperialUnits: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Imperial Units',
+                description: 'Include imperial/US customary length units',
+                helpText: 'Units: inches (in), feet (ft), yards (yd), miles (mi)',
+                order: 2
+              })
+            }
+          }),
+          
+          numberProperties: schemaV2.createCategory({
+            id: 'numberProperties',
+            label: 'Number Properties',
+            description: 'Control the complexity of numbers used',
+            icon: 'tag',
+            color: 'orange',
+            order: 4,
+            parameters: {
+              maxValue: schemaV2.createParameter({
+                type: 'number',
+                label: 'Maximum Value',
+                description: 'Largest measurement value to use in problems',
+                min: 10,
+                max: 500,
+                required: true,
+                slider: true,
+                presets: [50, 100, 200, 500],
+                helpText: 'Controls the size of numbers in measurements',
+                order: 1
+              }),
+              allowDecimals: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Allow Decimals',
+                description: 'Allow decimal values in measurements',
+                helpText: 'Examples: 2.5 meters, 1.75 feet, 3.2 centimeters',
+                order: 2
+              })
+            }
+          })
         },
-        includeBasicMeasurement: {
-          type: 'boolean',
-          label: 'Include Basic Measurement',
-          description: 'Include problems asking to measure or identify lengths'
-        },
-        includeConversion: {
-          type: 'boolean',
-          label: 'Include Conversions',
-          description: 'Include unit conversion problems'
-        },
-        includeArithmetic: {
-          type: 'boolean',
-          label: 'Include Arithmetic',
-          description: 'Include addition/subtraction of lengths'
-        },
-        useMetricUnits: {
-          type: 'boolean',
-          label: 'Use Metric Units',
-          description: 'Include metric units (mm, cm, m, km)'
-        },
-        useImperialUnits: {
-          type: 'boolean',
-          label: 'Use Imperial Units',
-          description: 'Include imperial units (in, ft, yd, mi)'
-        },
-        allowDecimals: {
-          type: 'boolean',
-          label: 'Allow Decimals',
-          description: 'Allow decimal values in problems'
-        },
-        maxValue: {
-          type: 'number',
-          label: 'Maximum Value',
-          description: 'Largest measurement value to use',
-          min: 1,
-          max: 1000,
-          required: true
-        }
-      }
+        
+        // Preset configurations for quick setup
+        presets: [
+          schemaV2.createPreset({
+            id: 'basic-measurement',
+            label: 'Basic Measurement',
+            description: 'Simple measurement problems for elementary students',
+            icon: 'looks_one',
+            category: 'difficulty',
+            values: {
+              problemCount: 10,
+              includeBasicMeasurement: true,
+              includeConversion: false,
+              includeArithmetic: false,
+              useMetricUnits: true,
+              useImperialUnits: true,
+              allowDecimals: false,
+              maxValue: 50
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'metric-conversions',
+            label: 'Metric Conversions',
+            description: 'Focus on metric system length conversions',
+            icon: 'swap_horiz',
+            category: 'scope',
+            values: {
+              problemCount: 12,
+              includeBasicMeasurement: false,
+              includeConversion: true,
+              includeArithmetic: false,
+              useMetricUnits: true,
+              useImperialUnits: false,
+              allowDecimals: true,
+              maxValue: 100
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'imperial-conversions',
+            label: 'Imperial Conversions',
+            description: 'Focus on imperial system length conversions',
+            icon: 'swap_horiz',
+            category: 'scope',
+            values: {
+              problemCount: 12,
+              includeBasicMeasurement: false,
+              includeConversion: true,
+              includeArithmetic: false,
+              useMetricUnits: false,
+              useImperialUnits: true,
+              allowDecimals: false,
+              maxValue: 100
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'length-arithmetic',
+            label: 'Length Arithmetic',
+            description: 'Practice adding and subtracting lengths',
+            icon: 'calculate',
+            category: 'scope',
+            values: {
+              problemCount: 10,
+              includeBasicMeasurement: false,
+              includeConversion: false,
+              includeArithmetic: true,
+              useMetricUnits: true,
+              useImperialUnits: true,
+              allowDecimals: true,
+              maxValue: 100
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'comprehensive-length',
+            label: 'Comprehensive Length',
+            description: 'Mixed practice with all length concepts',
+            icon: 'all_inclusive',
+            category: 'scope',
+            values: {
+              problemCount: 15,
+              includeBasicMeasurement: true,
+              includeConversion: true,
+              includeArithmetic: true,
+              useMetricUnits: true,
+              useImperialUnits: true,
+              allowDecimals: true,
+              maxValue: 200
+            }
+          })
+        ]
+      })
     })
   }
 
   generateProblem(parameters = {}) {
     const params = { ...this.defaultParameters, ...parameters }
     
-    const validation = this.validateParameters(params)
+    // Validate parameters using Parameter Schema V2
+    const validation = this.parameterSchema.validate(params)
     if (!validation.isValid) {
       throw new Error(`Invalid parameters: ${validation.errors.join(', ')}`)
+    }
+    
+    // Additional custom validation
+    const customErrors = []
+    if (!params.useMetricUnits && !params.useImperialUnits) {
+      customErrors.push('At least one unit system must be enabled')
+    }
+    if (!params.includeBasicMeasurement && !params.includeConversion && !params.includeArithmetic) {
+      customErrors.push('At least one problem type must be enabled')
+    }
+    if (customErrors.length > 0) {
+      throw new Error(`Invalid parameters: ${customErrors.join(', ')}`)
     }
     
     // Build array of enabled problem types

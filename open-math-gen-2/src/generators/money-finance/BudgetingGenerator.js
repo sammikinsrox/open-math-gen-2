@@ -1,4 +1,5 @@
 import { BaseGenerator } from '../BaseGenerator.js'
+import { ParameterSchemaV2 } from '../ParameterSchemaV2.js'
 
 /**
  * Budgeting Generator
@@ -6,6 +7,8 @@ import { BaseGenerator } from '../BaseGenerator.js'
  */
 export class BudgetingGenerator extends BaseGenerator {
   constructor() {
+    const schemaV2 = new ParameterSchemaV2()
+    
     super({
       name: 'Budgeting',
       description: 'Generate problems involving budgets, income, expenses, savings, and financial planning',
@@ -40,104 +43,378 @@ export class BudgetingGenerator extends BaseGenerator {
         includeWeeklyBudgets: false
       },
       
-      parameterSchema: {
-        problemCount: {
-          type: 'number',
-          label: 'Number of Problems',
-          description: 'How many budgeting problems to generate',
-          min: 1,
-          max: 100,
-          required: true
+      // Enhanced Parameter Schema V2 with beautiful categorization
+      parameterSchema: schemaV2.createSchema({
+        categories: {
+          general: schemaV2.createCategory({
+            id: 'general',
+            label: 'General Settings',
+            description: 'Basic configuration options',
+            icon: 'settings',
+            color: 'blue',
+            order: 1,
+            parameters: {
+              problemCount: schemaV2.createParameter({
+                type: 'number',
+                label: 'Number of Problems',
+                description: 'How many budgeting problems to generate',
+                min: 1,
+                max: 50,
+                required: true,
+                slider: true,
+                presets: [5, 8, 10, 15],
+                order: 1
+              })
+            }
+          }),
+          
+          problemTypes: schemaV2.createCategory({
+            id: 'problemTypes',
+            label: 'Problem Types',
+            description: 'Choose which budgeting concepts to include',
+            icon: 'account_balance_wallet',
+            color: 'green',
+            order: 2,
+            parameters: {
+              includeSavingsCalculation: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Savings Calculation',
+                description: 'Calculate savings from income minus expenses',
+                helpText: 'Examples: Income $3000, expenses $2200, savings = $800',
+                order: 1
+              }),
+              includePercentageOfIncome: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Percentage of Income',
+                description: 'Calculate what percentage expenses are of income',
+                helpText: 'Examples: $400 rent on $2000 income = 20%',
+                order: 2
+              }),
+              includeBudgetAllocation: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Budget Allocation',
+                description: 'Allocate income to savings and expenses',
+                helpText: 'Examples: Save 20% of income, how much left for expenses?',
+                order: 3
+              }),
+              includeCompareBudgets: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Budget Comparison',
+                description: 'Compare different budget scenarios',
+                helpText: 'Examples: Which budget saves more money?',
+                order: 4
+              }),
+              includeDeficitSurplus: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Deficit/Surplus Analysis',
+                description: 'Identify budget surplus or deficit',
+                helpText: 'Examples: Income $2000, expenses $2300 = $300 deficit',
+                order: 5
+              })
+            }
+          }),
+          
+          incomeRanges: schemaV2.createCategory({
+            id: 'incomeRanges',
+            label: 'Income Ranges',
+            description: 'Control the range of income amounts',
+            icon: 'paid',
+            color: 'purple',
+            order: 3,
+            parameters: {
+              incomeMin: schemaV2.createParameter({
+                type: 'number',
+                label: 'Minimum Income',
+                description: 'Lowest income amount per period (monthly/weekly)',
+                min: 100,
+                max: 50000,
+                required: true,
+                slider: true,
+                presets: [500, 1000, 2000, 3000],
+                helpText: 'Lower bound for income in problems',
+                order: 1
+              }),
+              incomeMax: schemaV2.createParameter({
+                type: 'number',
+                label: 'Maximum Income',
+                description: 'Highest income amount per period (monthly/weekly)',
+                min: 100,
+                max: 100000,
+                required: true,
+                slider: true,
+                presets: [3000, 5000, 8000, 10000],
+                helpText: 'Upper bound for income in problems',
+                order: 2
+              })
+            }
+          }),
+          
+          budgetComplexity: schemaV2.createCategory({
+            id: 'budgetComplexity',
+            label: 'Budget Complexity',
+            description: 'Control the complexity of budget scenarios',
+            icon: 'tune',
+            color: 'orange',
+            order: 4,
+            parameters: {
+              expenseCategories: schemaV2.createParameter({
+                type: 'number',
+                label: 'Number of Expense Categories',
+                description: 'How many expense categories to include in problems',
+                min: 2,
+                max: 8,
+                required: true,
+                slider: true,
+                presets: [3, 4, 5, 6],
+                helpText: 'Examples: rent, food, utilities, transportation',
+                order: 1
+              }),
+              allowDeficit: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Allow Budget Deficit',
+                description: 'Allow scenarios where expenses exceed income',
+                helpText: 'Creates problems with negative savings (overspending)',
+                order: 2
+              }),
+              usePercentages: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Use Percentage Allocations',
+                description: 'Include percentage-based budget allocations',
+                helpText: 'Examples: Save 15% of income, spend 30% on rent',
+                order: 3
+              })
+            }
+          }),
+          
+          timePeriods: schemaV2.createCategory({
+            id: 'timePeriods',
+            label: 'Time Periods',
+            description: 'Choose budget time periods to include',
+            icon: 'calendar_month',
+            color: 'teal',
+            order: 5,
+            parameters: {
+              includeMonthlyBudgets: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Monthly Budgets',
+                description: 'Include monthly budget problems',
+                helpText: 'Monthly income and expense scenarios',
+                order: 1
+              }),
+              includeWeeklyBudgets: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Weekly Budgets',
+                description: 'Include weekly budget problems',
+                helpText: 'Weekly income and expense scenarios',
+                order: 2
+              })
+            }
+          }),
+          
+          problemStyle: schemaV2.createCategory({
+            id: 'problemStyle',
+            label: 'Problem Style',
+            description: 'Control how problems are presented',
+            icon: 'style',
+            color: 'pink',
+            order: 6,
+            parameters: {
+              includeWordProblems: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Include Word Problems',
+                description: 'Include real-world budgeting scenarios with context',
+                helpText: 'Examples: Sarah\'s monthly budget, Mike\'s savings plan',
+                order: 1
+              }),
+              showSteps: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Show Calculation Steps',
+                description: 'Display step-by-step budget calculations',
+                helpText: 'Shows intermediate steps in problem solving',
+                order: 2
+              })
+            }
+          })
         },
-        includeSavingsCalculation: {
-          type: 'boolean',
-          label: 'Include Savings Calculation',
-          description: 'Include problems calculating savings from income and expenses'
-        },
-        includePercentageOfIncome: {
-          type: 'boolean',
-          label: 'Include Percentage of Income',
-          description: 'Include problems with expenses as percentage of income'
-        },
-        includeBudgetAllocation: {
-          type: 'boolean',
-          label: 'Include Budget Allocation',
-          description: 'Include problems about allocating budget to categories'
-        },
-        includeCompareBudgets: {
-          type: 'boolean',
-          label: 'Include Budget Comparison',
-          description: 'Include problems comparing different budget scenarios'
-        },
-        includeDeficitSurplus: {
-          type: 'boolean',
-          label: 'Include Deficit/Surplus',
-          description: 'Include problems identifying budget deficit or surplus'
-        },
-        includeWordProblems: {
-          type: 'boolean',
-          label: 'Include Word Problems',
-          description: 'Include real-world budgeting scenarios'
-        },
-        incomeMin: {
-          type: 'number',
-          label: 'Minimum Income',
-          description: 'Lowest income amount (per period)',
-          min: 100,
-          max: 50000,
-          required: true
-        },
-        incomeMax: {
-          type: 'number',
-          label: 'Maximum Income',
-          description: 'Highest income amount (per period)',
-          min: 100,
-          max: 100000,
-          required: true
-        },
-        expenseCategories: {
-          type: 'number',
-          label: 'Number of Expense Categories',
-          description: 'How many expense categories to include',
-          min: 2,
-          max: 8,
-          required: true
-        },
-        allowDeficit: {
-          type: 'boolean',
-          label: 'Allow Budget Deficit',
-          description: 'Allow scenarios where expenses exceed income'
-        },
-        showSteps: {
-          type: 'boolean',
-          label: 'Show Calculation Steps',
-          description: 'Show step-by-step calculations'
-        },
-        usePercentages: {
-          type: 'boolean',
-          label: 'Use Percentages',
-          description: 'Include percentage-based budget allocations'
-        },
-        includeMonthlyBudgets: {
-          type: 'boolean',
-          label: 'Include Monthly Budgets',
-          description: 'Include monthly budget problems'
-        },
-        includeWeeklyBudgets: {
-          type: 'boolean',
-          label: 'Include Weekly Budgets',
-          description: 'Include weekly budget problems'
-        }
-      }
+        
+        // Preset configurations for quick setup
+        presets: [
+          schemaV2.createPreset({
+            id: 'basic-budgeting',
+            label: 'Basic Budgeting',
+            description: 'Simple income, expenses, and savings calculations',
+            icon: 'looks_one',
+            category: 'difficulty',
+            values: {
+              problemCount: 10,
+              includeSavingsCalculation: true,
+              includePercentageOfIncome: false,
+              includeBudgetAllocation: true,
+              includeCompareBudgets: false,
+              includeDeficitSurplus: false,
+              includeWordProblems: true,
+              incomeMin: 1000,
+              incomeMax: 3000,
+              expenseCategories: 3,
+              allowDeficit: false,
+              showSteps: true,
+              usePercentages: false,
+              includeMonthlyBudgets: true,
+              includeWeeklyBudgets: false
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'percentage-budgeting',
+            label: 'Percentage Budgeting',
+            description: 'Focus on percentage-based budget planning',
+            icon: 'percent',
+            category: 'scope',
+            values: {
+              problemCount: 12,
+              includeSavingsCalculation: false,
+              includePercentageOfIncome: true,
+              includeBudgetAllocation: true,
+              includeCompareBudgets: false,
+              includeDeficitSurplus: false,
+              includeWordProblems: true,
+              incomeMin: 1500,
+              incomeMax: 4000,
+              expenseCategories: 4,
+              allowDeficit: false,
+              showSteps: true,
+              usePercentages: true,
+              includeMonthlyBudgets: true,
+              includeWeeklyBudgets: false
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'budget-analysis',
+            label: 'Budget Analysis',
+            description: 'Analyze and compare different budget scenarios',
+            icon: 'analytics',
+            category: 'scope',
+            values: {
+              problemCount: 10,
+              includeSavingsCalculation: true,
+              includePercentageOfIncome: true,
+              includeBudgetAllocation: false,
+              includeCompareBudgets: true,
+              includeDeficitSurplus: true,
+              includeWordProblems: true,
+              incomeMin: 2000,
+              incomeMax: 6000,
+              expenseCategories: 5,
+              allowDeficit: true,
+              showSteps: true,
+              usePercentages: true,
+              includeMonthlyBudgets: true,
+              includeWeeklyBudgets: false
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'complex-budgeting',
+            label: 'Complex Budgeting',
+            description: 'Advanced budgeting with multiple categories and scenarios',
+            icon: 'trending_up',
+            category: 'difficulty',
+            values: {
+              problemCount: 8,
+              includeSavingsCalculation: true,
+              includePercentageOfIncome: true,
+              includeBudgetAllocation: true,
+              includeCompareBudgets: true,
+              includeDeficitSurplus: true,
+              includeWordProblems: true,
+              incomeMin: 3000,
+              incomeMax: 8000,
+              expenseCategories: 7,
+              allowDeficit: true,
+              showSteps: true,
+              usePercentages: true,
+              includeMonthlyBudgets: true,
+              includeWeeklyBudgets: true
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'financial-planning',
+            label: 'Financial Planning',
+            description: 'Real-world financial planning scenarios',
+            icon: 'business',
+            category: 'scope',
+            values: {
+              problemCount: 12,
+              includeSavingsCalculation: true,
+              includePercentageOfIncome: true,
+              includeBudgetAllocation: true,
+              includeCompareBudgets: false,
+              includeDeficitSurplus: true,
+              includeWordProblems: true,
+              incomeMin: 2500,
+              incomeMax: 7000,
+              expenseCategories: 6,
+              allowDeficit: false,
+              showSteps: false,
+              usePercentages: true,
+              includeMonthlyBudgets: true,
+              includeWeeklyBudgets: false
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'comprehensive-budgeting',
+            label: 'Comprehensive Budgeting',
+            description: 'Complete practice with all budgeting concepts',
+            icon: 'all_inclusive',
+            category: 'scope',
+            values: {
+              problemCount: 15,
+              includeSavingsCalculation: true,
+              includePercentageOfIncome: true,
+              includeBudgetAllocation: true,
+              includeCompareBudgets: true,
+              includeDeficitSurplus: true,
+              includeWordProblems: true,
+              incomeMin: 1000,
+              incomeMax: 10000,
+              expenseCategories: 6,
+              allowDeficit: true,
+              showSteps: true,
+              usePercentages: true,
+              includeMonthlyBudgets: true,
+              includeWeeklyBudgets: true
+            }
+          })
+        ]
+      })
     })
   }
 
   generateProblem(parameters = {}) {
     const params = { ...this.defaultParameters, ...parameters }
     
-    const validation = this.validateParameters(params)
+    // Validate parameters using Parameter Schema V2
+    const validation = this.parameterSchema.validate(params)
     if (!validation.isValid) {
       throw new Error(`Invalid parameters: ${validation.errors.join(', ')}`)
+    }
+    
+    // Additional custom validation
+    const customErrors = []
+    if (!params.includeSavingsCalculation && !params.includePercentageOfIncome && !params.includeBudgetAllocation && !params.includeCompareBudgets && !params.includeDeficitSurplus) {
+      customErrors.push('At least one problem type must be enabled')
+    }
+    if (params.incomeMin > params.incomeMax) {
+      customErrors.push('Minimum Income cannot be greater than Maximum Income')
+    }
+    if (!params.includeMonthlyBudgets && !params.includeWeeklyBudgets) {
+      customErrors.push('At least one time period (monthly or weekly) must be enabled')
+    }
+    if (customErrors.length > 0) {
+      throw new Error(`Invalid parameters: ${customErrors.join(', ')}`)
     }
     
     // Build array of enabled problem types

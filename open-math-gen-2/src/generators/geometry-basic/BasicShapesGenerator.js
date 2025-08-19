@@ -1,4 +1,5 @@
 import { BaseGenerator } from '../BaseGenerator.js'
+import { ParameterSchemaV2 } from '../ParameterSchemaV2.js'
 import { getDiagramSize } from './shared/DiagramSizes.js'
 
 /**
@@ -9,6 +10,8 @@ import { getDiagramSize } from './shared/DiagramSizes.js'
  */
 export class BasicShapesGenerator extends BaseGenerator {
   constructor() {
+    const schemaV2 = new ParameterSchemaV2()
+    
     super({
       name: 'Basic Shapes',
       description: 'Shape identification, properties, and classification problems with visual diagrams',
@@ -44,98 +47,327 @@ export class BasicShapesGenerator extends BaseGenerator {
         diagramTheme: 'minimal'
       },
       
-      // Parameter schema for validation and UI generation
-      parameterSchema: {
-        problemCount: {
-          type: 'number',
-          label: 'Number of Problems',
-          description: 'How many problems to generate',
-          min: 1,
-          max: 50,
-          required: true
+      // Enhanced Parameter Schema V2 with beautiful categorization
+      parameterSchema: schemaV2.createSchema({
+        categories: {
+          general: schemaV2.createCategory({
+            id: 'general',
+            label: 'General Settings',
+            description: 'Basic configuration options',
+            icon: 'settings',
+            color: 'blue',
+            order: 1,
+            parameters: {
+              problemCount: schemaV2.createParameter({
+                type: 'number',
+                label: 'Number of Problems',
+                description: 'How many shape problems to generate',
+                min: 1,
+                max: 50,
+                required: true,
+                slider: true,
+                presets: [5, 8, 10, 15],
+                order: 1
+              })
+            }
+          }),
+          
+          shapes: schemaV2.createCategory({
+            id: 'shapes',
+            label: 'Shape Types',
+            description: 'Choose which shapes to include in problems',
+            icon: 'category',
+            color: 'green',
+            order: 2,
+            parameters: {
+              includeTriangles: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Triangles',
+                description: 'Include triangle problems',
+                helpText: '3 sides, 3 vertices',
+                order: 1
+              }),
+              includeRectangles: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Rectangles',
+                description: 'Include rectangle problems',
+                helpText: '4 sides, 4 right angles',
+                order: 2
+              }),
+              includeSquares: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Squares',
+                description: 'Include square problems',
+                helpText: '4 equal sides, 4 right angles',
+                order: 3
+              }),
+              includeCircles: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Circles',
+                description: 'Include circle problems',
+                helpText: 'Round shape, no sides or vertices',
+                order: 4
+              }),
+              includePentagons: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Pentagons',
+                description: 'Include pentagon problems',
+                helpText: '5 sides, 5 vertices',
+                order: 5
+              }),
+              includeHexagons: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Hexagons',
+                description: 'Include hexagon problems',
+                helpText: '6 sides, 6 vertices',
+                order: 6
+              })
+            }
+          }),
+          
+          questionTypes: schemaV2.createCategory({
+            id: 'questionTypes',
+            label: 'Question Types',
+            description: 'Choose types of questions about shapes',
+            icon: 'quiz',
+            color: 'purple',
+            order: 3,
+            parameters: {
+              includeIdentification: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Shape Identification',
+                description: 'Ask students to identify shape names',
+                helpText: 'What shape is this?',
+                order: 1
+              }),
+              includeSideCounting: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Side Counting',
+                description: 'Ask students to count sides',
+                helpText: 'How many sides does this shape have?',
+                order: 2
+              }),
+              includeVertexCounting: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Vertex Counting',
+                description: 'Ask students to count vertices/corners',
+                helpText: 'How many corners does this shape have?',
+                order: 3
+              }),
+              includeProperties: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Shape Properties',
+                description: 'Ask about shape properties',
+                helpText: 'Right angles, parallel sides, symmetry',
+                order: 4
+              }),
+              includeClassification: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Shape Classification',
+                description: 'Advanced classification questions',
+                helpText: 'Polygon/not polygon, regular/irregular',
+                order: 5
+              })
+            }
+          }),
+          
+          visualization: schemaV2.createCategory({
+            id: 'visualization',
+            label: 'Visualization',
+            description: 'Control diagram appearance and features',
+            icon: 'visibility',
+            color: 'orange',
+            order: 4,
+            parameters: {
+              showVisualDiagrams: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Show Visual Diagrams',
+                description: 'Include shape diagrams with problems',
+                helpText: 'Display visual shapes for students to analyze',
+                order: 1
+              }),
+              diagramSize: schemaV2.createParameter({
+                type: 'select',
+                label: 'Diagram Size',
+                description: 'Size of the shape diagrams',
+                options: [
+                  { value: 'small', label: 'Small' },
+                  { value: 'medium', label: 'Medium' },
+                  { value: 'large', label: 'Large' }
+                ],
+                helpText: 'Controls the size of visual diagrams',
+                order: 2
+              }),
+              diagramTheme: schemaV2.createParameter({
+                type: 'select',
+                label: 'Diagram Theme',
+                description: 'Visual style for diagrams',
+                options: [
+                  { value: 'educational', label: 'Educational' },
+                  { value: 'minimal', label: 'Minimal' },
+                  { value: 'blueprint', label: 'Blueprint' },
+                  { value: 'colorful', label: 'Colorful' }
+                ],
+                helpText: 'Appearance style for shape diagrams',
+                order: 3
+              })
+            }
+          })
         },
-        includeTriangles: {
-          type: 'boolean',
-          label: 'Include Triangles',
-          description: 'Include triangle problems'
-        },
-        includeRectangles: {
-          type: 'boolean',
-          label: 'Include Rectangles',
-          description: 'Include rectangle problems'
-        },
-        includeSquares: {
-          type: 'boolean',
-          label: 'Include Squares',
-          description: 'Include square problems'
-        },
-        includeCircles: {
-          type: 'boolean',
-          label: 'Include Circles',
-          description: 'Include circle problems'
-        },
-        includePentagons: {
-          type: 'boolean',
-          label: 'Include Pentagons',
-          description: 'Include pentagon problems'
-        },
-        includeHexagons: {
-          type: 'boolean',
-          label: 'Include Hexagons',
-          description: 'Include hexagon problems'
-        },
-        includeIdentification: {
-          type: 'boolean',
-          label: 'Shape Identification',
-          description: 'Ask students to identify shape names'
-        },
-        includeSideCounting: {
-          type: 'boolean',
-          label: 'Side Counting',
-          description: 'Ask students to count sides'
-        },
-        includeVertexCounting: {
-          type: 'boolean',
-          label: 'Vertex Counting',
-          description: 'Ask students to count vertices/corners'
-        },
-        includeProperties: {
-          type: 'boolean',
-          label: 'Shape Properties',
-          description: 'Ask about shape properties (right angles, parallel sides, etc.)'
-        },
-        includeClassification: {
-          type: 'boolean',
-          label: 'Shape Classification',
-          description: 'Advanced: classify shapes (polygon/not, regular/irregular)'
-        },
-        showVisualDiagrams: {
-          type: 'boolean',
-          label: 'Show Visual Diagrams',
-          description: 'Include geometric diagrams with problems'
-        },
-        diagramSize: {
-          type: 'select',
-          label: 'Diagram Size',
-          description: 'Size of the geometric diagrams',
-          options: [
-            { value: 'small', label: 'Small' },
-            { value: 'medium', label: 'Medium' },
-            { value: 'large', label: 'Large' }
-          ]
-        },
-        diagramTheme: {
-          type: 'select',
-          label: 'Diagram Theme',
-          description: 'Visual style for diagrams',
-          options: [
-            { value: 'educational', label: 'Educational' },
-            { value: 'minimal', label: 'Minimal' },
-            { value: 'blueprint', label: 'Blueprint' },
-            { value: 'colorful', label: 'Colorful' }
-          ]
-        }
-      }
+        
+        // Preset configurations for quick setup
+        presets: [
+          schemaV2.createPreset({
+            id: 'basic-shapes',
+            label: 'Basic Shapes',
+            description: 'Simple shape identification with common shapes',
+            icon: 'looks_one',
+            category: 'difficulty',
+            values: {
+              problemCount: 10,
+              includeTriangles: true,
+              includeRectangles: true,
+              includeSquares: true,
+              includeCircles: true,
+              includePentagons: false,
+              includeHexagons: false,
+              includeIdentification: true,
+              includeSideCounting: true,
+              includeVertexCounting: false,
+              includeProperties: false,
+              includeClassification: false,
+              showVisualDiagrams: true,
+              diagramSize: 'medium',
+              diagramTheme: 'minimal'
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'counting-practice',
+            label: 'Counting Practice',
+            description: 'Focus on counting sides and vertices',
+            icon: 'format_list_numbered',
+            category: 'scope',
+            values: {
+              problemCount: 12,
+              includeTriangles: true,
+              includeRectangles: true,
+              includeSquares: true,
+              includeCircles: false,
+              includePentagons: true,
+              includeHexagons: true,
+              includeIdentification: false,
+              includeSideCounting: true,
+              includeVertexCounting: true,
+              includeProperties: false,
+              includeClassification: false,
+              showVisualDiagrams: true,
+              diagramSize: 'medium',
+              diagramTheme: 'educational'
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'shape-properties',
+            label: 'Shape Properties',
+            description: 'Explore shape properties and characteristics',
+            icon: 'rule',
+            category: 'scope',
+            values: {
+              problemCount: 10,
+              includeTriangles: true,
+              includeRectangles: true,
+              includeSquares: true,
+              includeCircles: true,
+              includePentagons: false,
+              includeHexagons: false,
+              includeIdentification: false,
+              includeSideCounting: false,
+              includeVertexCounting: false,
+              includeProperties: true,
+              includeClassification: false,
+              showVisualDiagrams: true,
+              diagramSize: 'medium',
+              diagramTheme: 'educational'
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'all-polygons',
+            label: 'All Polygons',
+            description: 'Practice with all available polygon shapes',
+            icon: 'hexagon',
+            category: 'scope',
+            values: {
+              problemCount: 15,
+              includeTriangles: true,
+              includeRectangles: true,
+              includeSquares: true,
+              includeCircles: false,
+              includePentagons: true,
+              includeHexagons: true,
+              includeIdentification: true,
+              includeSideCounting: true,
+              includeVertexCounting: true,
+              includeProperties: false,
+              includeClassification: false,
+              showVisualDiagrams: true,
+              diagramSize: 'medium',
+              diagramTheme: 'colorful'
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'advanced-classification',
+            label: 'Advanced Classification',
+            description: 'Complex shape classification and properties',
+            icon: 'trending_up',
+            category: 'difficulty',
+            values: {
+              problemCount: 10,
+              includeTriangles: true,
+              includeRectangles: true,
+              includeSquares: true,
+              includeCircles: true,
+              includePentagons: true,
+              includeHexagons: true,
+              includeIdentification: false,
+              includeSideCounting: false,
+              includeVertexCounting: false,
+              includeProperties: true,
+              includeClassification: true,
+              showVisualDiagrams: true,
+              diagramSize: 'medium',
+              diagramTheme: 'educational'
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'comprehensive-shapes',
+            label: 'Comprehensive Shapes',
+            description: 'Complete practice with all shapes and question types',
+            icon: 'all_inclusive',
+            category: 'scope',
+            values: {
+              problemCount: 20,
+              includeTriangles: true,
+              includeRectangles: true,
+              includeSquares: true,
+              includeCircles: true,
+              includePentagons: true,
+              includeHexagons: true,
+              includeIdentification: true,
+              includeSideCounting: true,
+              includeVertexCounting: true,
+              includeProperties: true,
+              includeClassification: false,
+              showVisualDiagrams: true,
+              diagramSize: 'medium',
+              diagramTheme: 'educational'
+            }
+          })
+        ]
+      })
     })
   }
 
@@ -147,10 +379,24 @@ export class BasicShapesGenerator extends BaseGenerator {
   generateProblem(parameters = {}) {
     const params = { ...this.defaultParameters, ...parameters }
     
-    // Validate parameters
-    const validation = this.validateParameters(params)
+    // Validate parameters using Parameter Schema V2
+    const validation = this.parameterSchema.validate(params)
     if (!validation.isValid) {
       throw new Error(`Invalid parameters: ${validation.errors.join(', ')}`)
+    }
+    
+    // Additional custom validation
+    const customErrors = []
+    if (!params.includeTriangles && !params.includeRectangles && !params.includeSquares && 
+        !params.includeCircles && !params.includePentagons && !params.includeHexagons) {
+      customErrors.push('At least one shape type must be enabled')
+    }
+    if (!params.includeIdentification && !params.includeSideCounting && !params.includeVertexCounting &&
+        !params.includeProperties && !params.includeClassification) {
+      customErrors.push('At least one question type must be enabled')
+    }
+    if (customErrors.length > 0) {
+      throw new Error(`Invalid parameters: ${customErrors.join(', ')}`)
     }
     
     // Build array of enabled shapes

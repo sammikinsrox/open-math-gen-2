@@ -1,4 +1,5 @@
 import { BaseGenerator } from '../BaseGenerator.js'
+import { ParameterSchemaV2 } from '../ParameterSchemaV2.js'
 
 /**
  * Mixed Numbers Generator
@@ -6,6 +7,8 @@ import { BaseGenerator } from '../BaseGenerator.js'
  */
 export class MixedNumbersGenerator extends BaseGenerator {
   constructor() {
+    const schemaV2 = new ParameterSchemaV2()
+    
     super({
       name: 'Mixed Numbers',
       description: 'Generate problems involving mixed numbers and conversions between improper fractions and mixed numbers',
@@ -35,79 +38,299 @@ export class MixedNumbersGenerator extends BaseGenerator {
         requireSimplified: true
       },
       
-      parameterSchema: {
-        problemCount: {
-          type: 'number',
-          label: 'Number of Problems',
-          description: 'How many mixed number problems to generate',
-          min: 1,
-          max: 100,
-          required: true
+      // Enhanced Parameter Schema V2 with beautiful categorization
+      parameterSchema: schemaV2.createSchema({
+        categories: {
+          general: schemaV2.createCategory({
+            id: 'general',
+            label: 'General Settings',
+            description: 'Basic configuration options',
+            icon: 'settings',
+            color: 'blue',
+            order: 1,
+            parameters: {
+              problemCount: schemaV2.createParameter({
+                type: 'number',
+                label: 'Number of Problems',
+                description: 'How many mixed number problems to generate',
+                min: 1,
+                max: 50,
+                required: true,
+                slider: true,
+                presets: [5, 8, 10, 15],
+                order: 1
+              })
+            }
+          }),
+          
+          problemTypes: schemaV2.createCategory({
+            id: 'problemTypes',
+            label: 'Problem Types',
+            description: 'Choose which types of mixed number problems to include',
+            icon: 'layers',
+            color: 'green',
+            order: 2,
+            parameters: {
+              includeImproperToMixed: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Improper to Mixed',
+                description: 'Convert improper fractions to mixed numbers',
+                helpText: 'Example: Convert 7/3 to 2 1/3',
+                order: 1
+              }),
+              includeMixedToImproper: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Mixed to Improper',
+                description: 'Convert mixed numbers to improper fractions',
+                helpText: 'Example: Convert 2 1/3 to 7/3',
+                order: 2
+              }),
+              includeOperations: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Include Operations',
+                description: 'Include addition and subtraction of mixed numbers',
+                helpText: 'More challenging problems involving arithmetic',
+                order: 3
+              })
+            }
+          }),
+          
+          operationTypes: schemaV2.createCategory({
+            id: 'operationTypes',
+            label: 'Operation Types',
+            description: 'Choose which operations to include (when operations are enabled)',
+            icon: 'calculate',
+            color: 'purple',
+            order: 3,
+            parameters: {
+              includeAddition: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Addition',
+                description: 'Include mixed number addition problems',
+                helpText: 'Example: 2 1/4 + 1 3/8 = ?',
+                order: 1
+              }),
+              includeSubtraction: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Subtraction',
+                description: 'Include mixed number subtraction problems',
+                helpText: 'Example: 3 1/2 - 1 1/4 = ?',
+                order: 2
+              })
+            }
+          }),
+          
+          numberRanges: schemaV2.createCategory({
+            id: 'numberRanges',
+            label: 'Number Ranges',
+            description: 'Control the size of numbers used in problems',
+            icon: 'tag',
+            color: 'orange',
+            order: 4,
+            parameters: {
+              maxWholeNumber: schemaV2.createParameter({
+                type: 'number',
+                label: 'Maximum Whole Number',
+                description: 'Largest whole number part in mixed numbers',
+                min: 1,
+                max: 15,
+                required: true,
+                slider: true,
+                presets: [3, 5, 8, 10],
+                helpText: 'Controls the whole number part (e.g., the "2" in 2 1/3)',
+                order: 1
+              }),
+              maxNumerator: schemaV2.createParameter({
+                type: 'number',
+                label: 'Maximum Numerator',
+                description: 'Largest numerator to use in fractions',
+                min: 1,
+                max: 30,
+                required: true,
+                slider: true,
+                presets: [8, 12, 16, 20],
+                helpText: 'Top number in fractions',
+                order: 2
+              }),
+              maxDenominator: schemaV2.createParameter({
+                type: 'number',
+                label: 'Maximum Denominator',
+                description: 'Largest denominator to use in fractions',
+                min: 2,
+                max: 20,
+                required: true,
+                slider: true,
+                presets: [6, 8, 10, 12],
+                helpText: 'Bottom number in fractions',
+                order: 3
+              })
+            }
+          }),
+          
+          displayOptions: schemaV2.createCategory({
+            id: 'displayOptions',
+            label: 'Display Options',
+            description: 'Control how answers are formatted',
+            icon: 'visibility',
+            color: 'pink',
+            order: 5,
+            parameters: {
+              requireSimplified: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Require Simplified Form',
+                description: 'Answers should be in simplest form',
+                helpText: 'Convert fractions like 6/8 to 3/4',
+                order: 1
+              })
+            }
+          })
         },
-        includeImproperToMixed: {
-          type: 'boolean',
-          label: 'Include Improper to Mixed',
-          description: 'Include converting improper fractions to mixed numbers'
-        },
-        includeMixedToImproper: {
-          type: 'boolean',
-          label: 'Include Mixed to Improper',
-          description: 'Include converting mixed numbers to improper fractions'
-        },
-        maxWholeNumber: {
-          type: 'number',
-          label: 'Maximum Whole Number',
-          description: 'Largest whole number part in mixed numbers',
-          min: 1,
-          max: 20,
-          required: true
-        },
-        maxNumerator: {
-          type: 'number',
-          label: 'Maximum Numerator',
-          description: 'Largest numerator to use',
-          min: 1,
-          max: 25,
-          required: true
-        },
-        maxDenominator: {
-          type: 'number',
-          label: 'Maximum Denominator',
-          description: 'Largest denominator to use',
-          min: 2,
-          max: 20,
-          required: true
-        },
-        includeOperations: {
-          type: 'boolean',
-          label: 'Include Operations',
-          description: 'Include addition and subtraction of mixed numbers'
-        },
-        includeAddition: {
-          type: 'boolean',
-          label: 'Include Addition',
-          description: 'Include mixed number addition when operations are enabled'
-        },
-        includeSubtraction: {
-          type: 'boolean',
-          label: 'Include Subtraction',
-          description: 'Include mixed number subtraction when operations are enabled'
-        },
-        requireSimplified: {
-          type: 'boolean',
-          label: 'Require Simplified Form',
-          description: 'Answers should be in simplest form'
-        }
-      }
+        
+        // Preset configurations for quick setup
+        presets: [
+          schemaV2.createPreset({
+            id: 'basic-conversions',
+            label: 'Basic Conversions',
+            description: 'Simple conversions between improper fractions and mixed numbers',
+            icon: 'swap_horiz',
+            category: 'difficulty',
+            values: {
+              problemCount: 10,
+              includeImproperToMixed: true,
+              includeMixedToImproper: true,
+              includeOperations: false,
+              maxWholeNumber: 5,
+              maxNumerator: 12,
+              maxDenominator: 8,
+              includeAddition: false,
+              includeSubtraction: false,
+              requireSimplified: true
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'improper-to-mixed-focus',
+            label: 'Improper to Mixed Focus',
+            description: 'Focus on converting improper fractions to mixed numbers',
+            icon: 'arrow_forward',
+            category: 'scope',
+            values: {
+              problemCount: 12,
+              includeImproperToMixed: true,
+              includeMixedToImproper: false,
+              includeOperations: false,
+              maxWholeNumber: 6,
+              maxNumerator: 20,
+              maxDenominator: 10,
+              includeAddition: false,
+              includeSubtraction: false,
+              requireSimplified: true
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'mixed-to-improper-focus',
+            label: 'Mixed to Improper Focus',
+            description: 'Focus on converting mixed numbers to improper fractions',
+            icon: 'arrow_back',
+            category: 'scope',
+            values: {
+              problemCount: 12,
+              includeImproperToMixed: false,
+              includeMixedToImproper: true,
+              includeOperations: false,
+              maxWholeNumber: 8,
+              maxNumerator: 15,
+              maxDenominator: 12,
+              includeAddition: false,
+              includeSubtraction: false,
+              requireSimplified: true
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'operations-practice',
+            label: 'Operations Practice',
+            description: 'Practice adding and subtracting mixed numbers',
+            icon: 'calculate',
+            category: 'scope',
+            values: {
+              problemCount: 8,
+              includeImproperToMixed: false,
+              includeMixedToImproper: false,
+              includeOperations: true,
+              maxWholeNumber: 4,
+              maxNumerator: 10,
+              maxDenominator: 8,
+              includeAddition: true,
+              includeSubtraction: true,
+              requireSimplified: true
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'comprehensive-practice',
+            label: 'Comprehensive Practice',
+            description: 'Mixed practice with all types of mixed number problems',
+            icon: 'all_inclusive',
+            category: 'scope',
+            values: {
+              problemCount: 15,
+              includeImproperToMixed: true,
+              includeMixedToImproper: true,
+              includeOperations: true,
+              maxWholeNumber: 6,
+              maxNumerator: 15,
+              maxDenominator: 10,
+              includeAddition: true,
+              includeSubtraction: false,
+              requireSimplified: true
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'advanced-challenge',
+            label: 'Advanced Challenge',
+            description: 'Challenging problems with larger numbers and all operations',
+            icon: 'functions',
+            category: 'difficulty',
+            values: {
+              problemCount: 12,
+              includeImproperToMixed: true,
+              includeMixedToImproper: true,
+              includeOperations: true,
+              maxWholeNumber: 10,
+              maxNumerator: 25,
+              maxDenominator: 16,
+              includeAddition: true,
+              includeSubtraction: true,
+              requireSimplified: true
+            }
+          })
+        ]
+      })
     })
   }
 
   generateProblem(parameters = {}) {
     const params = { ...this.defaultParameters, ...parameters }
     
-    const validation = this.validateParameters(params)
+    // Validate parameters using Parameter Schema V2
+    const validation = this.parameterSchema.validate(params)
     if (!validation.isValid) {
       throw new Error(`Invalid parameters: ${validation.errors.join(', ')}`)
+    }
+    
+    // Additional custom validation
+    const customErrors = []
+    if (params.maxNumerator <= params.maxDenominator && params.includeImproperToMixed) {
+      customErrors.push('Maximum Numerator should be larger than Maximum Denominator for improper fractions')
+    }
+    if (params.includeOperations && !params.includeAddition && !params.includeSubtraction) {
+      customErrors.push('At least one operation type must be enabled when operations are included')
+    }
+    if (customErrors.length > 0) {
+      throw new Error(`Invalid parameters: ${customErrors.join(', ')}`)
     }
     
     // Build array of enabled problem types

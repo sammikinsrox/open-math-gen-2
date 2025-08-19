@@ -1,4 +1,5 @@
 import { BaseGenerator } from '../BaseGenerator.js'
+import { ParameterSchemaV2 } from '../ParameterSchemaV2.js'
 import { getDiagramSize } from './shared/DiagramSizes.js'
 
 /**
@@ -9,6 +10,8 @@ import { getDiagramSize } from './shared/DiagramSizes.js'
  */
 export class AreaGenerator extends BaseGenerator {
   constructor() {
+    const schemaV2 = new ParameterSchemaV2()
+    
     super({
       name: 'Area',
       description: 'Calculate area of rectangles, squares, triangles, and circles with visual diagrams',
@@ -48,132 +51,360 @@ export class AreaGenerator extends BaseGenerator {
         diagramTheme: 'educational'
       },
       
-      // Parameter schema for validation and UI generation
-      parameterSchema: {
-        problemCount: {
-          type: 'number',
-          label: 'Number of Problems',
-          description: 'How many problems to generate',
-          min: 1,
-          max: 50,
-          required: true
+      // Enhanced Parameter Schema V2 with beautiful categorization
+      parameterSchema: schemaV2.createSchema({
+        categories: {
+          general: schemaV2.createCategory({
+            id: 'general',
+            label: 'General Settings',
+            description: 'Basic configuration options',
+            icon: 'settings',
+            color: 'blue',
+            order: 1,
+            parameters: {
+              problemCount: schemaV2.createParameter({
+                type: 'number',
+                label: 'Number of Problems',
+                description: 'How many area problems to generate',
+                min: 1,
+                max: 50,
+                required: true,
+                slider: true,
+                presets: [5, 8, 10, 15],
+                order: 1
+              })
+            }
+          }),
+          
+          shapes: schemaV2.createCategory({
+            id: 'shapes',
+            label: 'Shape Types',
+            description: 'Choose which shapes to include in area calculations',
+            icon: 'crop_square',
+            color: 'green',
+            order: 2,
+            parameters: {
+              includeRectangles: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Rectangles',
+                description: 'Include rectangle area problems',
+                helpText: 'Formula: Area = length × width',
+                order: 1
+              }),
+              includeSquares: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Squares',
+                description: 'Include square area problems',
+                helpText: 'Formula: Area = side²',
+                order: 2
+              }),
+              includeTriangles: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Triangles',
+                description: 'Include triangle area problems',
+                helpText: 'Formula: Area = ½ × base × height',
+                order: 3
+              }),
+              includeCircles: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Circles',
+                description: 'Include circle area problems',
+                helpText: 'Formula: Area = π × radius²',
+                order: 4
+              })
+            }
+          }),
+          
+          measurements: schemaV2.createCategory({
+            id: 'measurements',
+            label: 'Measurements',
+            description: 'Control measurement ranges and precision',
+            icon: 'straighten',
+            color: 'purple',
+            order: 3,
+            parameters: {
+              minSideLength: schemaV2.createParameter({
+                type: 'number',
+                label: 'Minimum Side Length',
+                description: 'Smallest side length to use',
+                min: 1,
+                max: 100,
+                required: true,
+                slider: true,
+                presets: [1, 3, 5, 10],
+                helpText: 'Lower bound for all measurements',
+                order: 1
+              }),
+              maxSideLength: schemaV2.createParameter({
+                type: 'number',
+                label: 'Maximum Side Length',
+                description: 'Largest side length to use',
+                min: 1,
+                max: 100,
+                required: true,
+                slider: true,
+                presets: [10, 20, 25, 50],
+                helpText: 'Upper bound for all measurements',
+                order: 2
+              }),
+              allowDecimals: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Allow Decimals',
+                description: 'Allow decimal measurements',
+                helpText: 'Use decimal values like 5.5 cm instead of integers',
+                order: 3
+              }),
+              decimalPlaces: schemaV2.createParameter({
+                type: 'number',
+                label: 'Decimal Places',
+                description: 'Number of decimal places for measurements',
+                min: 1,
+                max: 3,
+                required: true,
+                slider: true,
+                presets: [1, 2],
+                helpText: 'Precision for decimal measurements',
+                order: 4
+              })
+            }
+          }),
+          
+          unitsAndDisplay: schemaV2.createCategory({
+            id: 'unitsAndDisplay',
+            label: 'Units & Display',
+            description: 'Control units and formula display options',
+            icon: 'format_textdirection_l_to_r',
+            color: 'orange',
+            order: 4,
+            parameters: {
+              units: schemaV2.createParameter({
+                type: 'select',
+                label: 'Units',
+                description: 'Measurement units to use',
+                options: [
+                  { value: 'mixed', label: 'Mixed Units' },
+                  { value: 'cm', label: 'Centimeters' },
+                  { value: 'in', label: 'Inches' },
+                  { value: 'ft', label: 'Feet' },
+                  { value: 'm', label: 'Meters' },
+                  { value: 'units', label: 'Generic Units' }
+                ],
+                helpText: 'Unit type for measurements',
+                order: 1
+              }),
+              showFormulas: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Show Formulas',
+                description: 'Include area formulas in problems',
+                helpText: 'Display the formula used for each shape',
+                order: 2
+              })
+            }
+          }),
+          
+          visualization: schemaV2.createCategory({
+            id: 'visualization',
+            label: 'Visualization',
+            description: 'Control diagram appearance and features',
+            icon: 'visibility',
+            color: 'teal',
+            order: 5,
+            parameters: {
+              showVisualDiagrams: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Show Visual Diagrams',
+                description: 'Include geometric diagrams with measurements',
+                helpText: 'Display shape diagrams with labeled dimensions',
+                order: 1
+              }),
+              diagramSize: schemaV2.createParameter({
+                type: 'select',
+                label: 'Diagram Size',
+                description: 'Size of the geometric diagrams',
+                options: [
+                  { value: 'small', label: 'Small' },
+                  { value: 'medium', label: 'Medium' },
+                  { value: 'large', label: 'Large' }
+                ],
+                helpText: 'Controls the size of visual diagrams',
+                order: 2
+              }),
+              diagramTheme: schemaV2.createParameter({
+                type: 'select',
+                label: 'Diagram Theme',
+                description: 'Visual style for diagrams',
+                options: [
+                  { value: 'educational', label: 'Educational' },
+                  { value: 'blueprint', label: 'Blueprint' },
+                  { value: 'minimal', label: 'Minimal' },
+                  { value: 'colorful', label: 'Colorful' }
+                ],
+                helpText: 'Appearance style for geometry diagrams',
+                order: 3
+              })
+            }
+          })
         },
-        includeRectangles: {
-          type: 'boolean',
-          label: 'Include Rectangles',
-          description: 'Include rectangle area problems'
-        },
-        includeSquares: {
-          type: 'boolean',
-          label: 'Include Squares',
-          description: 'Include square area problems'
-        },
-        includeTriangles: {
-          type: 'boolean',
-          label: 'Include Triangles',
-          description: 'Include triangle area problems'
-        },
-        includeCircles: {
-          type: 'boolean',
-          label: 'Include Circles',
-          description: 'Include circle area problems'
-        },
-        // includeParallelograms: {
-        //   type: 'boolean',
-        //   label: 'Include Parallelograms',
-        //   description: 'Include parallelogram area problems'
-        // },
-        // includeTrapezoids: {
-        //   type: 'boolean',
-        //   label: 'Include Trapezoids',
-        //   description: 'Include trapezoid area problems'
-        // },
-        // includeWordProblems: {
-        //   type: 'boolean',
-        //   label: 'Include Word Problems',
-        //   description: 'Include real-world area problems'
-        // },
-        minSideLength: {
-          type: 'number',
-          label: 'Minimum Side Length',
-          description: 'Smallest side length to use',
-          min: 1,
-          max: 100
-        },
-        maxSideLength: {
-          type: 'number',
-          label: 'Maximum Side Length',
-          description: 'Largest side length to use',
-          min: 1,
-          max: 100
-        },
-        allowDecimals: {
-          type: 'boolean',
-          label: 'Allow Decimals',
-          description: 'Allow decimal measurements'
-        },
-        decimalPlaces: {
-          type: 'number',
-          label: 'Decimal Places',
-          description: 'Number of decimal places for measurements',
-          min: 1,
-          max: 3
-        },
-        units: {
-          type: 'select',
-          label: 'Units',
-          description: 'Measurement units to use',
-          options: [
-            { value: 'mixed', label: 'Mixed Units' },
-            { value: 'cm', label: 'Centimeters' },
-            { value: 'in', label: 'Inches' },
-            { value: 'ft', label: 'Feet' },
-            { value: 'm', label: 'Meters' },
-            { value: 'units', label: 'Generic Units' }
-          ]
-        },
-        showFormulas: {
-          type: 'boolean',
-          label: 'Show Formulas',
-          description: 'Include area formulas in problems'
-        },
-        // showSteps: {
-        //   type: 'boolean',
-        //   label: 'Show Steps',
-        //   description: 'Show step-by-step calculations'
-        // },
-        showVisualDiagrams: {
-          type: 'boolean',
-          label: 'Show Visual Diagrams',
-          description: 'Include geometric diagrams with measurements'
-        },
-        // includeGridDiagrams: {
-        //   type: 'boolean',
-        //   label: 'Include Grid Diagrams',
-        //   description: 'Show unit square grids for visualization'
-        // },
-        diagramSize: {
-          type: 'select',
-          label: 'Diagram Size',
-          description: 'Size of the geometric diagrams',
-          options: [
-            { value: 'small', label: 'Small' },
-            { value: 'medium', label: 'Medium' },
-            { value: 'large', label: 'Large' }
-          ]
-        },
-        diagramTheme: {
-          type: 'select',
-          label: 'Diagram Theme',
-          description: 'Visual style for diagrams',
-          options: [
-            { value: 'educational', label: 'Educational' },
-            { value: 'blueprint', label: 'Blueprint' },
-            { value: 'minimal', label: 'Minimal' },
-            { value: 'colorful', label: 'Colorful' }
-          ]
-        }
-      }
+        
+        // Preset configurations for quick setup
+        presets: [
+          schemaV2.createPreset({
+            id: 'basic-rectangles-squares',
+            label: 'Basic Rectangles & Squares',
+            description: 'Simple area problems with rectangles and squares',
+            icon: 'looks_one',
+            category: 'difficulty',
+            values: {
+              problemCount: 10,
+              includeRectangles: true,
+              includeSquares: true,
+              includeTriangles: false,
+              includeCircles: false,
+              includeParallelograms: false,
+              includeTrapezoids: false,
+              minSideLength: 3,
+              maxSideLength: 15,
+              allowDecimals: false,
+              decimalPlaces: 1,
+              units: 'mixed',
+              showFormulas: true,
+              showVisualDiagrams: true,
+              diagramSize: 'medium',
+              diagramTheme: 'educational'
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'triangles-and-basic-shapes',
+            label: 'Triangles & Basic Shapes',
+            description: 'Include triangles with rectangles and squares',
+            icon: 'change_history',
+            category: 'scope',
+            values: {
+              problemCount: 12,
+              includeRectangles: true,
+              includeSquares: true,
+              includeTriangles: true,
+              includeCircles: false,
+              includeParallelograms: false,
+              includeTrapezoids: false,
+              minSideLength: 4,
+              maxSideLength: 20,
+              allowDecimals: false,
+              decimalPlaces: 1,
+              units: 'mixed',
+              showFormulas: true,
+              showVisualDiagrams: true,
+              diagramSize: 'medium',
+              diagramTheme: 'educational'
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'circles-included',
+            label: 'Circles Included',
+            description: 'All basic shapes including circles with π',
+            icon: 'radio_button_unchecked',
+            category: 'scope',
+            values: {
+              problemCount: 10,
+              includeRectangles: true,
+              includeSquares: true,
+              includeTriangles: true,
+              includeCircles: true,
+              includeParallelograms: false,
+              includeTrapezoids: false,
+              minSideLength: 5,
+              maxSideLength: 18,
+              allowDecimals: false,
+              decimalPlaces: 1,
+              units: 'mixed',
+              showFormulas: true,
+              showVisualDiagrams: true,
+              diagramSize: 'medium',
+              diagramTheme: 'educational'
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'decimal-measurements',
+            label: 'Decimal Measurements',
+            description: 'Practice with decimal side lengths',
+            icon: 'more_horiz',
+            category: 'difficulty',
+            values: {
+              problemCount: 8,
+              includeRectangles: true,
+              includeSquares: true,
+              includeTriangles: true,
+              includeCircles: false,
+              includeParallelograms: false,
+              includeTrapezoids: false,
+              minSideLength: 2,
+              maxSideLength: 12,
+              allowDecimals: true,
+              decimalPlaces: 1,
+              units: 'cm',
+              showFormulas: true,
+              showVisualDiagrams: true,
+              diagramSize: 'medium',
+              diagramTheme: 'educational'
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'advanced-area',
+            label: 'Advanced Area',
+            description: 'Complex problems with larger measurements and decimals',
+            icon: 'trending_up',
+            category: 'difficulty',
+            values: {
+              problemCount: 12,
+              includeRectangles: true,
+              includeSquares: true,
+              includeTriangles: true,
+              includeCircles: true,
+              includeParallelograms: false,
+              includeTrapezoids: false,
+              minSideLength: 5,
+              maxSideLength: 30,
+              allowDecimals: true,
+              decimalPlaces: 2,
+              units: 'mixed',
+              showFormulas: false,
+              showVisualDiagrams: true,
+              diagramSize: 'medium',
+              diagramTheme: 'educational'
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'comprehensive-area',
+            label: 'Comprehensive Area',
+            description: 'Complete practice with all available shapes',
+            icon: 'all_inclusive',
+            category: 'scope',
+            values: {
+              problemCount: 15,
+              includeRectangles: true,
+              includeSquares: true,
+              includeTriangles: true,
+              includeCircles: true,
+              includeParallelograms: false,
+              includeTrapezoids: false,
+              minSideLength: 3,
+              maxSideLength: 25,
+              allowDecimals: false,
+              decimalPlaces: 1,
+              units: 'mixed',
+              showFormulas: true,
+              showVisualDiagrams: true,
+              diagramSize: 'medium',
+              diagramTheme: 'educational'
+            }
+          })
+        ]
+      })
     })
   }
 
@@ -185,10 +416,23 @@ export class AreaGenerator extends BaseGenerator {
   generateProblem(parameters = {}) {
     const params = { ...this.defaultParameters, ...parameters }
     
-    // Validate parameters
-    const validation = this.validateParameters(params)
+    // Validate parameters using Parameter Schema V2
+    const validation = this.parameterSchema.validate(params)
     if (!validation.isValid) {
       throw new Error(`Invalid parameters: ${validation.errors.join(', ')}`)
+    }
+    
+    // Additional custom validation
+    const customErrors = []
+    if (!params.includeRectangles && !params.includeSquares && 
+        !params.includeTriangles && !params.includeCircles) {
+      customErrors.push('At least one shape type must be enabled')
+    }
+    if (params.minSideLength > params.maxSideLength) {
+      customErrors.push('Minimum Side Length cannot be greater than Maximum Side Length')
+    }
+    if (customErrors.length > 0) {
+      throw new Error(`Invalid parameters: ${customErrors.join(', ')}`)
     }
     
     // Build array of enabled shapes

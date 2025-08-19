@@ -1,4 +1,5 @@
 import { BaseGenerator } from '../BaseGenerator.js'
+import { ParameterSchemaV2 } from '../ParameterSchemaV2.js'
 
 /**
  * Equivalent Fractions Generator
@@ -6,6 +7,8 @@ import { BaseGenerator } from '../BaseGenerator.js'
  */
 export class EquivalentFractionsGenerator extends BaseGenerator {
   constructor() {
+    const schemaV2 = new ParameterSchemaV2()
+    
     super({
       name: 'Equivalent Fractions',
       description: 'Generate problems involving finding equivalent fractions, simplifying fractions, and identifying equivalent forms',
@@ -36,84 +39,267 @@ export class EquivalentFractionsGenerator extends BaseGenerator {
         showMultipleEquivalents: false
       },
       
-      parameterSchema: {
-        problemCount: {
-          type: 'number',
-          label: 'Number of Problems',
-          description: 'How many equivalent fraction problems to generate',
-          min: 1,
-          max: 100,
-          required: true
+      // Enhanced Parameter Schema V2 with beautiful categorization
+      parameterSchema: schemaV2.createSchema({
+        categories: {
+          general: schemaV2.createCategory({
+            id: 'general',
+            label: 'General Settings',
+            description: 'Basic configuration options',
+            icon: 'settings',
+            color: 'blue',
+            order: 1,
+            parameters: {
+              problemCount: schemaV2.createParameter({
+                type: 'number',
+                label: 'Number of Problems',
+                description: 'How many equivalent fraction problems to generate',
+                min: 1,
+                max: 50,
+                required: true,
+                slider: true,
+                presets: [5, 8, 10, 15],
+                order: 1
+              })
+            }
+          }),
+          
+          problemTypes: schemaV2.createCategory({
+            id: 'problemTypes',
+            label: 'Problem Types',
+            description: 'Choose which types of equivalent fraction problems to include',
+            icon: 'compare_arrows',
+            color: 'green',
+            order: 2,
+            parameters: {
+              includeFindMissingNumerator: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Find Missing Numerator',
+                description: 'Find the missing top number in equivalent fractions',
+                helpText: 'Example: 2/3 = ?/12 (Answer: 8)',
+                order: 1
+              }),
+              includeFindMissingDenominator: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Find Missing Denominator',
+                description: 'Find the missing bottom number in equivalent fractions',
+                helpText: 'Example: 2/3 = 8/? (Answer: 12)',
+                order: 2
+              }),
+              includeSimplifyFraction: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Simplify Fractions',
+                description: 'Reduce fractions to their simplest form',
+                helpText: 'Example: 8/12 = ? (Answer: 2/3)',
+                order: 3
+              }),
+              includeIdentifyEquivalent: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Identify Equivalent',
+                description: 'Identify which fractions are equivalent',
+                helpText: 'Example: Which equals 1/2? a) 2/4 b) 3/5 c) 4/9',
+                order: 4
+              })
+            }
+          }),
+          
+          fractionProperties: schemaV2.createCategory({
+            id: 'fractionProperties',
+            label: 'Fraction Properties',
+            description: 'Control the types and complexity of fractions',
+            icon: 'pie_chart',
+            color: 'purple',
+            order: 3,
+            parameters: {
+              includeImproperFractions: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Include Improper Fractions',
+                description: 'Include fractions where numerator ≥ denominator',
+                helpText: 'Examples: 5/3, 7/4, 8/5',
+                order: 1
+              }),
+              showMultipleEquivalents: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Show Multiple Equivalents',
+                description: 'Show multiple equivalent forms in some problems',
+                helpText: 'Example: 1/2 = 2/4 = 3/6 = 4/8',
+                order: 2
+              })
+            }
+          }),
+          
+          numberRanges: schemaV2.createCategory({
+            id: 'numberRanges',
+            label: 'Number Ranges',
+            description: 'Control the size of numerators and denominators',
+            icon: 'tag',
+            color: 'orange',
+            order: 4,
+            parameters: {
+              maxNumerator: schemaV2.createParameter({
+                type: 'number',
+                label: 'Maximum Original Numerator',
+                description: 'Largest numerator for the starting fraction',
+                min: 1,
+                max: 30,
+                required: true,
+                slider: true,
+                presets: [12, 18, 24, 30],
+                helpText: 'Top number in the original fraction',
+                order: 1
+              }),
+              maxDenominator: schemaV2.createParameter({
+                type: 'number',
+                label: 'Maximum Original Denominator',
+                description: 'Largest denominator for the starting fraction',
+                min: 2,
+                max: 30,
+                required: true,
+                slider: true,
+                presets: [12, 18, 24, 30],
+                helpText: 'Bottom number in the original fraction',
+                order: 2
+              }),
+              targetDenominatorMax: schemaV2.createParameter({
+                type: 'number',
+                label: 'Maximum Target Denominator',
+                description: 'Largest denominator for equivalent fractions',
+                min: 2,
+                max: 60,
+                required: true,
+                slider: true,
+                presets: [24, 36, 48, 60],
+                helpText: 'Controls how large equivalent fractions can get',
+                order: 3
+              })
+            }
+          }),
+          
+          displayOptions: schemaV2.createCategory({
+            id: 'displayOptions',
+            label: 'Display Options',
+            description: 'Control how answers are formatted',
+            icon: 'visibility',
+            color: 'pink',
+            order: 5,
+            parameters: {
+              requireSimplestForm: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Require Simplest Form',
+                description: 'When simplifying, require the most reduced form',
+                helpText: 'Ensures answers are fully simplified (e.g., 2/3 not 4/6)',
+                order: 1
+              })
+            }
+          })
         },
-        includeFindMissingNumerator: {
-          type: 'boolean',
-          label: 'Include Find Missing Numerator',
-          description: 'Include problems like "2/3 = ?/12"'
-        },
-        includeFindMissingDenominator: {
-          type: 'boolean',
-          label: 'Include Find Missing Denominator',
-          description: 'Include problems like "2/3 = 8/?"'
-        },
-        includeSimplifyFraction: {
-          type: 'boolean',
-          label: 'Include Simplify Fraction',
-          description: 'Include problems like "8/12 = ?"'
-        },
-        includeIdentifyEquivalent: {
-          type: 'boolean',
-          label: 'Include Identify Equivalent',
-          description: 'Include problems asking to identify equivalent fractions'
-        },
-        maxNumerator: {
-          type: 'number',
-          label: 'Maximum Original Numerator',
-          description: 'Largest numerator for the original fraction',
-          min: 1,
-          max: 50,
-          required: true
-        },
-        maxDenominator: {
-          type: 'number',
-          label: 'Maximum Original Denominator',
-          description: 'Largest denominator for the original fraction',
-          min: 2,
-          max: 50,
-          required: true
-        },
-        targetDenominatorMax: {
-          type: 'number',
-          label: 'Maximum Target Denominator',
-          description: 'Largest denominator for equivalent fractions',
-          min: 2,
-          max: 100,
-          required: true
-        },
-        includeImproperFractions: {
-          type: 'boolean',
-          label: 'Include Improper Fractions',
-          description: 'Include fractions where numerator ≥ denominator'
-        },
-        requireSimplestForm: {
-          type: 'boolean',
-          label: 'Require Simplest Form',
-          description: 'When simplifying, require the simplest possible form'
-        },
-        showMultipleEquivalents: {
-          type: 'boolean',
-          label: 'Show Multiple Equivalents',
-          description: 'Show multiple equivalent forms in some problems'
-        }
-      }
+        
+        // Preset configurations for quick setup
+        presets: [
+          schemaV2.createPreset({
+            id: 'basic-equivalents',
+            label: 'Basic Equivalents',
+            description: 'Simple equivalent fraction problems for beginners',
+            icon: 'looks_one',
+            category: 'difficulty',
+            values: {
+              problemCount: 10,
+              includeFindMissingNumerator: true,
+              includeFindMissingDenominator: true,
+              includeSimplifyFraction: false,
+              includeIdentifyEquivalent: false,
+              maxNumerator: 12,
+              maxDenominator: 12,
+              targetDenominatorMax: 24,
+              includeImproperFractions: false,
+              requireSimplestForm: true,
+              showMultipleEquivalents: false
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'simplification-focus',
+            label: 'Simplification Focus',
+            description: 'Practice reducing fractions to simplest form',
+            icon: 'compress',
+            category: 'scope',
+            values: {
+              problemCount: 12,
+              includeFindMissingNumerator: false,
+              includeFindMissingDenominator: false,
+              includeSimplifyFraction: true,
+              includeIdentifyEquivalent: false,
+              maxNumerator: 20,
+              maxDenominator: 16,
+              targetDenominatorMax: 32,
+              includeImproperFractions: false,
+              requireSimplestForm: true,
+              showMultipleEquivalents: false
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'missing-numbers-practice',
+            label: 'Missing Numbers Practice',
+            description: 'Find missing numerators and denominators',
+            icon: 'help_outline',
+            category: 'scope',
+            values: {
+              problemCount: 15,
+              includeFindMissingNumerator: true,
+              includeFindMissingDenominator: true,
+              includeSimplifyFraction: false,
+              includeIdentifyEquivalent: false,
+              maxNumerator: 18,
+              maxDenominator: 15,
+              targetDenominatorMax: 45,
+              includeImproperFractions: false,
+              requireSimplestForm: true,
+              showMultipleEquivalents: true
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'comprehensive-equivalents',
+            label: 'Comprehensive Equivalents',
+            description: 'Mixed practice with all equivalent fraction concepts',
+            icon: 'all_inclusive',
+            category: 'scope',
+            values: {
+              problemCount: 16,
+              includeFindMissingNumerator: true,
+              includeFindMissingDenominator: true,
+              includeSimplifyFraction: true,
+              includeIdentifyEquivalent: true,
+              maxNumerator: 24,
+              maxDenominator: 20,
+              targetDenominatorMax: 48,
+              includeImproperFractions: true,
+              requireSimplestForm: true,
+              showMultipleEquivalents: true
+            }
+          })
+        ]
+      })
     })
   }
 
   generateProblem(parameters = {}) {
     const params = { ...this.defaultParameters, ...parameters }
     
-    const validation = this.validateParameters(params)
+    // Validate parameters using Parameter Schema V2
+    const validation = this.parameterSchema.validate(params)
     if (!validation.isValid) {
       throw new Error(`Invalid parameters: ${validation.errors.join(', ')}`)
+    }
+    
+    // Additional custom validation
+    const customErrors = []
+    if (params.targetDenominatorMax < params.maxDenominator) {
+      customErrors.push('Maximum Target Denominator should be at least as large as Maximum Original Denominator')
+    }
+    if (customErrors.length > 0) {
+      throw new Error(`Invalid parameters: ${customErrors.join(', ')}`)
     }
     
     // Build array of enabled problem types

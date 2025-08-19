@@ -1,4 +1,5 @@
 import { BaseGenerator } from '../BaseGenerator.js'
+import { ParameterSchemaV2 } from '../ParameterSchemaV2.js'
 
 /**
  * Time Generator
@@ -6,6 +7,8 @@ import { BaseGenerator } from '../BaseGenerator.js'
  */
 export class TimeGenerator extends BaseGenerator {
   constructor() {
+    const schemaV2 = new ParameterSchemaV2()
+    
     super({
       name: 'Time',
       description: 'Generate problems involving time measurements, conversions, and calculations',
@@ -37,83 +40,304 @@ export class TimeGenerator extends BaseGenerator {
         maxHours: 12
       },
       
-      parameterSchema: {
-        problemCount: {
-          type: 'number',
-          label: 'Number of Problems',
-          description: 'How many time problems to generate',
-          min: 1,
-          max: 100,
-          required: true
+      // Enhanced Parameter Schema V2 with beautiful categorization
+      parameterSchema: schemaV2.createSchema({
+        categories: {
+          general: schemaV2.createCategory({
+            id: 'general',
+            label: 'General Settings',
+            description: 'Basic configuration options',
+            icon: 'settings',
+            color: 'blue',
+            order: 1,
+            parameters: {
+              problemCount: schemaV2.createParameter({
+                type: 'number',
+                label: 'Number of Problems',
+                description: 'How many time problems to generate',
+                min: 1,
+                max: 50,
+                required: true,
+                slider: true,
+                presets: [5, 8, 10, 15],
+                order: 1
+              })
+            }
+          }),
+          
+          problemTypes: schemaV2.createCategory({
+            id: 'problemTypes',
+            label: 'Problem Types',
+            description: 'Choose which types of time problems to include',
+            icon: 'schedule',
+            color: 'green',
+            order: 2,
+            parameters: {
+              includeBasicTime: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Basic Time Reading',
+                description: 'Problems about reading and identifying times',
+                helpText: 'Examples: "What time is shown?", "Read the clock"',
+                order: 1
+              }),
+              includeConversion: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Unit Conversions',
+                description: 'Convert between different time units',
+                helpText: 'Examples: Convert 2 hours to minutes, 120 seconds to minutes',
+                order: 2
+              }),
+              includeElapsedTime: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Elapsed Time',
+                description: 'Calculate time that has passed',
+                helpText: 'Examples: From 2:30 PM to 4:15 PM = ? hours ? minutes',
+                order: 3
+              }),
+              includeClockReading: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Analog Clock Reading',
+                description: 'Read times from analog clock descriptions',
+                helpText: 'Examples: Hour hand on 3, minute hand on 6 = what time?',
+                order: 4
+              }),
+              includeTimeArithmetic: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Time Arithmetic',
+                description: 'Add and subtract time values',
+                helpText: 'Examples: 2h 30m + 1h 45m = ?, 5h 20m - 2h 35m = ?',
+                order: 5
+              }),
+              includeWordProblems: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Word Problems',
+                description: 'Real-world time scenarios',
+                helpText: 'Examples: movie times, school schedules, travel duration',
+                order: 6
+              })
+            }
+          }),
+          
+          timeFormats: schemaV2.createCategory({
+            id: 'timeFormats',
+            label: 'Time Formats',
+            description: 'Choose which time formats to use',
+            icon: 'access_time',
+            color: 'purple',
+            order: 3,
+            parameters: {
+              use12HourFormat: schemaV2.createParameter({
+                type: 'boolean',
+                label: '12-Hour Format',
+                description: 'Use 12-hour time format (1:00 - 12:59)',
+                helpText: 'Examples: 1:30, 11:45, 12:00',
+                order: 1
+              }),
+              use24HourFormat: schemaV2.createParameter({
+                type: 'boolean',
+                label: '24-Hour Format',
+                description: 'Use 24-hour time format (00:00 - 23:59)',
+                helpText: 'Examples: 13:30, 23:45, 00:15',
+                order: 2
+              }),
+              includeAMPM: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Include AM/PM',
+                description: 'Add AM/PM notation to 12-hour times',
+                helpText: 'Examples: 2:30 PM, 8:15 AM',
+                order: 3
+              })
+            }
+          }),
+          
+          numberProperties: schemaV2.createCategory({
+            id: 'numberProperties',
+            label: 'Number Properties',
+            description: 'Control the complexity of numbers used',
+            icon: 'tag',
+            color: 'orange',
+            order: 4,
+            parameters: {
+              maxHours: schemaV2.createParameter({
+                type: 'number',
+                label: 'Maximum Hours',
+                description: 'Largest hour value to use in problems',
+                min: 1,
+                max: 24,
+                required: true,
+                slider: true,
+                presets: [12, 16, 20, 24],
+                helpText: 'Controls the range of hours in time problems',
+                order: 1
+              }),
+              allowDecimals: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Allow Decimals',
+                description: 'Allow decimal values in time conversions',
+                helpText: 'Examples: 2.5 hours, 1.75 minutes',
+                order: 2
+              })
+            }
+          })
         },
-        includeBasicTime: {
-          type: 'boolean',
-          label: 'Include Basic Time',
-          description: 'Include problems asking about time values'
-        },
-        includeConversion: {
-          type: 'boolean',
-          label: 'Include Conversions',
-          description: 'Include time unit conversion problems'
-        },
-        includeElapsedTime: {
-          type: 'boolean',
-          label: 'Include Elapsed Time',
-          description: 'Include problems calculating elapsed time'
-        },
-        includeClockReading: {
-          type: 'boolean',
-          label: 'Include Clock Reading',
-          description: 'Include problems reading analog clock times'
-        },
-        includeTimeArithmetic: {
-          type: 'boolean',
-          label: 'Include Time Arithmetic',
-          description: 'Include addition/subtraction of time values'
-        },
-        includeWordProblems: {
-          type: 'boolean',
-          label: 'Include Word Problems',
-          description: 'Include real-world time word problems'
-        },
-        use12HourFormat: {
-          type: 'boolean',
-          label: 'Use 12-Hour Format',
-          description: 'Include 12-hour time format (1-12)'
-        },
-        use24HourFormat: {
-          type: 'boolean',
-          label: 'Use 24-Hour Format',
-          description: 'Include 24-hour time format (0-23)'
-        },
-        includeAMPM: {
-          type: 'boolean',
-          label: 'Include AM/PM',
-          description: 'Include AM/PM notation in problems'
-        },
-        allowDecimals: {
-          type: 'boolean',
-          label: 'Allow Decimals',
-          description: 'Allow decimal values in time problems'
-        },
-        maxHours: {
-          type: 'number',
-          label: 'Maximum Hours',
-          description: 'Largest hour value to use',
-          min: 1,
-          max: 24,
-          required: true
-        }
-      }
+        
+        // Preset configurations for quick setup
+        presets: [
+          schemaV2.createPreset({
+            id: 'basic-time-reading',
+            label: 'Basic Time Reading',
+            description: 'Simple time reading problems for elementary students',
+            icon: 'looks_one',
+            category: 'difficulty',
+            values: {
+              problemCount: 10,
+              includeBasicTime: true,
+              includeConversion: false,
+              includeElapsedTime: false,
+              includeClockReading: true,
+              includeTimeArithmetic: false,
+              includeWordProblems: false,
+              use12HourFormat: true,
+              use24HourFormat: false,
+              includeAMPM: true,
+              allowDecimals: false,
+              maxHours: 12
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'time-conversions',
+            label: 'Time Conversions',
+            description: 'Focus on converting between time units',
+            icon: 'swap_horiz',
+            category: 'scope',
+            values: {
+              problemCount: 12,
+              includeBasicTime: false,
+              includeConversion: true,
+              includeElapsedTime: false,
+              includeClockReading: false,
+              includeTimeArithmetic: false,
+              includeWordProblems: false,
+              use12HourFormat: true,
+              use24HourFormat: false,
+              includeAMPM: false,
+              allowDecimals: true,
+              maxHours: 24
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'elapsed-time-practice',
+            label: 'Elapsed Time Practice',
+            description: 'Practice calculating elapsed time',
+            icon: 'timer',
+            category: 'scope',
+            values: {
+              problemCount: 10,
+              includeBasicTime: false,
+              includeConversion: false,
+              includeElapsedTime: true,
+              includeClockReading: false,
+              includeTimeArithmetic: true,
+              includeWordProblems: false,
+              use12HourFormat: true,
+              use24HourFormat: false,
+              includeAMPM: true,
+              allowDecimals: false,
+              maxHours: 12
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: '24-hour-format',
+            label: '24-Hour Format',
+            description: 'Practice with 24-hour (military) time',
+            icon: 'military_tech',
+            category: 'scope',
+            values: {
+              problemCount: 12,
+              includeBasicTime: true,
+              includeConversion: true,
+              includeElapsedTime: true,
+              includeClockReading: false,
+              includeTimeArithmetic: false,
+              includeWordProblems: false,
+              use12HourFormat: false,
+              use24HourFormat: true,
+              includeAMPM: false,
+              allowDecimals: false,
+              maxHours: 24
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'real-world-time',
+            label: 'Real-World Time',
+            description: 'Word problems with real-world time scenarios',
+            icon: 'public',
+            category: 'scope',
+            values: {
+              problemCount: 10,
+              includeBasicTime: false,
+              includeConversion: false,
+              includeElapsedTime: true,
+              includeClockReading: false,
+              includeTimeArithmetic: true,
+              includeWordProblems: true,
+              use12HourFormat: true,
+              use24HourFormat: false,
+              includeAMPM: true,
+              allowDecimals: false,
+              maxHours: 12
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'comprehensive-time',
+            label: 'Comprehensive Time',
+            description: 'Mixed practice with all time concepts',
+            icon: 'all_inclusive',
+            category: 'scope',
+            values: {
+              problemCount: 15,
+              includeBasicTime: true,
+              includeConversion: true,
+              includeElapsedTime: true,
+              includeClockReading: true,
+              includeTimeArithmetic: true,
+              includeWordProblems: true,
+              use12HourFormat: true,
+              use24HourFormat: true,
+              includeAMPM: true,
+              allowDecimals: true,
+              maxHours: 24
+            }
+          })
+        ]
+      })
     })
   }
 
   generateProblem(parameters = {}) {
     const params = { ...this.defaultParameters, ...parameters }
     
-    const validation = this.validateParameters(params)
+    // Validate parameters using Parameter Schema V2
+    const validation = this.parameterSchema.validate(params)
     if (!validation.isValid) {
       throw new Error(`Invalid parameters: ${validation.errors.join(', ')}`)
+    }
+    
+    // Additional custom validation
+    const customErrors = []
+    if (!params.use12HourFormat && !params.use24HourFormat) {
+      customErrors.push('At least one time format must be enabled')
+    }
+    if (!params.includeBasicTime && !params.includeConversion && !params.includeElapsedTime && !params.includeClockReading && !params.includeTimeArithmetic && !params.includeWordProblems) {
+      customErrors.push('At least one problem type must be enabled')
+    }
+    if (customErrors.length > 0) {
+      throw new Error(`Invalid parameters: ${customErrors.join(', ')}`)
     }
     
     // Build array of enabled problem types

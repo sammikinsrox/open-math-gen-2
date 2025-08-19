@@ -1,4 +1,5 @@
 import { BaseGenerator } from '../BaseGenerator.js'
+import { ParameterSchemaV2 } from '../ParameterSchemaV2.js'
 
 /**
  * Money Operations Generator
@@ -6,6 +7,8 @@ import { BaseGenerator } from '../BaseGenerator.js'
  */
 export class MoneyOperationsGenerator extends BaseGenerator {
   constructor() {
+    const schemaV2 = new ParameterSchemaV2()
+    
     super({
       name: 'Money Operations',
       description: 'Generate problems involving arithmetic operations with money amounts',
@@ -39,105 +42,364 @@ export class MoneyOperationsGenerator extends BaseGenerator {
         maxTerms: 3
       },
       
-      parameterSchema: {
-        problemCount: {
-          type: 'number',
-          label: 'Number of Problems',
-          description: 'How many money operation problems to generate',
-          min: 1,
-          max: 100,
-          required: true
+      // Enhanced Parameter Schema V2 with beautiful categorization
+      parameterSchema: schemaV2.createSchema({
+        categories: {
+          general: schemaV2.createCategory({
+            id: 'general',
+            label: 'General Settings',
+            description: 'Basic configuration options',
+            icon: 'settings',
+            color: 'blue',
+            order: 1,
+            parameters: {
+              problemCount: schemaV2.createParameter({
+                type: 'number',
+                label: 'Number of Problems',
+                description: 'How many money operation problems to generate',
+                min: 1,
+                max: 50,
+                required: true,
+                slider: true,
+                presets: [5, 8, 10, 15],
+                order: 1
+              })
+            }
+          }),
+          
+          operationTypes: schemaV2.createCategory({
+            id: 'operationTypes',
+            label: 'Operation Types',
+            description: 'Choose which arithmetic operations to include',
+            icon: 'calculate',
+            color: 'green',
+            order: 2,
+            parameters: {
+              includeAddition: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Addition',
+                description: 'Include money addition problems',
+                helpText: 'Examples: $15.50 + $23.75, $5.00 + $3.25 + $7.10',
+                order: 1
+              }),
+              includeSubtraction: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Subtraction',
+                description: 'Include money subtraction problems',
+                helpText: 'Examples: $25.00 - $8.75, $50.00 - $12.50 - $5.25',
+                order: 2
+              }),
+              includeMultiplication: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Multiplication',
+                description: 'Include money multiplication problems',
+                helpText: 'Examples: $12.50 × 3, $4.75 × 8',
+                order: 3
+              }),
+              includeDivision: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Division',
+                description: 'Include money division problems',
+                helpText: 'Examples: $36.00 ÷ 4, $52.50 ÷ 5',
+                order: 4
+              })
+            }
+          }),
+          
+          moneyRanges: schemaV2.createCategory({
+            id: 'moneyRanges',
+            label: 'Money Ranges',
+            description: 'Control the range of money amounts used',
+            icon: 'attach_money',
+            color: 'purple',
+            order: 3,
+            parameters: {
+              moneyMin: schemaV2.createParameter({
+                type: 'number',
+                label: 'Minimum Money Amount',
+                description: 'Smallest money amount to use (in dollars)',
+                min: 0.01,
+                max: 1000.00,
+                required: true,
+                slider: true,
+                presets: [0.25, 1.00, 5.00, 10.00],
+                helpText: 'Lower bound for money values in problems',
+                order: 1
+              }),
+              moneyMax: schemaV2.createParameter({
+                type: 'number',
+                label: 'Maximum Money Amount',
+                description: 'Largest money amount to use (in dollars)',
+                min: 0.01,
+                max: 10000.00,
+                required: true,
+                slider: true,
+                presets: [25.00, 50.00, 100.00, 500.00],
+                helpText: 'Upper bound for money values in problems',
+                order: 2
+              }),
+              allowDecimals: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Allow Decimal Amounts',
+                description: 'Allow decimal amounts in money values',
+                helpText: 'Examples: $12.75, $8.99 vs $12.00, $8.00',
+                order: 3
+              })
+            }
+          }),
+          
+          multiplicationDivision: schemaV2.createCategory({
+            id: 'multiplicationDivision',
+            label: 'Multiplication & Division',
+            description: 'Settings for multiplication and division problems',
+            icon: 'clear_all',
+            color: 'orange',
+            order: 4,
+            parameters: {
+              multiplierMin: schemaV2.createParameter({
+                type: 'number',
+                label: 'Minimum Multiplier',
+                description: 'Smallest multiplier for multiplication problems',
+                min: 1,
+                max: 100,
+                required: true,
+                slider: true,
+                presets: [2, 3, 5, 10],
+                helpText: 'Lower bound for multiplication/division factors',
+                order: 1
+              }),
+              multiplierMax: schemaV2.createParameter({
+                type: 'number',
+                label: 'Maximum Multiplier',
+                description: 'Largest multiplier for multiplication problems',
+                min: 1,
+                max: 1000,
+                required: true,
+                slider: true,
+                presets: [10, 20, 50, 100],
+                helpText: 'Upper bound for multiplication/division factors',
+                order: 2
+              })
+            }
+          }),
+          
+          problemComplexity: schemaV2.createCategory({
+            id: 'problemComplexity',
+            label: 'Problem Complexity',
+            description: 'Control the complexity and presentation of problems',
+            icon: 'tune',
+            color: 'teal',
+            order: 5,
+            parameters: {
+              maxTerms: schemaV2.createParameter({
+                type: 'number',
+                label: 'Maximum Terms',
+                description: 'Maximum number of terms in addition/subtraction',
+                min: 2,
+                max: 5,
+                required: true,
+                slider: true,
+                presets: [2, 3, 4, 5],
+                helpText: 'Controls complexity of multi-term operations',
+                order: 1
+              }),
+              ensurePositiveResults: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Ensure Positive Results',
+                description: 'Ensure all results are positive amounts',
+                helpText: 'Prevents negative money amounts in answers',
+                order: 2
+              }),
+              showSteps: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Show Calculation Steps',
+                description: 'Display step-by-step calculation process',
+                helpText: 'Shows intermediate steps in problem solving',
+                order: 3
+              }),
+              includeWordProblems: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Include Word Problems',
+                description: 'Include real-world money operation scenarios',
+                helpText: 'Examples: shopping, earning, budgeting scenarios',
+                order: 4
+              })
+            }
+          })
         },
-        includeAddition: {
-          type: 'boolean',
-          label: 'Include Addition',
-          description: 'Include money addition problems'
-        },
-        includeSubtraction: {
-          type: 'boolean',
-          label: 'Include Subtraction',
-          description: 'Include money subtraction problems'
-        },
-        includeMultiplication: {
-          type: 'boolean',
-          label: 'Include Multiplication',
-          description: 'Include money multiplication problems'
-        },
-        includeDivision: {
-          type: 'boolean',
-          label: 'Include Division',
-          description: 'Include money division problems'
-        },
-        includeWordProblems: {
-          type: 'boolean',
-          label: 'Include Word Problems',
-          description: 'Include real-world money operation scenarios'
-        },
-        moneyMin: {
-          type: 'number',
-          label: 'Minimum Money Amount',
-          description: 'Smallest money amount to use (in dollars)',
-          min: 0.01,
-          max: 1000.00,
-          required: true
-        },
-        moneyMax: {
-          type: 'number',
-          label: 'Maximum Money Amount',
-          description: 'Largest money amount to use (in dollars)',
-          min: 0.01,
-          max: 10000.00,
-          required: true
-        },
-        allowDecimals: {
-          type: 'boolean',
-          label: 'Allow Decimals',
-          description: 'Allow decimal amounts in money values'
-        },
-        ensurePositiveResults: {
-          type: 'boolean',
-          label: 'Ensure Positive Results',
-          description: 'Ensure all results are positive amounts'
-        },
-        multiplierMin: {
-          type: 'number',
-          label: 'Minimum Multiplier',
-          description: 'Smallest multiplier for multiplication problems',
-          min: 1,
-          max: 100,
-          required: true
-        },
-        multiplierMax: {
-          type: 'number',
-          label: 'Maximum Multiplier',
-          description: 'Largest multiplier for multiplication problems',
-          min: 1,
-          max: 1000,
-          required: true
-        },
-        showSteps: {
-          type: 'boolean',
-          label: 'Show Calculation Steps',
-          description: 'Show step-by-step calculation'
-        },
-        maxTerms: {
-          type: 'number',
-          label: 'Maximum Terms',
-          description: 'Maximum number of terms in addition/subtraction problems',
-          min: 2,
-          max: 5,
-          required: true
-        }
-      }
+        
+        // Preset configurations for quick setup
+        presets: [
+          schemaV2.createPreset({
+            id: 'basic-addition-subtraction',
+            label: 'Basic Addition & Subtraction',
+            description: 'Simple addition and subtraction with small amounts',
+            icon: 'looks_one',
+            category: 'difficulty',
+            values: {
+              problemCount: 10,
+              includeAddition: true,
+              includeSubtraction: true,
+              includeMultiplication: false,
+              includeDivision: false,
+              includeWordProblems: false,
+              moneyMin: 0.50,
+              moneyMax: 25.00,
+              allowDecimals: true,
+              ensurePositiveResults: true,
+              multiplierMin: 2,
+              multiplierMax: 10,
+              showSteps: true,
+              maxTerms: 2
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'multiplication-division',
+            label: 'Multiplication & Division',
+            description: 'Focus on multiplication and division operations',
+            icon: 'clear_all',
+            category: 'scope',
+            values: {
+              problemCount: 10,
+              includeAddition: false,
+              includeSubtraction: false,
+              includeMultiplication: true,
+              includeDivision: true,
+              includeWordProblems: true,
+              moneyMin: 1.00,
+              moneyMax: 50.00,
+              allowDecimals: true,
+              ensurePositiveResults: true,
+              multiplierMin: 2,
+              multiplierMax: 12,
+              showSteps: true,
+              maxTerms: 3
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'multi-term-operations',
+            label: 'Multi-Term Operations',
+            description: 'Complex problems with multiple terms',
+            icon: 'functions',
+            category: 'difficulty',
+            values: {
+              problemCount: 8,
+              includeAddition: true,
+              includeSubtraction: true,
+              includeMultiplication: false,
+              includeDivision: false,
+              includeWordProblems: false,
+              moneyMin: 2.00,
+              moneyMax: 30.00,
+              allowDecimals: true,
+              ensurePositiveResults: true,
+              multiplierMin: 2,
+              multiplierMax: 10,
+              showSteps: true,
+              maxTerms: 5
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'real-world-scenarios',
+            label: 'Real-World Scenarios',
+            description: 'Word problems with practical money situations',
+            icon: 'business',
+            category: 'scope',
+            values: {
+              problemCount: 12,
+              includeAddition: true,
+              includeSubtraction: true,
+              includeMultiplication: true,
+              includeDivision: false,
+              includeWordProblems: true,
+              moneyMin: 1.00,
+              moneyMax: 75.00,
+              allowDecimals: true,
+              ensurePositiveResults: true,
+              multiplierMin: 2,
+              multiplierMax: 15,
+              showSteps: false,
+              maxTerms: 3
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'advanced-operations',
+            label: 'Advanced Operations',
+            description: 'Complex problems with larger amounts and all operations',
+            icon: 'trending_up',
+            category: 'difficulty',
+            values: {
+              problemCount: 10,
+              includeAddition: true,
+              includeSubtraction: true,
+              includeMultiplication: true,
+              includeDivision: true,
+              includeWordProblems: false,
+              moneyMin: 5.00,
+              moneyMax: 200.00,
+              allowDecimals: true,
+              ensurePositiveResults: false,
+              multiplierMin: 3,
+              multiplierMax: 25,
+              showSteps: true,
+              maxTerms: 4
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'comprehensive-money-operations',
+            label: 'Comprehensive Money Operations',
+            description: 'Complete practice with all operation types',
+            icon: 'all_inclusive',
+            category: 'scope',
+            values: {
+              problemCount: 15,
+              includeAddition: true,
+              includeSubtraction: true,
+              includeMultiplication: true,
+              includeDivision: true,
+              includeWordProblems: true,
+              moneyMin: 0.50,
+              moneyMax: 100.00,
+              allowDecimals: true,
+              ensurePositiveResults: true,
+              multiplierMin: 2,
+              multiplierMax: 20,
+              showSteps: true,
+              maxTerms: 4
+            }
+          })
+        ]
+      })
     })
   }
 
   generateProblem(parameters = {}) {
     const params = { ...this.defaultParameters, ...parameters }
     
-    const validation = this.validateParameters(params)
+    // Validate parameters using Parameter Schema V2
+    const validation = this.parameterSchema.validate(params)
     if (!validation.isValid) {
       throw new Error(`Invalid parameters: ${validation.errors.join(', ')}`)
+    }
+    
+    // Additional custom validation
+    const customErrors = []
+    if (!params.includeAddition && !params.includeSubtraction && !params.includeMultiplication && !params.includeDivision) {
+      customErrors.push('At least one operation type must be enabled')
+    }
+    if (params.moneyMin > params.moneyMax) {
+      customErrors.push('Minimum Money Amount cannot be greater than Maximum Money Amount')
+    }
+    if (params.multiplierMin > params.multiplierMax) {
+      customErrors.push('Minimum Multiplier cannot be greater than Maximum Multiplier')
+    }
+    if (customErrors.length > 0) {
+      throw new Error(`Invalid parameters: ${customErrors.join(', ')}`)
     }
     
     // Build array of enabled problem types

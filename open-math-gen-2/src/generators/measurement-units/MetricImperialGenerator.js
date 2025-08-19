@@ -1,4 +1,5 @@
 import { BaseGenerator } from '../BaseGenerator.js'
+import { ParameterSchemaV2 } from '../ParameterSchemaV2.js'
 
 /**
  * Metric-Imperial Generator
@@ -6,6 +7,8 @@ import { BaseGenerator } from '../BaseGenerator.js'
  */
 export class MetricImperialGenerator extends BaseGenerator {
   constructor() {
+    const schemaV2 = new ParameterSchemaV2()
+    
     super({
       name: 'Metric-Imperial',
       description: 'Generate problems involving conversions between metric and imperial measurement systems',
@@ -40,101 +43,373 @@ export class MetricImperialGenerator extends BaseGenerator {
         showApproximateVsExact: false
       },
       
-      parameterSchema: {
-        problemCount: {
-          type: 'number',
-          label: 'Number of Problems',
-          description: 'How many metric-imperial conversion problems to generate',
-          min: 1,
-          max: 100,
-          required: true
+      // Enhanced Parameter Schema V2 with beautiful categorization
+      parameterSchema: schemaV2.createSchema({
+        categories: {
+          general: schemaV2.createCategory({
+            id: 'general',
+            label: 'General Settings',
+            description: 'Basic configuration options',
+            icon: 'settings',
+            color: 'blue',
+            order: 1,
+            parameters: {
+              problemCount: schemaV2.createParameter({
+                type: 'number',
+                label: 'Number of Problems',
+                description: 'How many metric-imperial conversion problems to generate',
+                min: 1,
+                max: 50,
+                required: true,
+                slider: true,
+                presets: [5, 8, 10, 15],
+                order: 1
+              })
+            }
+          }),
+          
+          measurementTypes: schemaV2.createCategory({
+            id: 'measurementTypes',
+            label: 'Measurement Types',
+            description: 'Choose which types of measurements to convert between systems',
+            icon: 'swap_horiz',
+            color: 'green',
+            order: 2,
+            parameters: {
+              includeLength: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Length/Distance',
+                description: 'Include length conversions between metric and imperial',
+                helpText: 'Examples: km ↔ miles, meters ↔ feet, cm ↔ inches',
+                order: 1
+              }),
+              includeWeight: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Weight/Mass',
+                description: 'Include weight conversions between metric and imperial',
+                helpText: 'Examples: kg ↔ pounds, grams ↔ ounces',
+                order: 2
+              }),
+              includeVolume: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Volume/Capacity',
+                description: 'Include volume conversions between metric and imperial',
+                helpText: 'Examples: liters ↔ gallons, mL ↔ fluid ounces',
+                order: 3
+              }),
+              includeTemperature: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Temperature',
+                description: 'Include temperature conversions between scales',
+                helpText: 'Examples: °C ↔ °F (Celsius ↔ Fahrenheit)',
+                order: 4
+              })
+            }
+          }),
+          
+          conversionDirections: schemaV2.createCategory({
+            id: 'conversionDirections',
+            label: 'Conversion Directions',
+            description: 'Choose which direction of conversions to include',
+            icon: 'compare_arrows',
+            color: 'purple',
+            order: 3,
+            parameters: {
+              includeMetricToImperial: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Metric → Imperial',
+                description: 'Convert from metric system to imperial system',
+                helpText: 'Examples: 5 km → ? miles, 2 kg → ? pounds',
+                order: 1
+              }),
+              includeImperialToMetric: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Imperial → Metric',
+                description: 'Convert from imperial system to metric system',
+                helpText: 'Examples: 10 miles → ? km, 5 pounds → ? kg',
+                order: 2
+              })
+            }
+          }),
+          
+          conversionAccuracy: schemaV2.createCategory({
+            id: 'conversionAccuracy',
+            label: 'Conversion Accuracy',
+            description: 'Control the precision and type of conversion factors used',
+            icon: 'precision_manufacturing',
+            color: 'orange',
+            order: 4,
+            parameters: {
+              includeCommonConversions: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Common Conversions',
+                description: 'Include frequently used everyday conversions',
+                helpText: 'Focus on practical, commonly encountered conversions',
+                order: 1
+              }),
+              includeApproximations: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Approximate Values',
+                description: 'Use rounded conversion factors for easier calculation',
+                helpText: 'Examples: 1 kg ≈ 2.2 lbs (instead of 2.20462 lbs)',
+                order: 2
+              }),
+              includePreciseConversions: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Precise Values',
+                description: 'Use exact conversion factors',
+                helpText: 'Examples: 1 inch = 2.54 cm (exact)',
+                order: 3
+              }),
+              showApproximateVsExact: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Show Approximate vs Exact',
+                description: 'Display both approximate and exact values in answers',
+                helpText: 'Educational feature showing the difference between approximate and exact values',
+                order: 4
+              })
+            }
+          }),
+          
+          problemComplexity: schemaV2.createCategory({
+            id: 'problemComplexity',
+            label: 'Problem Complexity',
+            description: 'Control the complexity and context of problems',
+            icon: 'tune',
+            color: 'teal',
+            order: 5,
+            parameters: {
+              includeWordProblems: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Word Problems',
+                description: 'Include real-world conversion scenarios',
+                helpText: 'Examples: travel distances, cooking measurements, shipping weights',
+                order: 1
+              })
+            }
+          }),
+          
+          numberProperties: schemaV2.createCategory({
+            id: 'numberProperties',
+            label: 'Number Properties',
+            description: 'Control the format and range of numbers used',
+            icon: 'tag',
+            color: 'pink',
+            order: 6,
+            parameters: {
+              maxValue: schemaV2.createParameter({
+                type: 'number',
+                label: 'Maximum Value',
+                description: 'Largest value to use in conversions',
+                min: 1,
+                max: 1000,
+                required: true,
+                slider: true,
+                presets: [50, 100, 500, 1000],
+                helpText: 'Controls the size of numbers in conversion problems',
+                order: 1
+              }),
+              allowDecimals: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Allow Decimal Values',
+                description: 'Allow decimal numbers in problems and answers',
+                helpText: 'Examples: 2.5 km, 3.7 pounds, 1.25 liters',
+                order: 2
+              }),
+              decimalPlaces: schemaV2.createParameter({
+                type: 'number',
+                label: 'Decimal Places',
+                description: 'Number of decimal places in results',
+                min: 0,
+                max: 4,
+                required: true,
+                slider: true,
+                presets: [1, 2, 3, 4],
+                helpText: 'Controls precision of decimal answers',
+                order: 3
+              })
+            }
+          })
         },
-        includeLength: {
-          type: 'boolean',
-          label: 'Include Length',
-          description: 'Include length conversions (km↔mi, m↔ft, cm↔in)'
-        },
-        includeWeight: {
-          type: 'boolean',
-          label: 'Include Weight',
-          description: 'Include weight conversions (kg↔lb, g↔oz)'
-        },
-        includeVolume: {
-          type: 'boolean',
-          label: 'Include Volume',
-          description: 'Include volume conversions (L↔gal, ml↔fl oz)'
-        },
-        includeTemperature: {
-          type: 'boolean',
-          label: 'Include Temperature',
-          description: 'Include temperature conversions (°C↔°F)'
-        },
-        includeMetricToImperial: {
-          type: 'boolean',
-          label: 'Metric to Imperial',
-          description: 'Include conversions from metric to imperial'
-        },
-        includeImperialToMetric: {
-          type: 'boolean',
-          label: 'Imperial to Metric',
-          description: 'Include conversions from imperial to metric'
-        },
-        includeCommonConversions: {
-          type: 'boolean',
-          label: 'Common Conversions',
-          description: 'Focus on commonly used conversions'
-        },
-        includePreciseConversions: {
-          type: 'boolean',
-          label: 'Precise Conversions',
-          description: 'Include exact conversion factors'
-        },
-        includeApproximations: {
-          type: 'boolean',
-          label: 'Approximations',
-          description: 'Include rounded/approximate conversion factors'
-        },
-        includeWordProblems: {
-          type: 'boolean',
-          label: 'Include Word Problems',
-          description: 'Include real-world conversion scenarios'
-        },
-        allowDecimals: {
-          type: 'boolean',
-          label: 'Allow Decimals',
-          description: 'Allow decimal values in conversions'
-        },
-        decimalPlaces: {
-          type: 'number',
-          label: 'Decimal Places',
-          description: 'Number of decimal places in results',
-          min: 0,
-          max: 4,
-          required: true
-        },
-        maxValue: {
-          type: 'number',
-          label: 'Maximum Value',
-          description: 'Largest value to use in conversions',
-          min: 1,
-          max: 1000,
-          required: true
-        },
-        showApproximateVsExact: {
-          type: 'boolean',
-          label: 'Show Approximate vs Exact',
-          description: 'Show both approximate and exact values'
-        }
-      }
+        
+        // Preset configurations for quick setup
+        presets: [
+          schemaV2.createPreset({
+            id: 'everyday-conversions',
+            label: 'Everyday Conversions',
+            description: 'Common metric-imperial conversions for daily use',
+            icon: 'home',
+            category: 'scope',
+            values: {
+              problemCount: 10,
+              includeLength: true,
+              includeWeight: true,
+              includeVolume: true,
+              includeTemperature: false,
+              includeMetricToImperial: true,
+              includeImperialToMetric: true,
+              includeCommonConversions: true,
+              includePreciseConversions: false,
+              includeApproximations: true,
+              includeWordProblems: false,
+              allowDecimals: true,
+              decimalPlaces: 1,
+              maxValue: 50,
+              showApproximateVsExact: false
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'cooking-measurements',
+            label: 'Cooking Measurements',
+            description: 'Kitchen conversions between metric and imperial',
+            icon: 'restaurant',
+            category: 'scope',
+            values: {
+              problemCount: 12,
+              includeLength: false,
+              includeWeight: true,
+              includeVolume: true,
+              includeTemperature: true,
+              includeMetricToImperial: true,
+              includeImperialToMetric: true,
+              includeCommonConversions: true,
+              includePreciseConversions: false,
+              includeApproximations: true,
+              includeWordProblems: true,
+              allowDecimals: true,
+              decimalPlaces: 2,
+              maxValue: 100,
+              showApproximateVsExact: false
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'travel-distances',
+            label: 'Travel Distances',
+            description: 'Distance conversions for travel and navigation',
+            icon: 'flight',
+            category: 'scope',
+            values: {
+              problemCount: 10,
+              includeLength: true,
+              includeWeight: false,
+              includeVolume: false,
+              includeTemperature: false,
+              includeMetricToImperial: true,
+              includeImperialToMetric: true,
+              includeCommonConversions: true,
+              includePreciseConversions: false,
+              includeApproximations: true,
+              includeWordProblems: true,
+              allowDecimals: true,
+              decimalPlaces: 2,
+              maxValue: 500,
+              showApproximateVsExact: false
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'scientific-precision',
+            label: 'Scientific Precision',
+            description: 'Precise conversions for scientific applications',
+            icon: 'science',
+            category: 'difficulty',
+            values: {
+              problemCount: 8,
+              includeLength: true,
+              includeWeight: true,
+              includeVolume: true,
+              includeTemperature: true,
+              includeMetricToImperial: true,
+              includeImperialToMetric: true,
+              includeCommonConversions: false,
+              includePreciseConversions: true,
+              includeApproximations: false,
+              includeWordProblems: false,
+              allowDecimals: true,
+              decimalPlaces: 4,
+              maxValue: 100,
+              showApproximateVsExact: true
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'approximate-vs-exact',
+            label: 'Approximate vs Exact',
+            description: 'Compare approximate and exact conversion values',
+            icon: 'compare',
+            category: 'educational',
+            values: {
+              problemCount: 10,
+              includeLength: true,
+              includeWeight: true,
+              includeVolume: true,
+              includeTemperature: false,
+              includeMetricToImperial: true,
+              includeImperialToMetric: true,
+              includeCommonConversions: true,
+              includePreciseConversions: true,
+              includeApproximations: true,
+              includeWordProblems: false,
+              allowDecimals: true,
+              decimalPlaces: 3,
+              maxValue: 100,
+              showApproximateVsExact: true
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'comprehensive-metric-imperial',
+            label: 'Comprehensive Metric-Imperial',
+            description: 'Complete practice with all metric-imperial conversions',
+            icon: 'all_inclusive',
+            category: 'scope',
+            values: {
+              problemCount: 15,
+              includeLength: true,
+              includeWeight: true,
+              includeVolume: true,
+              includeTemperature: true,
+              includeMetricToImperial: true,
+              includeImperialToMetric: true,
+              includeCommonConversions: true,
+              includePreciseConversions: true,
+              includeApproximations: true,
+              includeWordProblems: true,
+              allowDecimals: true,
+              decimalPlaces: 2,
+              maxValue: 200,
+              showApproximateVsExact: false
+            }
+          })
+        ]
+      })
     })
   }
 
   generateProblem(parameters = {}) {
     const params = { ...this.defaultParameters, ...parameters }
     
-    const validation = this.validateParameters(params)
+    // Validate parameters using Parameter Schema V2
+    const validation = this.parameterSchema.validate(params)
     if (!validation.isValid) {
-      throw new Error(`Invalid parameters: ${validation.errors.join(', ')}`);
+      throw new Error(`Invalid parameters: ${validation.errors.join(', ')}`)
+    }
+    
+    // Additional custom validation
+    const customErrors = []
+    if (!params.includeMetricToImperial && !params.includeImperialToMetric) {
+      customErrors.push('At least one conversion direction must be enabled')
+    }
+    if (!params.includeLength && !params.includeWeight && !params.includeVolume && !params.includeTemperature) {
+      customErrors.push('At least one measurement type must be enabled')
+    }
+    if (!params.includeCommonConversions && !params.includePreciseConversions && !params.includeApproximations) {
+      customErrors.push('At least one conversion accuracy type must be enabled')
+    }
+    if (customErrors.length > 0) {
+      throw new Error(`Invalid parameters: ${customErrors.join(', ')}`)
     }
     
     // Build array of enabled measurement types

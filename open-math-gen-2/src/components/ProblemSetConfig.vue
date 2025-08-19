@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, watch, nextTick } from 'vue'
+import { ref, computed, watch, nextTick, onUnmounted } from 'vue'
 import MathExpression from './MathExpression.vue'
 import GeometryDiagram from './GeometryDiagram.vue'
 import ParameterConfigV2 from './ParameterConfigV2.vue'
@@ -28,35 +28,87 @@ const parameters = ref(
 const previewProblems = ref([])
 const isGeneratingPreview = ref(false)
 const validationResult = ref({ isValid: true, errors: [], warnings: [] })
+const hasParameterChanges = ref(false)
 let previewTimeout = null
 let isUpdatingFromV2 = false
+let lastUpdateTime = 0
+let lastParametersHash = ''
+
+// Create a simple hash of parameters for comparison
+const getParametersHash = (params) => {
+  return JSON.stringify(params, Object.keys(params).sort())
+}
 
 // Debounced preview generation for better performance
 const schedulePreviewUpdate = () => {
-  if (isUpdatingFromV2) return // Prevent loops from V2 updates
-  
   if (previewTimeout) {
     clearTimeout(previewTimeout)
   }
-  previewTimeout = setTimeout(generatePreview, 300) // 300ms debounce
+  
+  // Show immediate feedback that parameters changed
+  hasParameterChanges.value = true
+  
+  // Use shorter debounce for better responsiveness
+  previewTimeout = setTimeout(() => {
+    // Check if parameters actually changed to avoid unnecessary generation
+    const currentHash = getParametersHash(parameters.value)
+    if (currentHash === lastParametersHash) {
+      hasParameterChanges.value = false
+      return
+    }
+    
+    // Prevent too frequent updates for performance
+    const now = Date.now()
+    if (now - lastUpdateTime < 100) return
+    
+    lastParametersHash = currentHash
+    hasParameterChanges.value = false
+    generatePreview()
+    lastUpdateTime = now
+  }, 200) // Reduced from 300ms to 200ms for better responsiveness
 }
+
+// Initialize the hash on first load
+lastParametersHash = getParametersHash(parameters.value)
 
 // Generate preview problems when parameters change
 watch(parameters, schedulePreviewUpdate, { deep: true, immediate: true })
+
+// Also watch for V2 parameter changes directly for immediate response
+watch(() => isSchemaV2.value ? validationResult.value : null, () => {
+  if (isSchemaV2.value) {
+    schedulePreviewUpdate()
+  }
+}, { deep: true })
 
 async function generatePreview() {
   if (isGeneratingPreview.value) return
   
   isGeneratingPreview.value = true
   try {
-    // Generate 3 preview problems
-    const problems = props.generator.generateProblems(3, parameters.value)
+    // Create a copy of parameters to avoid reactivity issues
+    const paramsCopy = { ...parameters.value }
+    
+    // Generate 3 preview problems with timeout for performance
+    const problems = await Promise.race([
+      Promise.resolve(props.generator.generateProblems(3, paramsCopy)),
+      new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 5000))
+    ])
+    
     previewProblems.value = problems
   } catch (error) {
     console.error('Error generating preview:', error)
-    previewProblems.value = []
+    
+    // Provide user-friendly error handling
+    if (error.message.includes('At least one')) {
+      previewProblems.value = []
+    } else {
+      // Keep previous problems if generation fails temporarily
+      console.warn('Keeping previous preview problems due to generation error')
+    }
+  } finally {
+    isGeneratingPreview.value = false
   }
-  isGeneratingPreview.value = false
 }
 
 const addProblemSet = () => {
@@ -85,19 +137,26 @@ const handleValidationChange = (validation) => {
 const handleParameterChange = (newParams) => {
   isUpdatingFromV2 = true
   
-  // Only update if values actually changed to prevent unnecessary updates
+  // Check for actual changes and update parameters
   const hasChanges = Object.keys(newParams).some(key => 
     parameters.value[key] !== newParams[key]
   )
   
   if (hasChanges) {
+    // Update parameters and trigger preview update
     Object.assign(parameters.value, newParams)
+    
+    // Schedule preview update after a brief delay to allow Vue reactivity to process
+    nextTick(() => {
+      isUpdatingFromV2 = false
+      schedulePreviewUpdate()
+    })
+  } else {
+    // Reset flag immediately if no changes
+    nextTick(() => {
+      isUpdatingFromV2 = false
+    })
   }
-  
-  // Reset flag after Vue's next tick to allow the update to complete
-  nextTick(() => {
-    isUpdatingFromV2 = false
-  })
 }
 
 const cancel = () => {
@@ -107,6 +166,13 @@ const cancel = () => {
 const resetToDefaults = () => {
   parameters.value = { ...generatorInfo.value.defaultParameters }
 }
+
+// Cleanup on component unmount
+onUnmounted(() => {
+  if (previewTimeout) {
+    clearTimeout(previewTimeout)
+  }
+})
 
 // Helper functions for rendering form inputs
 const getInputType = (param) => {
@@ -299,21 +365,36 @@ const shouldShowParameter = (paramKey) => {
       <div class="space-y-6 sticky top-20 max-h-[calc(100vh-6rem)] overflow-y-auto">
         <div class="bg-slate-800/30 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-6">
           <div class="flex items-center justify-between mb-6">
-            <h3 class="text-xl font-semibold text-white">Preview</h3>
+            <div class="flex items-center space-x-3">
+              <h3 class="text-xl font-semibold text-white">Preview</h3>
+              <!-- Status indicators -->
+              <div v-if="hasParameterChanges" class="flex items-center space-x-2">
+                <div class="w-2 h-2 bg-orange-400 rounded-full animate-pulse"></div>
+                <span class="text-sm text-orange-300">Updating...</span>
+              </div>
+              <div v-else-if="isGeneratingPreview" class="flex items-center space-x-2">
+                <div class="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
+                <span class="text-sm text-blue-300">Generating...</span>
+              </div>
+              <div v-else-if="previewProblems.length > 0" class="flex items-center space-x-2">
+                <div class="w-2 h-2 bg-green-400 rounded-full"></div>
+                <span class="text-sm text-green-300">Up to date</span>
+              </div>
+            </div>
             <button 
               @click="generatePreview"
-              :disabled="isGeneratingPreview"
+              :disabled="isGeneratingPreview || hasParameterChanges"
               class="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white px-4 py-2 rounded-lg font-medium transition-colors"
             >
-              {{ isGeneratingPreview ? 'Generating...' : 'Refresh Preview' }}
+              {{ isGeneratingPreview ? 'Generating...' : hasParameterChanges ? 'Updating...' : 'Refresh Preview' }}
             </button>
           </div>
           
           <!-- Preview Problems -->
-          <div v-if="previewProblems.length > 0" class="space-y-6">
+          <div v-if="previewProblems.length > 0" class="space-y-6" :class="{ 'opacity-75 transition-opacity duration-200': hasParameterChanges || isGeneratingPreview }">
             <div 
               v-for="(problem, index) in previewProblems" 
-              :key="index"
+              :key="`${lastParametersHash}-${index}`"
               class="bg-white rounded-lg p-4 text-slate-800"
             >
               <div class="flex items-center justify-between mb-3">

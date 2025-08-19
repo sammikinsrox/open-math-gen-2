@@ -1,4 +1,5 @@
 import { BaseGenerator } from '../BaseGenerator.js'
+import { ParameterSchemaV2 } from '../ParameterSchemaV2.js'
 
 /**
  * Decimal Operations Generator
@@ -6,6 +7,8 @@ import { BaseGenerator } from '../BaseGenerator.js'
  */
 export class DecimalOperationsGenerator extends BaseGenerator {
   constructor() {
+    const schemaV2 = new ParameterSchemaV2()
+    
     super({
       name: 'Decimal Operations',
       description: 'Generate problems involving addition, subtraction, multiplication, and division of decimal numbers',
@@ -35,76 +38,291 @@ export class DecimalOperationsGenerator extends BaseGenerator {
         allowNegativeResults: false
       },
       
-      parameterSchema: {
-        problemCount: {
-          type: 'number',
-          label: 'Number of Problems',
-          description: 'How many decimal operation problems to generate',
-          min: 1,
-          max: 100,
-          required: true
+      // Enhanced Parameter Schema V2 with beautiful categorization
+      parameterSchema: schemaV2.createSchema({
+        categories: {
+          general: schemaV2.createCategory({
+            id: 'general',
+            label: 'General Settings',
+            description: 'Basic configuration options',
+            icon: 'settings',
+            color: 'blue',
+            order: 1,
+            parameters: {
+              problemCount: schemaV2.createParameter({
+                type: 'number',
+                label: 'Number of Problems',
+                description: 'How many decimal operation problems to generate',
+                min: 1,
+                max: 50,
+                required: true,
+                slider: true,
+                presets: [5, 8, 10, 15],
+                order: 1
+              })
+            }
+          }),
+          
+          operations: schemaV2.createCategory({
+            id: 'operations',
+            label: 'Operations',
+            description: 'Choose which decimal operations to include',
+            icon: 'calculate',
+            color: 'green',
+            order: 2,
+            parameters: {
+              includeAddition: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Addition',
+                description: 'Include decimal addition problems',
+                helpText: 'Example: 2.45 + 1.3 = 3.75',
+                order: 1
+              }),
+              includeSubtraction: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Subtraction',
+                description: 'Include decimal subtraction problems',
+                helpText: 'Example: 5.67 - 2.34 = 3.33',
+                order: 2
+              }),
+              includeMultiplication: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Multiplication',
+                description: 'Include decimal multiplication problems',
+                helpText: 'Example: 1.5 × 2.4 = 3.6',
+                order: 3
+              }),
+              includeDivision: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Division',
+                description: 'Include decimal division problems',
+                helpText: 'Example: 8.4 ÷ 2.1 = 4.0',
+                order: 4
+              })
+            }
+          }),
+          
+          decimalProperties: schemaV2.createCategory({
+            id: 'decimalProperties',
+            label: 'Decimal Properties',
+            description: 'Control the complexity and formatting of decimal numbers',
+            icon: 'filter_9_plus',
+            color: 'purple',
+            order: 3,
+            parameters: {
+              decimalPlaces: schemaV2.createParameter({
+                type: 'number',
+                label: 'Maximum Decimal Places',
+                description: 'Maximum number of digits after the decimal point',
+                min: 1,
+                max: 4,
+                required: true,
+                slider: true,
+                presets: [1, 2, 3, 4],
+                helpText: 'Controls precision: 1 = tenths, 2 = hundredths, 3 = thousandths',
+                order: 1
+              }),
+              includeWholeNumbers: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Include Whole Numbers',
+                description: 'Include problems with whole numbers (no decimal part)',
+                helpText: 'Examples: 5, 12, 25 (numbers without decimal points)',
+                order: 2
+              }),
+              allowNegativeResults: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Allow Negative Results',
+                description: 'Allow problems with negative answers',
+                helpText: 'When disabled, ensures all answers are positive',
+                order: 3
+              })
+            }
+          }),
+          
+          numberRanges: schemaV2.createCategory({
+            id: 'numberRanges',
+            label: 'Number Ranges',
+            description: 'Control the size of numbers used in problems',
+            icon: 'tag',
+            color: 'orange',
+            order: 4,
+            parameters: {
+              maxWholeNumber: schemaV2.createParameter({
+                type: 'number',
+                label: 'Maximum Whole Number',
+                description: 'Largest whole number part to use in decimals',
+                min: 1,
+                max: 500,
+                required: true,
+                slider: true,
+                presets: [10, 25, 50, 100],
+                helpText: 'Controls the whole number part (e.g., the "25" in 25.75)',
+                order: 1
+              })
+            }
+          }),
+          
+          displayOptions: schemaV2.createCategory({
+            id: 'displayOptions',
+            label: 'Display Options',
+            description: 'Control how problems are presented',
+            icon: 'visibility',
+            color: 'pink',
+            order: 5,
+            parameters: {
+              alignDecimalPoints: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Align Decimal Points',
+                description: 'Show problems with aligned decimal points for easier solving',
+                helpText: 'Creates vertical alignment in addition/subtraction steps',
+                order: 1
+              })
+            }
+          })
         },
-        includeAddition: {
-          type: 'boolean',
-          label: 'Include Addition',
-          description: 'Include decimal addition problems'
-        },
-        includeSubtraction: {
-          type: 'boolean',
-          label: 'Include Subtraction',
-          description: 'Include decimal subtraction problems'
-        },
-        includeMultiplication: {
-          type: 'boolean',
-          label: 'Include Multiplication',
-          description: 'Include decimal multiplication problems'
-        },
-        includeDivision: {
-          type: 'boolean',
-          label: 'Include Division',
-          description: 'Include decimal division problems'
-        },
-        decimalPlaces: {
-          type: 'number',
-          label: 'Decimal Places',
-          description: 'Maximum number of decimal places',
-          min: 1,
-          max: 4,
-          required: true
-        },
-        maxWholeNumber: {
-          type: 'number',
-          label: 'Maximum Whole Number',
-          description: 'Largest whole number part to use',
-          min: 1,
-          max: 1000,
-          required: true
-        },
-        includeWholeNumbers: {
-          type: 'boolean',
-          label: 'Include Whole Numbers',
-          description: 'Include problems with whole numbers (no decimal part)'
-        },
-        alignDecimalPoints: {
-          type: 'boolean',
-          label: 'Align Decimal Points',
-          description: 'Show problems with aligned decimal points for easier solving'
-        },
-        allowNegativeResults: {
-          type: 'boolean',
-          label: 'Allow Negative Results',
-          description: 'Allow problems with negative answers'
-        }
-      }
+        
+        // Preset configurations for quick setup
+        presets: [
+          schemaV2.createPreset({
+            id: 'basic-addition-subtraction',
+            label: 'Basic Addition & Subtraction',
+            description: 'Simple decimal addition and subtraction with 1-2 decimal places',
+            icon: 'add_circle',
+            category: 'difficulty',
+            values: {
+              problemCount: 10,
+              includeAddition: true,
+              includeSubtraction: true,
+              includeMultiplication: false,
+              includeDivision: false,
+              decimalPlaces: 2,
+              maxWholeNumber: 20,
+              includeWholeNumbers: true,
+              alignDecimalPoints: true,
+              allowNegativeResults: false
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'tenths-practice',
+            label: 'Tenths Practice',
+            description: 'Focus on decimals with one decimal place (tenths)',
+            icon: 'looks_one',
+            category: 'scope',
+            values: {
+              problemCount: 12,
+              includeAddition: true,
+              includeSubtraction: true,
+              includeMultiplication: false,
+              includeDivision: false,
+              decimalPlaces: 1,
+              maxWholeNumber: 25,
+              includeWholeNumbers: false,
+              alignDecimalPoints: true,
+              allowNegativeResults: false
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'hundredths-practice',
+            label: 'Hundredths Practice',
+            description: 'Focus on decimals with two decimal places (hundredths)',
+            icon: 'looks_two',
+            category: 'scope',
+            values: {
+              problemCount: 12,
+              includeAddition: true,
+              includeSubtraction: true,
+              includeMultiplication: false,
+              includeDivision: false,
+              decimalPlaces: 2,
+              maxWholeNumber: 50,
+              includeWholeNumbers: false,
+              alignDecimalPoints: true,
+              allowNegativeResults: false
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'multiplication-division-focus',
+            label: 'Multiplication & Division Focus',
+            description: 'Practice multiplying and dividing decimals',
+            icon: 'close',
+            category: 'scope',
+            values: {
+              problemCount: 10,
+              includeAddition: false,
+              includeSubtraction: false,
+              includeMultiplication: true,
+              includeDivision: true,
+              decimalPlaces: 2,
+              maxWholeNumber: 15,
+              includeWholeNumbers: true,
+              alignDecimalPoints: false,
+              allowNegativeResults: false
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'comprehensive-practice',
+            label: 'Comprehensive Practice',
+            description: 'Mixed practice with all four decimal operations',
+            icon: 'all_inclusive',
+            category: 'scope',
+            values: {
+              problemCount: 16,
+              includeAddition: true,
+              includeSubtraction: true,
+              includeMultiplication: true,
+              includeDivision: true,
+              decimalPlaces: 2,
+              maxWholeNumber: 30,
+              includeWholeNumbers: true,
+              alignDecimalPoints: true,
+              allowNegativeResults: false
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'advanced-challenge',
+            label: 'Advanced Challenge',
+            description: 'Complex problems with more decimal places and larger numbers',
+            icon: 'functions',
+            category: 'difficulty',
+            values: {
+              problemCount: 12,
+              includeAddition: true,
+              includeSubtraction: true,
+              includeMultiplication: true,
+              includeDivision: true,
+              decimalPlaces: 3,
+              maxWholeNumber: 100,
+              includeWholeNumbers: true,
+              alignDecimalPoints: false,
+              allowNegativeResults: true
+            }
+          })
+        ]
+      })
     })
   }
 
   generateProblem(parameters = {}) {
     const params = { ...this.defaultParameters, ...parameters }
     
-    const validation = this.validateParameters(params)
+    // Validate parameters using Parameter Schema V2
+    const validation = this.parameterSchema.validate(params)
     if (!validation.isValid) {
       throw new Error(`Invalid parameters: ${validation.errors.join(', ')}`)
+    }
+    
+    // Additional custom validation
+    const customErrors = []
+    if (params.decimalPlaces > 3 && params.maxWholeNumber > 100) {
+      customErrors.push('High precision decimals (>3 places) should use smaller whole numbers for manageable results')
+    }
+    if (customErrors.length > 0) {
+      throw new Error(`Invalid parameters: ${customErrors.join(', ')}`)
     }
     
     // Build array of enabled operations

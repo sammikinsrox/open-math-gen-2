@@ -1,4 +1,5 @@
 import { BaseGenerator } from '../BaseGenerator.js'
+import { ParameterSchemaV2 } from '../ParameterSchemaV2.js'
 
 /**
  * Temperature Generator
@@ -6,6 +7,8 @@ import { BaseGenerator } from '../BaseGenerator.js'
  */
 export class TemperatureGenerator extends BaseGenerator {
   constructor() {
+    const schemaV2 = new ParameterSchemaV2()
+    
     super({
       name: 'Temperature',
       description: 'Generate problems involving temperature measurements, conversions, and calculations',
@@ -38,91 +41,325 @@ export class TemperatureGenerator extends BaseGenerator {
         minTemperature: -20
       },
       
-      parameterSchema: {
-        problemCount: {
-          type: 'number',
-          label: 'Number of Problems',
-          description: 'How many temperature problems to generate',
-          min: 1,
-          max: 100,
-          required: true
+      // Enhanced Parameter Schema V2 with beautiful categorization
+      parameterSchema: schemaV2.createSchema({
+        categories: {
+          general: schemaV2.createCategory({
+            id: 'general',
+            label: 'General Settings',
+            description: 'Basic configuration options',
+            icon: 'settings',
+            color: 'blue',
+            order: 1,
+            parameters: {
+              problemCount: schemaV2.createParameter({
+                type: 'number',
+                label: 'Number of Problems',
+                description: 'How many temperature problems to generate',
+                min: 1,
+                max: 50,
+                required: true,
+                slider: true,
+                presets: [5, 8, 10, 15],
+                order: 1
+              })
+            }
+          }),
+          
+          problemTypes: schemaV2.createCategory({
+            id: 'problemTypes',
+            label: 'Problem Types',
+            description: 'Choose which types of temperature problems to include',
+            icon: 'thermostat',
+            color: 'green',
+            order: 2,
+            parameters: {
+              includeBasicTemperature: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Basic Temperature Reading',
+                description: 'Problems about reading and identifying temperatures',
+                helpText: 'Examples: "What is the temperature?", "Read the thermometer"',
+                order: 1
+              }),
+              includeConversion: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Temperature Conversions',
+                description: 'Convert between different temperature scales',
+                helpText: 'Examples: Convert 32°F to Celsius, 100°C to Kelvin',
+                order: 2
+              }),
+              includeTemperatureChange: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Temperature Changes',
+                description: 'Calculate temperature increases and decreases',
+                helpText: 'Examples: Temperature rises 15°, falls 8°',
+                order: 3
+              }),
+              includeComparison: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Temperature Comparisons',
+                description: 'Compare different temperatures using <, >, =',
+                helpText: 'Examples: 20°C ___ 68°F, -10°C ___ 14°F',
+                order: 4
+              }),
+              includeWordProblems: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Word Problems',
+                description: 'Real-world temperature scenarios',
+                helpText: 'Examples: weather, cooking, body temperature, freezing point',
+                order: 5
+              })
+            }
+          }),
+          
+          temperatureScales: schemaV2.createCategory({
+            id: 'temperatureScales',
+            label: 'Temperature Scales',
+            description: 'Choose which temperature scales to use',
+            icon: 'device_thermostat',
+            color: 'purple',
+            order: 3,
+            parameters: {
+              useCelsius: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Celsius (°C)',
+                description: 'Include Celsius temperature scale',
+                helpText: 'Metric scale: 0°C = freezing, 100°C = boiling',
+                order: 1
+              }),
+              useFahrenheit: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Fahrenheit (°F)',
+                description: 'Include Fahrenheit temperature scale',
+                helpText: 'Imperial scale: 32°F = freezing, 212°F = boiling',
+                order: 2
+              }),
+              useKelvin: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Kelvin (K)',
+                description: 'Include Kelvin temperature scale (scientific)',
+                helpText: 'Scientific scale: 273.15K = freezing, 373.15K = boiling',
+                order: 3
+              })
+            }
+          }),
+          
+          temperatureRanges: schemaV2.createCategory({
+            id: 'temperatureRanges',
+            label: 'Temperature Ranges',
+            description: 'Control the range and type of temperatures used',
+            icon: 'tune',
+            color: 'orange',
+            order: 4,
+            parameters: {
+              minTemperature: schemaV2.createParameter({
+                type: 'number',
+                label: 'Minimum Temperature',
+                description: 'Lowest temperature value to use in problems',
+                min: -100,
+                max: 100,
+                required: true,
+                slider: true,
+                presets: [-50, -20, 0, 10],
+                helpText: 'Lower bound for temperature values',
+                order: 1
+              }),
+              maxTemperature: schemaV2.createParameter({
+                type: 'number',
+                label: 'Maximum Temperature',
+                description: 'Highest temperature value to use in problems',
+                min: -50,
+                max: 500,
+                required: true,
+                slider: true,
+                presets: [50, 100, 200, 300],
+                helpText: 'Upper bound for temperature values',
+                order: 2
+              }),
+              allowNegativeTemperatures: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Allow Negative Temperatures',
+                description: 'Include temperatures below zero',
+                helpText: 'Examples: -10°C, -5°F (below freezing)',
+                order: 3
+              }),
+              allowDecimals: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Allow Decimal Temperatures',
+                description: 'Allow decimal values in temperatures',
+                helpText: 'Examples: 98.6°F, 36.5°C, 273.15K',
+                order: 4
+              })
+            }
+          })
         },
-        includeBasicTemperature: {
-          type: 'boolean',
-          label: 'Include Basic Temperature',
-          description: 'Include problems asking about temperature values'
-        },
-        includeConversion: {
-          type: 'boolean',
-          label: 'Include Conversions',
-          description: 'Include temperature conversion problems'
-        },
-        includeComparison: {
-          type: 'boolean',
-          label: 'Include Comparisons',
-          description: 'Include problems comparing temperatures'
-        },
-        includeWordProblems: {
-          type: 'boolean',
-          label: 'Include Word Problems',
-          description: 'Include real-world temperature word problems'
-        },
-        includeTemperatureChange: {
-          type: 'boolean',
-          label: 'Include Temperature Change',
-          description: 'Include problems calculating temperature changes'
-        },
-        useCelsius: {
-          type: 'boolean',
-          label: 'Use Celsius',
-          description: 'Include Celsius temperature scale'
-        },
-        useFahrenheit: {
-          type: 'boolean',
-          label: 'Use Fahrenheit',
-          description: 'Include Fahrenheit temperature scale'
-        },
-        useKelvin: {
-          type: 'boolean',
-          label: 'Use Kelvin',
-          description: 'Include Kelvin temperature scale'
-        },
-        allowNegativeTemperatures: {
-          type: 'boolean',
-          label: 'Allow Negative Temperatures',
-          description: 'Allow negative temperature values'
-        },
-        allowDecimals: {
-          type: 'boolean',
-          label: 'Allow Decimals',
-          description: 'Allow decimal values in temperatures'
-        },
-        maxTemperature: {
-          type: 'number',
-          label: 'Maximum Temperature',
-          description: 'Highest temperature value to use',
-          min: -50,
-          max: 500,
-          required: true
-        },
-        minTemperature: {
-          type: 'number',
-          label: 'Minimum Temperature',
-          description: 'Lowest temperature value to use',
-          min: -100,
-          max: 100,
-          required: true
-        }
-      }
+        
+        // Preset configurations for quick setup
+        presets: [
+          schemaV2.createPreset({
+            id: 'basic-temperature-reading',
+            label: 'Basic Temperature Reading',
+            description: 'Simple temperature reading for elementary students',
+            icon: 'looks_one',
+            category: 'difficulty',
+            values: {
+              problemCount: 10,
+              includeBasicTemperature: true,
+              includeConversion: false,
+              includeComparison: true,
+              includeWordProblems: false,
+              includeTemperatureChange: false,
+              useCelsius: true,
+              useFahrenheit: true,
+              useKelvin: false,
+              allowNegativeTemperatures: false,
+              allowDecimals: false,
+              maxTemperature: 50,
+              minTemperature: 0
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'celsius-fahrenheit-conversions',
+            label: 'Celsius-Fahrenheit Conversions',
+            description: 'Focus on converting between Celsius and Fahrenheit',
+            icon: 'swap_horiz',
+            category: 'scope',
+            values: {
+              problemCount: 12,
+              includeBasicTemperature: false,
+              includeConversion: true,
+              includeComparison: false,
+              includeWordProblems: false,
+              includeTemperatureChange: false,
+              useCelsius: true,
+              useFahrenheit: true,
+              useKelvin: false,
+              allowNegativeTemperatures: true,
+              allowDecimals: true,
+              maxTemperature: 100,
+              minTemperature: -20
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'scientific-temperature',
+            label: 'Scientific Temperature',
+            description: 'Include Kelvin scale for scientific contexts',
+            icon: 'science',
+            category: 'scope',
+            values: {
+              problemCount: 10,
+              includeBasicTemperature: false,
+              includeConversion: true,
+              includeComparison: false,
+              includeWordProblems: false,
+              includeTemperatureChange: false,
+              useCelsius: true,
+              useFahrenheit: false,
+              useKelvin: true,
+              allowNegativeTemperatures: false,
+              allowDecimals: true,
+              maxTemperature: 400,
+              minTemperature: -50
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'weather-temperatures',
+            label: 'Weather Temperatures',
+            description: 'Real-world weather and climate problems',
+            icon: 'wb_sunny',
+            category: 'scope',
+            values: {
+              problemCount: 12,
+              includeBasicTemperature: true,
+              includeConversion: false,
+              includeComparison: true,
+              includeWordProblems: true,
+              includeTemperatureChange: true,
+              useCelsius: true,
+              useFahrenheit: true,
+              useKelvin: false,
+              allowNegativeTemperatures: true,
+              allowDecimals: true,
+              maxTemperature: 45,
+              minTemperature: -30
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'cooking-temperatures',
+            label: 'Cooking Temperatures',
+            description: 'Kitchen and cooking temperature problems',
+            icon: 'restaurant',
+            category: 'scope',
+            values: {
+              problemCount: 10,
+              includeBasicTemperature: true,
+              includeConversion: true,
+              includeComparison: false,
+              includeWordProblems: true,
+              includeTemperatureChange: false,
+              useCelsius: true,
+              useFahrenheit: true,
+              useKelvin: false,
+              allowNegativeTemperatures: false,
+              allowDecimals: false,
+              maxTemperature: 250,
+              minTemperature: 0
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'comprehensive-temperature',
+            label: 'Comprehensive Temperature',
+            description: 'Mixed practice with all temperature concepts',
+            icon: 'all_inclusive',
+            category: 'scope',
+            values: {
+              problemCount: 15,
+              includeBasicTemperature: true,
+              includeConversion: true,
+              includeComparison: true,
+              includeWordProblems: true,
+              includeTemperatureChange: true,
+              useCelsius: true,
+              useFahrenheit: true,
+              useKelvin: true,
+              allowNegativeTemperatures: true,
+              allowDecimals: true,
+              maxTemperature: 200,
+              minTemperature: -50
+            }
+          })
+        ]
+      })
     })
   }
 
   generateProblem(parameters = {}) {
     const params = { ...this.defaultParameters, ...parameters }
     
-    const validation = this.validateParameters(params)
+    // Validate parameters using Parameter Schema V2
+    const validation = this.parameterSchema.validate(params)
     if (!validation.isValid) {
       throw new Error(`Invalid parameters: ${validation.errors.join(', ')}`)
+    }
+    
+    // Additional custom validation
+    const customErrors = []
+    if (!params.useCelsius && !params.useFahrenheit && !params.useKelvin) {
+      customErrors.push('At least one temperature scale must be enabled')
+    }
+    if (params.minTemperature > params.maxTemperature) {
+      customErrors.push('Minimum Temperature cannot be greater than Maximum Temperature')
+    }
+    if (!params.includeBasicTemperature && !params.includeConversion && !params.includeComparison && !params.includeWordProblems && !params.includeTemperatureChange) {
+      customErrors.push('At least one problem type must be enabled')
+    }
+    if (customErrors.length > 0) {
+      throw new Error(`Invalid parameters: ${customErrors.join(', ')}`)
     }
     
     // Build array of enabled problem types

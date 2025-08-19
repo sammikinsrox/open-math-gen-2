@@ -1,4 +1,5 @@
 import { BaseGenerator } from '../BaseGenerator.js'
+import { ParameterSchemaV2 } from '../ParameterSchemaV2.js'
 
 /**
  * Fraction-Decimal Conversion Generator
@@ -6,6 +7,8 @@ import { BaseGenerator } from '../BaseGenerator.js'
  */
 export class FractionDecimalConversionGenerator extends BaseGenerator {
   constructor() {
+    const schemaV2 = new ParameterSchemaV2()
+    
     super({
       name: 'Fraction ↔ Decimal Conversion',
       description: 'Generate problems involving conversions between fractions and decimals',
@@ -35,79 +38,279 @@ export class FractionDecimalConversionGenerator extends BaseGenerator {
         requireSimplifiedFractions: true
       },
       
-      parameterSchema: {
-        problemCount: {
-          type: 'number',
-          label: 'Number of Problems',
-          description: 'How many conversion problems to generate',
-          min: 1,
-          max: 100,
-          required: true
+      // Enhanced Parameter Schema V2 with beautiful categorization
+      parameterSchema: schemaV2.createSchema({
+        categories: {
+          general: schemaV2.createCategory({
+            id: 'general',
+            label: 'General Settings',
+            description: 'Basic configuration options',
+            icon: 'settings',
+            color: 'blue',
+            order: 1,
+            parameters: {
+              problemCount: schemaV2.createParameter({
+                type: 'number',
+                label: 'Number of Problems',
+                description: 'How many conversion problems to generate',
+                min: 1,
+                max: 50,
+                required: true,
+                slider: true,
+                presets: [5, 8, 10, 15],
+                order: 1
+              })
+            }
+          }),
+          
+          conversionTypes: schemaV2.createCategory({
+            id: 'conversionTypes',
+            label: 'Conversion Types',
+            description: 'Choose which types of conversions to include',
+            icon: 'swap_horiz',
+            color: 'green',
+            order: 2,
+            parameters: {
+              includeFractionToDecimal: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Fraction → Decimal',
+                description: 'Include converting fractions to decimals',
+                helpText: 'Example: Convert 3/4 to 0.75',
+                order: 1
+              }),
+              includeDecimalToFraction: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Decimal → Fraction',
+                description: 'Include converting decimals to fractions',
+                helpText: 'Example: Convert 0.75 to 3/4',
+                order: 2
+              })
+            }
+          }),
+          
+          decimalTypes: schemaV2.createCategory({
+            id: 'decimalTypes',
+            label: 'Decimal Types',
+            description: 'Control which types of decimals to include',
+            icon: 'filter_9_plus',
+            color: 'purple',
+            order: 3,
+            parameters: {
+              includeTerminatingDecimals: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Terminating Decimals',
+                description: 'Include decimals that end cleanly',
+                helpText: 'Examples: 0.25, 0.5, 0.125, 0.75',
+                order: 1
+              }),
+              includeRepeatingDecimals: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Repeating Decimals',
+                description: 'Include decimals that repeat infinitely',
+                helpText: 'Examples: 0.333..., 0.666..., 0.1666...',
+                order: 2
+              }),
+              includeCommonFractions: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Common Fractions',
+                description: 'Include frequently used fractions',
+                helpText: 'Examples: 1/2, 1/4, 3/4, 1/8, 3/8, 1/5, 2/5',
+                order: 3
+              })
+            }
+          }),
+          
+          numberRanges: schemaV2.createCategory({
+            id: 'numberRanges',
+            label: 'Number Ranges',
+            description: 'Control the complexity of fractions and decimals',
+            icon: 'tag',
+            color: 'orange',
+            order: 4,
+            parameters: {
+              maxNumerator: schemaV2.createParameter({
+                type: 'number',
+                label: 'Maximum Numerator',
+                description: 'Largest numerator to use in fractions',
+                min: 1,
+                max: 30,
+                required: true,
+                slider: true,
+                presets: [10, 15, 20, 25],
+                helpText: 'Top number in fractions',
+                order: 1
+              }),
+              maxDenominator: schemaV2.createParameter({
+                type: 'number',
+                label: 'Maximum Denominator',
+                description: 'Largest denominator to use in fractions',
+                min: 2,
+                max: 25,
+                required: true,
+                slider: true,
+                presets: [10, 12, 16, 20],
+                helpText: 'Bottom number in fractions',
+                order: 2
+              }),
+              decimalPlaces: schemaV2.createParameter({
+                type: 'number',
+                label: 'Maximum Decimal Places',
+                description: 'Maximum precision for decimal conversions',
+                min: 1,
+                max: 4,
+                required: true,
+                slider: true,
+                presets: [2, 3, 4],
+                helpText: 'Controls precision: 2 = hundredths, 3 = thousandths',
+                order: 3
+              })
+            }
+          }),
+          
+          displayOptions: schemaV2.createCategory({
+            id: 'displayOptions',
+            label: 'Display Options',
+            description: 'Control how answers are formatted',
+            icon: 'visibility',
+            color: 'pink',
+            order: 5,
+            parameters: {
+              requireSimplifiedFractions: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Require Simplified Fractions',
+                description: 'Fraction answers should be in simplest form',
+                helpText: 'Convert answers like 6/8 to 3/4',
+                order: 1
+              })
+            }
+          })
         },
-        includeFractionToDecimal: {
-          type: 'boolean',
-          label: 'Include Fraction to Decimal',
-          description: 'Include converting fractions to decimals'
-        },
-        includeDecimalToFraction: {
-          type: 'boolean',
-          label: 'Include Decimal to Fraction',
-          description: 'Include converting decimals to fractions'
-        },
-        maxNumerator: {
-          type: 'number',
-          label: 'Maximum Numerator',
-          description: 'Largest numerator to use in fractions',
-          min: 1,
-          max: 50,
-          required: true
-        },
-        maxDenominator: {
-          type: 'number',
-          label: 'Maximum Denominator',
-          description: 'Largest denominator to use in fractions',
-          min: 2,
-          max: 30,
-          required: true
-        },
-        decimalPlaces: {
-          type: 'number',
-          label: 'Maximum Decimal Places',
-          description: 'Maximum number of decimal places for conversions',
-          min: 1,
-          max: 4,
-          required: true
-        },
-        includeTerminatingDecimals: {
-          type: 'boolean',
-          label: 'Include Terminating Decimals',
-          description: 'Include decimals that end (like 0.25, 0.5)'
-        },
-        includeRepeatingDecimals: {
-          type: 'boolean',
-          label: 'Include Repeating Decimals',
-          description: 'Include decimals that repeat (like 0.333..., 0.666...)'
-        },
-        includeCommonFractions: {
-          type: 'boolean',
-          label: 'Include Common Fractions',
-          description: 'Include common fractions like 1/2, 1/4, 3/4, etc.'
-        },
-        requireSimplifiedFractions: {
-          type: 'boolean',
-          label: 'Require Simplified Fractions',
-          description: 'Fraction answers should be in simplest form'
-        }
-      }
+        
+        // Preset configurations for quick setup
+        presets: [
+          schemaV2.createPreset({
+            id: 'basic-conversions',
+            label: 'Basic Conversions',
+            description: 'Simple fraction-decimal conversions with common fractions',
+            icon: 'swap_horiz',
+            category: 'difficulty',
+            values: {
+              problemCount: 10,
+              includeFractionToDecimal: true,
+              includeDecimalToFraction: true,
+              maxNumerator: 12,
+              maxDenominator: 10,
+              decimalPlaces: 2,
+              includeTerminatingDecimals: true,
+              includeRepeatingDecimals: false,
+              includeCommonFractions: true,
+              requireSimplifiedFractions: true
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'fraction-to-decimal-focus',
+            label: 'Fraction → Decimal Focus',
+            description: 'Practice converting fractions to decimals only',
+            icon: 'trending_flat',
+            category: 'scope',
+            values: {
+              problemCount: 12,
+              includeFractionToDecimal: true,
+              includeDecimalToFraction: false,
+              maxNumerator: 15,
+              maxDenominator: 12,
+              decimalPlaces: 3,
+              includeTerminatingDecimals: true,
+              includeRepeatingDecimals: false,
+              includeCommonFractions: true,
+              requireSimplifiedFractions: true
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'decimal-to-fraction-focus',
+            label: 'Decimal → Fraction Focus',
+            description: 'Practice converting decimals to fractions only',
+            icon: 'trending_flat',
+            category: 'scope',
+            values: {
+              problemCount: 12,
+              includeFractionToDecimal: false,
+              includeDecimalToFraction: true,
+              maxNumerator: 20,
+              maxDenominator: 16,
+              decimalPlaces: 3,
+              includeTerminatingDecimals: true,
+              includeRepeatingDecimals: false,
+              includeCommonFractions: true,
+              requireSimplifiedFractions: true
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'repeating-decimals-practice',
+            label: 'Repeating Decimals Practice',
+            description: 'Focus on repeating decimal conversions',
+            icon: 'repeat',
+            category: 'scope',
+            values: {
+              problemCount: 8,
+              includeFractionToDecimal: true,
+              includeDecimalToFraction: false,
+              maxNumerator: 10,
+              maxDenominator: 9,
+              decimalPlaces: 3,
+              includeTerminatingDecimals: false,
+              includeRepeatingDecimals: true,
+              includeCommonFractions: false,
+              requireSimplifiedFractions: true
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'comprehensive-conversions',
+            label: 'Comprehensive Conversions',
+            description: 'Mixed practice with all conversion types',
+            icon: 'all_inclusive',
+            category: 'scope',
+            values: {
+              problemCount: 16,
+              includeFractionToDecimal: true,
+              includeDecimalToFraction: true,
+              maxNumerator: 20,
+              maxDenominator: 16,
+              decimalPlaces: 3,
+              includeTerminatingDecimals: true,
+              includeRepeatingDecimals: true,
+              includeCommonFractions: true,
+              requireSimplifiedFractions: true
+            }
+          })
+        ]
+      })
     })
   }
 
   generateProblem(parameters = {}) {
     const params = { ...this.defaultParameters, ...parameters }
     
-    const validation = this.validateParameters(params)
+    // Validate parameters using Parameter Schema V2
+    const validation = this.parameterSchema.validate(params)
     if (!validation.isValid) {
       throw new Error(`Invalid parameters: ${validation.errors.join(', ')}`)
+    }
+    
+    // Additional custom validation
+    const customErrors = []
+    if (!params.includeFractionToDecimal && !params.includeDecimalToFraction) {
+      customErrors.push('At least one conversion type must be enabled')
+    }
+    if (!params.includeTerminatingDecimals && !params.includeRepeatingDecimals) {
+      customErrors.push('At least one decimal type must be enabled')
+    }
+    if (customErrors.length > 0) {
+      throw new Error(`Invalid parameters: ${customErrors.join(', ')}`)
     }
     
     // Build array of enabled conversion types

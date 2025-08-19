@@ -1,4 +1,5 @@
 import { BaseGenerator } from '../BaseGenerator.js'
+import { ParameterSchemaV2 } from '../ParameterSchemaV2.js'
 
 /**
  * Unit Conversion Generator
@@ -6,6 +7,8 @@ import { BaseGenerator } from '../BaseGenerator.js'
  */
 export class UnitConversionGenerator extends BaseGenerator {
   constructor() {
+    const schemaV2 = new ParameterSchemaV2()
+    
     super({
       name: 'Unit Conversion',
       description: 'Generate problems involving unit conversions across length, weight, volume, time, and temperature',
@@ -39,93 +42,341 @@ export class UnitConversionGenerator extends BaseGenerator {
         showFormulas: false
       },
       
-      parameterSchema: {
-        problemCount: {
-          type: 'number',
-          label: 'Number of Problems',
-          description: 'How many unit conversion problems to generate',
-          min: 1,
-          max: 100,
-          required: true
+      // Enhanced Parameter Schema V2 with beautiful categorization
+      parameterSchema: schemaV2.createSchema({
+        categories: {
+          general: schemaV2.createCategory({
+            id: 'general',
+            label: 'General Settings',
+            description: 'Basic configuration options',
+            icon: 'settings',
+            color: 'blue',
+            order: 1,
+            parameters: {
+              problemCount: schemaV2.createParameter({
+                type: 'number',
+                label: 'Number of Problems',
+                description: 'How many unit conversion problems to generate',
+                min: 1,
+                max: 50,
+                required: true,
+                slider: true,
+                presets: [5, 8, 10, 15],
+                order: 1
+              })
+            }
+          }),
+          
+          measurementTypes: schemaV2.createCategory({
+            id: 'measurementTypes',
+            label: 'Measurement Types',
+            description: 'Choose which types of measurements to include',
+            icon: 'transform',
+            color: 'green',
+            order: 2,
+            parameters: {
+              includeLength: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Length/Distance',
+                description: 'Include length and distance unit conversions',
+                helpText: 'Units: mm, cm, m, km, in, ft, yd, mi',
+                order: 1
+              }),
+              includeWeight: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Weight/Mass',
+                description: 'Include weight and mass unit conversions',
+                helpText: 'Units: mg, g, kg, t, oz, lb, ton',
+                order: 2
+              }),
+              includeVolume: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Volume/Capacity',
+                description: 'Include volume and capacity unit conversions',
+                helpText: 'Units: ml, L, fl oz, cup, pt, qt, gal',
+                order: 3
+              }),
+              includeTime: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Time',
+                description: 'Include time unit conversions',
+                helpText: 'Units: sec, min, hr, day',
+                order: 4
+              }),
+              includeTemperature: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Temperature',
+                description: 'Include temperature scale conversions',
+                helpText: 'Scales: Celsius (°C), Fahrenheit (°F), Kelvin (K)',
+                order: 5
+              })
+            }
+          }),
+          
+          conversionTypes: schemaV2.createCategory({
+            id: 'conversionTypes',
+            label: 'Conversion Types',
+            description: 'Choose which types of conversions to include',
+            icon: 'compare_arrows',
+            color: 'purple',
+            order: 3,
+            parameters: {
+              includeMetricToMetric: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Metric to Metric',
+                description: 'Conversions within the metric system',
+                helpText: 'Examples: meters to cm, kg to grams, L to mL',
+                order: 1
+              }),
+              includeImperialToImperial: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Imperial to Imperial',
+                description: 'Conversions within the imperial system',
+                helpText: 'Examples: feet to inches, pounds to ounces, quarts to cups',
+                order: 2
+              }),
+              includeMetricToImperial: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Metric to Imperial',
+                description: 'Convert from metric to imperial units',
+                helpText: 'Examples: cm to inches, kg to pounds, L to quarts',
+                order: 3
+              }),
+              includeImperialToMetric: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Imperial to Metric',
+                description: 'Convert from imperial to metric units',
+                helpText: 'Examples: inches to cm, pounds to kg, quarts to L',
+                order: 4
+              })
+            }
+          }),
+          
+          complexity: schemaV2.createCategory({
+            id: 'complexity',
+            label: 'Problem Complexity',
+            description: 'Control the difficulty and features of problems',
+            icon: 'tune',
+            color: 'orange',
+            order: 4,
+            parameters: {
+              includeChainConversions: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Chain Conversions',
+                description: 'Include multi-step conversions (advanced)',
+                helpText: 'Examples: km → m → cm, or hours → min → sec',
+                order: 1
+              }),
+              showFormulas: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Show Conversion Formulas',
+                description: 'Display conversion formulas in solution steps',
+                helpText: 'Shows the mathematical relationship between units',
+                order: 2
+              })
+            }
+          }),
+          
+          numberProperties: schemaV2.createCategory({
+            id: 'numberProperties',
+            label: 'Number Properties',
+            description: 'Control the types and sizes of numbers used',
+            icon: 'tag',
+            color: 'teal',
+            order: 5,
+            parameters: {
+              maxValue: schemaV2.createParameter({
+                type: 'number',
+                label: 'Maximum Value',
+                description: 'Largest value to use in conversions',
+                min: 1,
+                max: 1000,
+                required: true,
+                slider: true,
+                presets: [50, 100, 500, 1000],
+                helpText: 'Controls the size of numbers in conversion problems',
+                order: 1
+              }),
+              allowDecimals: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Allow Decimal Values',
+                description: 'Allow decimal numbers in conversions',
+                helpText: 'Examples: 2.5 meters, 3.7 liters, 1.25 pounds',
+                order: 2
+              })
+            }
+          })
         },
-        includeLength: {
-          type: 'boolean',
-          label: 'Include Length',
-          description: 'Include length unit conversions (m, cm, ft, in, etc.)'
-        },
-        includeWeight: {
-          type: 'boolean',
-          label: 'Include Weight',
-          description: 'Include weight unit conversions (kg, g, lb, oz, etc.)'
-        },
-        includeVolume: {
-          type: 'boolean',
-          label: 'Include Volume',
-          description: 'Include volume unit conversions (L, ml, gal, qt, etc.)'
-        },
-        includeTime: {
-          type: 'boolean',
-          label: 'Include Time',
-          description: 'Include time unit conversions (hr, min, sec, etc.)'
-        },
-        includeTemperature: {
-          type: 'boolean',
-          label: 'Include Temperature',
-          description: 'Include temperature conversions (°C, °F, K)'
-        },
-        includeMetricToMetric: {
-          type: 'boolean',
-          label: 'Metric to Metric',
-          description: 'Include conversions within metric system'
-        },
-        includeImperialToImperial: {
-          type: 'boolean',
-          label: 'Imperial to Imperial',
-          description: 'Include conversions within imperial system'
-        },
-        includeMetricToImperial: {
-          type: 'boolean',
-          label: 'Metric to Imperial',
-          description: 'Include conversions from metric to imperial'
-        },
-        includeImperialToMetric: {
-          type: 'boolean',
-          label: 'Imperial to Metric',
-          description: 'Include conversions from imperial to metric'
-        },
-        includeChainConversions: {
-          type: 'boolean',
-          label: 'Include Chain Conversions',
-          description: 'Include multi-step conversions (e.g., km → m → cm)'
-        },
-        allowDecimals: {
-          type: 'boolean',
-          label: 'Allow Decimals',
-          description: 'Allow decimal values in conversions'
-        },
-        maxValue: {
-          type: 'number',
-          label: 'Maximum Value',
-          description: 'Largest value to use in conversions',
-          min: 1,
-          max: 1000,
-          required: true
-        },
-        showFormulas: {
-          type: 'boolean',
-          label: 'Show Formulas',
-          description: 'Show conversion formulas in solutions'
-        }
-      }
+        
+        // Preset configurations for quick setup
+        presets: [
+          schemaV2.createPreset({
+            id: 'basic-metric',
+            label: 'Basic Metric',
+            description: 'Simple metric system conversions',
+            icon: 'looks_one',
+            category: 'difficulty',
+            values: {
+              problemCount: 10,
+              includeLength: true,
+              includeWeight: true,
+              includeVolume: true,
+              includeTime: false,
+              includeTemperature: false,
+              includeMetricToMetric: true,
+              includeImperialToImperial: false,
+              includeMetricToImperial: false,
+              includeImperialToMetric: false,
+              includeChainConversions: false,
+              allowDecimals: false,
+              maxValue: 100,
+              showFormulas: false
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'basic-imperial',
+            label: 'Basic Imperial',
+            description: 'Simple imperial system conversions',
+            icon: 'looks_one',
+            category: 'difficulty',
+            values: {
+              problemCount: 10,
+              includeLength: true,
+              includeWeight: true,
+              includeVolume: true,
+              includeTime: false,
+              includeTemperature: false,
+              includeMetricToMetric: false,
+              includeImperialToImperial: true,
+              includeMetricToImperial: false,
+              includeImperialToMetric: false,
+              includeChainConversions: false,
+              allowDecimals: false,
+              maxValue: 50,
+              showFormulas: false
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'metric-imperial-mixed',
+            label: 'Metric-Imperial Mixed',
+            description: 'Practice converting between metric and imperial',
+            icon: 'swap_horiz',
+            category: 'scope',
+            values: {
+              problemCount: 12,
+              includeLength: true,
+              includeWeight: true,
+              includeVolume: true,
+              includeTime: false,
+              includeTemperature: false,
+              includeMetricToMetric: false,
+              includeImperialToImperial: false,
+              includeMetricToImperial: true,
+              includeImperialToMetric: true,
+              includeChainConversions: false,
+              allowDecimals: true,
+              maxValue: 100,
+              showFormulas: true
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'temperature-conversions',
+            label: 'Temperature Conversions',
+            description: 'Focus on temperature scale conversions',
+            icon: 'thermostat',
+            category: 'scope',
+            values: {
+              problemCount: 10,
+              includeLength: false,
+              includeWeight: false,
+              includeVolume: false,
+              includeTime: false,
+              includeTemperature: true,
+              includeMetricToMetric: true,
+              includeImperialToImperial: false,
+              includeMetricToImperial: true,
+              includeImperialToMetric: true,
+              includeChainConversions: false,
+              allowDecimals: true,
+              maxValue: 100,
+              showFormulas: true
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'advanced-chain-conversions',
+            label: 'Advanced Chain Conversions',
+            description: 'Multi-step conversions for advanced students',
+            icon: 'link',
+            category: 'difficulty',
+            values: {
+              problemCount: 8,
+              includeLength: true,
+              includeWeight: true,
+              includeVolume: true,
+              includeTime: true,
+              includeTemperature: false,
+              includeMetricToMetric: true,
+              includeImperialToImperial: true,
+              includeMetricToImperial: false,
+              includeImperialToMetric: false,
+              includeChainConversions: true,
+              allowDecimals: true,
+              maxValue: 100,
+              showFormulas: true
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'comprehensive-conversions',
+            label: 'Comprehensive Conversions',
+            description: 'Mixed practice with all conversion types',
+            icon: 'all_inclusive',
+            category: 'scope',
+            values: {
+              problemCount: 15,
+              includeLength: true,
+              includeWeight: true,
+              includeVolume: true,
+              includeTime: true,
+              includeTemperature: true,
+              includeMetricToMetric: true,
+              includeImperialToImperial: true,
+              includeMetricToImperial: true,
+              includeImperialToMetric: true,
+              includeChainConversions: true,
+              allowDecimals: true,
+              maxValue: 200,
+              showFormulas: false
+            }
+          })
+        ]
+      })
     })
   }
 
   generateProblem(parameters = {}) {
     const params = { ...this.defaultParameters, ...parameters }
     
-    const validation = this.validateParameters(params)
+    // Validate parameters using Parameter Schema V2
+    const validation = this.parameterSchema.validate(params)
     if (!validation.isValid) {
       throw new Error(`Invalid parameters: ${validation.errors.join(', ')}`)
+    }
+    
+    // Additional custom validation
+    const customErrors = []
+    if (!params.includeMetricToMetric && !params.includeImperialToImperial && !params.includeMetricToImperial && !params.includeImperialToMetric) {
+      customErrors.push('At least one conversion type must be enabled')
+    }
+    if (!params.includeLength && !params.includeWeight && !params.includeVolume && !params.includeTime && !params.includeTemperature) {
+      customErrors.push('At least one measurement type must be enabled')
+    }
+    if (customErrors.length > 0) {
+      throw new Error(`Invalid parameters: ${customErrors.join(', ')}`)
     }
     
     // Build array of enabled measurement types

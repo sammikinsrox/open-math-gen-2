@@ -1,4 +1,5 @@
 import { BaseGenerator } from '../BaseGenerator.js'
+import { ParameterSchemaV2 } from '../ParameterSchemaV2.js'
 
 /**
  * Order of Operations Generator (PEMDAS/BODMAS)
@@ -6,6 +7,8 @@ import { BaseGenerator } from '../BaseGenerator.js'
  */
 export class OrderOfOperationsGenerator extends BaseGenerator {
   constructor() {
+    const schemaV2 = new ParameterSchemaV2()
+    
     super({
       name: 'Order of Operations (PEMDAS)',
       description: 'Generate problems requiring proper order of operations',
@@ -32,7 +35,7 @@ export class OrderOfOperationsGenerator extends BaseGenerator {
         includeDivision: true,
         includeAddition: true,
         includeSubtraction: true,
-        complexityLevel: 2,
+        complexityLevel: 'intermediate',
         maxExponent: 3,
         forceMultiStep: true,
         avoidNegativeResults: true,
@@ -40,118 +43,330 @@ export class OrderOfOperationsGenerator extends BaseGenerator {
         nestingLevel: 1
       },
       
-      parameterSchema: {
-        problemCount: {
-          type: 'number',
-          label: 'Number of Problems',
-          description: 'How many order of operations problems to generate',
-          min: 1,
-          max: 100,
-          required: true
+      // Enhanced Parameter Schema V2 with beautiful categorization
+      parameterSchema: schemaV2.createSchema({
+        categories: {
+          general: schemaV2.createCategory({
+            id: 'general',
+            label: 'General Settings',
+            description: 'Basic configuration options',
+            icon: 'settings',
+            color: 'blue',
+            order: 1,
+            parameters: {
+              problemCount: schemaV2.createParameter({
+                type: 'number',
+                label: 'Number of Problems',
+                description: 'How many order of operations problems to generate',
+                min: 1,
+                max: 50,
+                required: true,
+                slider: true,
+                presets: [5, 8, 10, 15],
+                order: 1
+              }),
+              complexityLevel: schemaV2.createParameter({
+                type: 'select',
+                label: 'Complexity Level',
+                description: 'Controls the overall difficulty and expression structure',
+                variant: 'cards',
+                options: [
+                  { 
+                    value: 'basic', 
+                    label: 'Basic',
+                    description: '3-term expressions with mixed operations (5-8th grade)'
+                  },
+                  { 
+                    value: 'intermediate', 
+                    label: 'Intermediate',
+                    description: '4-term expressions with parentheses and exponents'
+                  },
+                  { 
+                    value: 'advanced', 
+                    label: 'Advanced',
+                    description: 'Complex nested expressions with multiple levels'
+                  }
+                ],
+                order: 2
+              })
+            }
+          }),
+          
+          numberRanges: schemaV2.createCategory({
+            id: 'numberRanges',
+            label: 'Number Ranges',
+            description: 'Control the range of numbers used in expressions',
+            icon: 'tag',
+            color: 'green',
+            order: 2,
+            parameters: {
+              minNumber: schemaV2.createParameter({
+                type: 'number',
+                label: 'Minimum Number',
+                description: 'Smallest number to use in expressions',
+                min: 1,
+                max: 50,
+                required: true,
+                presets: [1, 2, 5, 10],
+                order: 1
+              }),
+              maxNumber: schemaV2.createParameter({
+                type: 'number',
+                label: 'Maximum Number',
+                description: 'Largest number to use in expressions',
+                min: 1,
+                max: 100,
+                required: true,
+                presets: [12, 20, 50, 100],
+                order: 2
+              })
+            }
+          }),
+          
+          operations: schemaV2.createCategory({
+            id: 'operations',
+            label: 'Operations to Include',
+            description: 'Select which mathematical operations to include',
+            icon: 'calculate',
+            color: 'orange',
+            order: 3,
+            parameters: {
+              includeAddition: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Addition (+)',
+                description: 'Include addition operations in expressions',
+                helpText: 'Essential for most order of operations problems',
+                order: 1
+              }),
+              includeSubtraction: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Subtraction (−)',
+                description: 'Include subtraction operations in expressions',
+                helpText: 'Can create negative intermediate results',
+                order: 2
+              }),
+              includeMultiplication: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Multiplication (×)',
+                description: 'Include multiplication operations in expressions',
+                helpText: 'High priority operation essential for PEMDAS practice',
+                order: 3
+              }),
+              includeDivision: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Division (÷)',
+                description: 'Include division operations in expressions',
+                helpText: 'High priority operation, may create decimal results',
+                order: 4
+              }),
+              includeExponents: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Exponents (^)',
+                description: 'Include exponents (powers) in expressions',
+                helpText: 'Highest priority operation in PEMDAS hierarchy',
+                order: 5
+              })
+            }
+          }),
+          
+          structure: schemaV2.createCategory({
+            id: 'structure',
+            label: 'Expression Structure',
+            description: 'Control parentheses, nesting, and expression complexity',
+            icon: 'account_tree',
+            color: 'purple',
+            order: 4,
+            parameters: {
+              includeParentheses: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Include Parentheses',
+                description: 'Add parentheses to change order of operations',
+                helpText: 'Essential for practicing grouping and precedence rules',
+                order: 1
+              }),
+              nestingLevel: schemaV2.createParameter({
+                type: 'number',
+                label: 'Parentheses Nesting Level',
+                description: 'Maximum depth of nested parentheses',
+                min: 1,
+                max: 3,
+                required: true,
+                helpText: '1: (a+b)*c, 2: ((a+b)*c)+d, 3: (((a+b)*c)+d)*e',
+                slider: true,
+                order: 2
+              }),
+              maxExponent: schemaV2.createParameter({
+                type: 'number',
+                label: 'Maximum Exponent',
+                description: 'Largest exponent value when exponents are enabled',
+                min: 2,
+                max: 4,
+                required: true,
+                presets: [2, 3, 4],
+                helpText: 'Higher exponents create larger intermediate results',
+                order: 3
+              })
+            }
+          }),
+          
+          constraints: schemaV2.createCategory({
+            id: 'constraints',
+            label: 'Problem Constraints',
+            description: 'Advanced options to control problem characteristics',
+            icon: 'tune',
+            color: 'red',
+            order: 5,
+            expanded: false,
+            parameters: {
+              forceMultiStep: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Force Multi-Step Solutions',
+                description: 'Ensure all problems require multiple calculation steps',
+                helpText: 'Eliminates simple expressions like "2 + 3"',
+                order: 1
+              }),
+              avoidNegativeResults: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Avoid Negative Results',
+                description: 'Try to generate problems with positive final answers',
+                helpText: 'Useful for elementary-level practice',
+                order: 2
+              }),
+              allowDecimals: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Allow Decimal Results',
+                description: 'Permit problems that result in decimal answers',
+                helpText: 'Mainly affects division operations',
+                order: 3
+              })
+            }
+          })
         },
-        minNumber: {
-          type: 'number',
-          label: 'Minimum Number',
-          description: 'Smallest number to use',
-          min: 1,
-          max: 50,
-          required: true
-        },
-        maxNumber: {
-          type: 'number',
-          label: 'Maximum Number',
-          description: 'Largest number to use',
-          min: 1,
-          max: 100,
-          required: true
-        },
-        includeParentheses: {
-          type: 'boolean',
-          label: 'Include Parentheses',
-          description: 'Include problems with parentheses'
-        },
-        includeExponents: {
-          type: 'boolean',
-          label: 'Include Exponents',
-          description: 'Include problems with exponents (powers)'
-        },
-        includeMultiplication: {
-          type: 'boolean',
-          label: 'Include Multiplication',
-          description: 'Include multiplication operations'
-        },
-        includeDivision: {
-          type: 'boolean',
-          label: 'Include Division',
-          description: 'Include division operations'
-        },
-        includeAddition: {
-          type: 'boolean',
-          label: 'Include Addition',
-          description: 'Include addition operations'
-        },
-        includeSubtraction: {
-          type: 'boolean',
-          label: 'Include Subtraction',
-          description: 'Include subtraction operations'
-        },
-        complexityLevel: {
-          type: 'number',
-          label: 'Complexity Level',
-          description: 'How complex the expressions should be (1=simple, 3=very complex)',
-          min: 1,
-          max: 3,
-          required: true
-        },
-        maxExponent: {
-          type: 'number',
-          label: 'Maximum Exponent',
-          description: 'Largest exponent to use when exponents are enabled',
-          min: 2,
-          max: 4,
-          required: true
-        },
-        forceMultiStep: {
-          type: 'boolean',
-          label: 'Force Multi-Step',
-          description: 'Ensure problems require multiple steps to solve'
-        },
-        avoidNegativeResults: {
-          type: 'boolean',
-          label: 'Avoid Negative Results',
-          description: 'Try to avoid problems with negative answers'
-        },
-        allowDecimals: {
-          type: 'boolean',
-          label: 'Allow Decimal Results',
-          description: 'Allow problems that result in decimal answers'
-        },
-        nestingLevel: {
-          type: 'number',
-          label: 'Parentheses Nesting Level',
-          description: 'How deeply nested parentheses can be',
-          min: 1,
-          max: 3,
-          required: true
-        }
-      }
+        
+        // Preset configurations for quick setup
+        presets: [
+          schemaV2.createPreset({
+            id: 'elementary-pemdas',
+            label: 'Elementary PEMDAS',
+            description: 'Introduction to order of operations (grades 5-6)',
+            icon: 'school',
+            category: 'difficulty',
+            values: {
+              problemCount: 8,
+              complexityLevel: 'basic',
+              minNumber: 1,
+              maxNumber: 12,
+              includeAddition: true,
+              includeSubtraction: true,
+              includeMultiplication: true,
+              includeDivision: false,
+              includeExponents: false,
+              includeParentheses: true,
+              nestingLevel: 1,
+              maxExponent: 2,
+              forceMultiStep: true,
+              avoidNegativeResults: true,
+              allowDecimals: false
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'middle-school-standard',
+            label: 'Middle School Standard',
+            description: 'Comprehensive PEMDAS practice (grades 6-8)',
+            icon: 'calculate',
+            category: 'difficulty',
+            values: {
+              problemCount: 12,
+              complexityLevel: 'intermediate',
+              minNumber: 1,
+              maxNumber: 15,
+              includeAddition: true,
+              includeSubtraction: true,
+              includeMultiplication: true,
+              includeDivision: true,
+              includeExponents: true,
+              includeParentheses: true,
+              nestingLevel: 2,
+              maxExponent: 3,
+              forceMultiStep: true,
+              avoidNegativeResults: false,
+              allowDecimals: true
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'advanced-expressions',
+            label: 'Advanced Expressions',
+            description: 'Complex nested expressions (grades 8+)',
+            icon: 'functions',
+            category: 'difficulty',
+            values: {
+              problemCount: 10,
+              complexityLevel: 'advanced',
+              minNumber: 1,
+              maxNumber: 20,
+              includeAddition: true,
+              includeSubtraction: true,
+              includeMultiplication: true,
+              includeDivision: true,
+              includeExponents: true,
+              includeParentheses: true,
+              nestingLevel: 3,
+              maxExponent: 4,
+              forceMultiStep: true,
+              avoidNegativeResults: false,
+              allowDecimals: true
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'no-parentheses',
+            label: 'No Parentheses Focus',
+            description: 'Practice natural order of operations without grouping symbols',
+            icon: 'remove',
+            category: 'scope',
+            values: {
+              problemCount: 15,
+              complexityLevel: 'intermediate',
+              minNumber: 2,
+              maxNumber: 12,
+              includeAddition: true,
+              includeSubtraction: true,
+              includeMultiplication: true,
+              includeDivision: true,
+              includeExponents: true,
+              includeParentheses: false,
+              nestingLevel: 1,
+              maxExponent: 3,
+              forceMultiStep: true,
+              avoidNegativeResults: true,
+              allowDecimals: false
+            }
+          })
+        ]
+      })
     })
   }
 
   generateProblem(parameters = {}) {
     const params = { ...this.defaultParameters, ...parameters }
     
-    const validation = this.validateParameters(params)
+    // Apply complexity level overrides for better defaults
+    const adjustedParams = this.applyComplexityLevelAdjustments(params)
+    
+    // Validate parameters
+    const validation = this.validateParameters(adjustedParams)
     if (!validation.isValid) {
       throw new Error(`Invalid parameters: ${validation.errors.join(', ')}`)
     }
 
     // Validate that at least one operation is enabled
     const operations = [
-      params.includeAddition,
-      params.includeSubtraction,
-      params.includeMultiplication,
-      params.includeDivision
+      adjustedParams.includeAddition,
+      adjustedParams.includeSubtraction,
+      adjustedParams.includeMultiplication,
+      adjustedParams.includeDivision
     ]
     if (!operations.some(op => op)) {
       throw new Error('At least one basic operation must be enabled')
@@ -164,15 +379,15 @@ export class OrderOfOperationsGenerator extends BaseGenerator {
     do {
       attempts++
       try {
-        const result = this.generatePEMDASExpression(params)
+        const result = this.generatePEMDASExpression(adjustedParams)
         expression = result.expression
         answer = result.answer
         steps = result.steps
 
         // Validate result meets criteria
-        if (params.avoidNegativeResults && answer < 0) continue
-        if (!params.allowDecimals && !Number.isInteger(answer)) continue
-        if (params.forceMultiStep && steps.length < 3) continue
+        if (adjustedParams.avoidNegativeResults && answer < 0) continue
+        if (!adjustedParams.allowDecimals && !Number.isInteger(answer)) continue
+        if (adjustedParams.forceMultiStep && steps.length < 3) continue
 
         break
       } catch (error) {
@@ -183,7 +398,7 @@ export class OrderOfOperationsGenerator extends BaseGenerator {
 
     // Fallback if no valid expression found
     if (attempts >= maxAttempts) {
-      const fallback = this.generateSimpleFallback(params)
+      const fallback = this.generateSimpleFallback(adjustedParams)
       expression = fallback.expression
       answer = fallback.answer
       steps = fallback.steps
@@ -201,9 +416,11 @@ export class OrderOfOperationsGenerator extends BaseGenerator {
       metadata: {
         operation: 'order-of-operations',
         expression: expression.raw,
-        complexity: params.complexityLevel,
+        complexityLevel: adjustedParams.complexityLevel,
         hasParentheses: expression.hasParentheses,
         hasExponents: expression.hasExponents,
+        operationsUsed: this.getOperationsUsed(adjustedParams),
+        stepCount: steps.length,
         difficulty: this.difficulty,
         estimatedTime: '120 seconds'
       }
@@ -213,9 +430,9 @@ export class OrderOfOperationsGenerator extends BaseGenerator {
   generatePEMDASExpression(params) {
     const complexity = params.complexityLevel
     
-    if (complexity === 1) {
+    if (complexity === 'basic') {
       return this.generateSimpleExpression(params)
-    } else if (complexity === 2) {
+    } else if (complexity === 'intermediate') {
       return this.generateMediumExpression(params)
     } else {
       return this.generateComplexExpression(params)
@@ -673,6 +890,67 @@ export class OrderOfOperationsGenerator extends BaseGenerator {
 
   getRandomElement(array) {
     return array[Math.floor(Math.random() * array.length)]
+  }
+
+  /**
+   * Apply complexity level adjustments to parameters
+   * @param {Object} params - Original parameters
+   * @returns {Object} - Adjusted parameters
+   */
+  applyComplexityLevelAdjustments(params) {
+    const adjusted = { ...params }
+    
+    // Apply complexity level overrides for better defaults
+    if (params.complexityLevel === 'basic') {
+      // Basic: simpler numbers and operations
+      adjusted.minNumber = Math.max(1, Math.min(adjusted.minNumber, 12))
+      adjusted.maxNumber = Math.min(adjusted.maxNumber, 12)
+      adjusted.nestingLevel = Math.min(adjusted.nestingLevel, 1)
+      adjusted.maxExponent = Math.min(adjusted.maxExponent, 2)
+      // Prefer avoiding decimals and negatives for basic level
+      if (!adjusted.hasOwnProperty('allowDecimals')) {
+        adjusted.allowDecimals = false
+      }
+      if (!adjusted.hasOwnProperty('avoidNegativeResults')) {
+        adjusted.avoidNegativeResults = true
+      }
+    } else if (params.complexityLevel === 'intermediate') {
+      // Intermediate: moderate complexity
+      adjusted.minNumber = Math.max(1, Math.min(adjusted.minNumber, 15))
+      adjusted.maxNumber = Math.min(adjusted.maxNumber, 20)
+      adjusted.nestingLevel = Math.min(adjusted.nestingLevel, 2)
+      adjusted.maxExponent = Math.min(adjusted.maxExponent, 3)
+    } else if (params.complexityLevel === 'advanced') {
+      // Advanced: full complexity
+      adjusted.maxNumber = Math.max(adjusted.maxNumber, 15)
+      adjusted.nestingLevel = Math.max(adjusted.nestingLevel, 2)
+      adjusted.maxExponent = Math.max(adjusted.maxExponent, 3)
+      // Enable more advanced features for advanced level
+      if (!adjusted.hasOwnProperty('allowDecimals')) {
+        adjusted.allowDecimals = true
+      }
+      if (!adjusted.hasOwnProperty('includeExponents')) {
+        adjusted.includeExponents = true
+      }
+    }
+    
+    return adjusted
+  }
+
+  /**
+   * Get list of operations used based on parameters
+   * @param {Object} params - Parameters object
+   * @returns {Array} - Array of operation symbols used
+   */
+  getOperationsUsed(params) {
+    const operations = []
+    if (params.includeAddition) operations.push('+')
+    if (params.includeSubtraction) operations.push('−')
+    if (params.includeMultiplication) operations.push('×')
+    if (params.includeDivision) operations.push('÷')
+    if (params.includeExponents) operations.push('^')
+    if (params.includeParentheses) operations.push('()')
+    return operations
   }
 }
 

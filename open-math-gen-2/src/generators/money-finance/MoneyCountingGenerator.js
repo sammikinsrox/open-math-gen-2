@@ -1,4 +1,5 @@
 import { BaseGenerator } from '../BaseGenerator.js'
+import { ParameterSchemaV2 } from '../ParameterSchemaV2.js'
 
 /**
  * Money Counting Generator
@@ -6,6 +7,8 @@ import { BaseGenerator } from '../BaseGenerator.js'
  */
 export class MoneyCountingGenerator extends BaseGenerator {
   constructor() {
+    const schemaV2 = new ParameterSchemaV2()
+    
     super({
       name: 'Money Counting',
       description: 'Generate problems involving counting coins and bills, and identifying money values',
@@ -42,170 +45,412 @@ export class MoneyCountingGenerator extends BaseGenerator {
         maxTotalValue: 25.00
       },
       
-      parameterSchema: {
-        // General Settings
-        problemCount: {
-          type: 'number',
-          label: 'Number of Problems',
-          description: 'How many money counting problems to generate',
-          min: 1,
-          max: 100,
-          required: true,
-          category: 'General'
+      // Enhanced Parameter Schema V2 with beautiful categorization
+      parameterSchema: schemaV2.createSchema({
+        categories: {
+          general: schemaV2.createCategory({
+            id: 'general',
+            label: 'General Settings',
+            description: 'Basic configuration options',
+            icon: 'settings',
+            color: 'blue',
+            order: 1,
+            parameters: {
+              problemCount: schemaV2.createParameter({
+                type: 'number',
+                label: 'Number of Problems',
+                description: 'How many money counting problems to generate',
+                min: 1,
+                max: 50,
+                required: true,
+                slider: true,
+                presets: [5, 8, 10, 15],
+                order: 1
+              })
+            }
+          }),
+          
+          moneyTypes: schemaV2.createCategory({
+            id: 'moneyTypes',
+            label: 'Money Types',
+            description: 'Choose which types of money to include',
+            icon: 'attach_money',
+            color: 'green',
+            order: 2,
+            parameters: {
+              includeCoins: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Include Coins',
+                description: 'Include coin counting problems',
+                helpText: 'Types: pennies, nickels, dimes, quarters, half dollars',
+                order: 1
+              }),
+              includeBills: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Include Bills',
+                description: 'Include bill counting problems',
+                helpText: 'Types: $1, $5, $10, $20 bills',
+                order: 2
+              }),
+              allowMixed: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Allow Mixed Problems',
+                description: 'Allow problems with both coins and bills',
+                helpText: 'Examples: 2 quarters + 1 dollar bill = $1.50',
+                order: 3
+              })
+            }
+          }),
+          
+          coinTypes: schemaV2.createCategory({
+            id: 'coinTypes',
+            label: 'Coin Types',
+            description: 'Select which coin denominations to include',
+            icon: 'monetization_on',
+            color: 'purple',
+            order: 3,
+            parameters: {
+              includePennies: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Pennies (1¢)',
+                description: 'Include pennies in coin counting problems',
+                helpText: 'Value: 1 cent each',
+                order: 1
+              }),
+              includeNickels: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Nickels (5¢)',
+                description: 'Include nickels in coin counting problems',
+                helpText: 'Value: 5 cents each',
+                order: 2
+              }),
+              includeDimes: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Dimes (10¢)',
+                description: 'Include dimes in coin counting problems',
+                helpText: 'Value: 10 cents each',
+                order: 3
+              }),
+              includeQuarters: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Quarters (25¢)',
+                description: 'Include quarters in coin counting problems',
+                helpText: 'Value: 25 cents each',
+                order: 4
+              }),
+              includeHalfDollars: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Half Dollars (50¢)',
+                description: 'Include half dollars in coin counting problems',
+                helpText: 'Value: 50 cents each (advanced)',
+                order: 5
+              })
+            }
+          }),
+          
+          billTypes: schemaV2.createCategory({
+            id: 'billTypes',
+            label: 'Bill Types',
+            description: 'Select which bill denominations to include',
+            icon: 'receipt_long',
+            color: 'orange',
+            order: 4,
+            parameters: {
+              includeDollars: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'One Dollar Bills ($1)',
+                description: 'Include one dollar bills in problems',
+                helpText: 'Value: $1.00 each',
+                order: 1
+              }),
+              includeFives: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Five Dollar Bills ($5)',
+                description: 'Include five dollar bills in problems',
+                helpText: 'Value: $5.00 each',
+                order: 2
+              }),
+              includeTens: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Ten Dollar Bills ($10)',
+                description: 'Include ten dollar bills in problems',
+                helpText: 'Value: $10.00 each',
+                order: 3
+              }),
+              includeTwenties: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Twenty Dollar Bills ($20)',
+                description: 'Include twenty dollar bills in problems',
+                helpText: 'Value: $20.00 each (advanced)',
+                order: 4
+              })
+            }
+          }),
+          
+          quantityLimits: schemaV2.createCategory({
+            id: 'quantityLimits',
+            label: 'Quantity Limits',
+            description: 'Control the number and value of money in problems',
+            icon: 'tune',
+            color: 'teal',
+            order: 5,
+            parameters: {
+              maxCoinCount: schemaV2.createParameter({
+                type: 'number',
+                label: 'Maximum Coins Per Type',
+                description: 'Maximum number of each coin type in problems',
+                min: 1,
+                max: 20,
+                required: true,
+                slider: true,
+                presets: [5, 10, 15, 20],
+                helpText: 'Controls complexity of coin counting',
+                order: 1
+              }),
+              maxBillCount: schemaV2.createParameter({
+                type: 'number',
+                label: 'Maximum Bills Per Type',
+                description: 'Maximum number of each bill type in problems',
+                min: 1,
+                max: 10,
+                required: true,
+                slider: true,
+                presets: [3, 5, 7, 10],
+                helpText: 'Controls complexity of bill counting',
+                order: 2
+              }),
+              maxTotalValue: schemaV2.createParameter({
+                type: 'number',
+                label: 'Maximum Total Value',
+                description: 'Maximum total value for each problem (in dollars)',
+                min: 0.25,
+                max: 100.00,
+                required: true,
+                slider: true,
+                presets: [5.00, 10.00, 25.00, 50.00],
+                helpText: 'Caps the total amount to count',
+                order: 3
+              })
+            }
+          }),
+          
+          problemStyle: schemaV2.createCategory({
+            id: 'problemStyle',
+            label: 'Problem Style',
+            description: 'Control the presentation and context of problems',
+            icon: 'style',
+            color: 'pink',
+            order: 6,
+            parameters: {
+              includeWordProblems: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Include Word Problems',
+                description: 'Include real-world money counting scenarios',
+                helpText: 'Examples: piggy bank, allowance, cashier scenarios',
+                order: 1
+              })
+            }
+          })
         },
         
-        // Money Types
-        includeCoins: {
-          type: 'boolean',
-          label: 'Include Coins',
-          description: 'Include coin counting problems',
-          category: 'Money Types'
-        },
-        includeBills: {
-          type: 'boolean',
-          label: 'Include Bills',
-          description: 'Include bill counting problems',
-          category: 'Money Types'
-        },
-        allowMixed: {
-          type: 'boolean',
-          label: 'Allow Mixed Problems',
-          description: 'Allow problems with both coins and bills',
-          category: 'Money Types'
-        },
-        
-        // Coin Types (conditional on includeCoins)
-        includePennies: {
-          type: 'boolean',
-          label: 'Include Pennies (1¢)',
-          description: 'Include pennies in problems',
-          category: 'Coin Types',
-          dependsOn: 'includeCoins'
-        },
-        includeNickels: {
-          type: 'boolean',
-          label: 'Include Nickels (5¢)',
-          description: 'Include nickels in problems',
-          category: 'Coin Types',
-          dependsOn: 'includeCoins'
-        },
-        includeDimes: {
-          type: 'boolean',
-          label: 'Include Dimes (10¢)',
-          description: 'Include dimes in problems',
-          category: 'Coin Types',
-          dependsOn: 'includeCoins'
-        },
-        includeQuarters: {
-          type: 'boolean',
-          label: 'Include Quarters (25¢)',
-          description: 'Include quarters in problems',
-          category: 'Coin Types',
-          dependsOn: 'includeCoins'
-        },
-        includeHalfDollars: {
-          type: 'boolean',
-          label: 'Include Half Dollars (50¢)',
-          description: 'Include half dollars in problems',
-          category: 'Coin Types',
-          dependsOn: 'includeCoins'
-        },
-        
-        // Bill Types (conditional on includeBills)
-        includeDollars: {
-          type: 'boolean',
-          label: 'Include $1 Bills',
-          description: 'Include one dollar bills in problems',
-          category: 'Bill Types',
-          dependsOn: 'includeBills'
-        },
-        includeFives: {
-          type: 'boolean',
-          label: 'Include $5 Bills',
-          description: 'Include five dollar bills in problems',
-          category: 'Bill Types',
-          dependsOn: 'includeBills'
-        },
-        includeTens: {
-          type: 'boolean',
-          label: 'Include $10 Bills',
-          description: 'Include ten dollar bills in problems',
-          category: 'Bill Types',
-          dependsOn: 'includeBills'
-        },
-        includeTwenties: {
-          type: 'boolean',
-          label: 'Include $20 Bills',
-          description: 'Include twenty dollar bills in problems',
-          category: 'Bill Types',
-          dependsOn: 'includeBills'
-        },
-        
-        // Quantity Limits
-        maxCoinCount: {
-          type: 'number',
-          label: 'Maximum Coins Per Type',
-          description: 'Maximum number of each coin type',
-          min: 1,
-          max: 20,
-          required: true,
-          category: 'Quantity Limits',
-          dependsOn: 'includeCoins'
-        },
-        maxBillCount: {
-          type: 'number',
-          label: 'Maximum Bills Per Type',
-          description: 'Maximum number of each bill type',
-          min: 1,
-          max: 10,
-          required: true,
-          category: 'Quantity Limits',
-          dependsOn: 'includeBills'
-        },
-        maxTotalValue: {
-          type: 'number',
-          label: 'Maximum Total Value',
-          description: 'Maximum total value for each problem (in dollars)',
-          min: 0.25,
-          max: 100.00,
-          required: true,
-          category: 'Quantity Limits'
-        },
-        
-        // Problem Style
-        includeWordProblems: {
-          type: 'boolean',
-          label: 'Include Word Problems',
-          description: 'Include real-world money counting scenarios',
-          category: 'Problem Style'
-        }
-      }
+        // Preset configurations for quick setup
+        presets: [
+          schemaV2.createPreset({
+            id: 'basic-coins',
+            label: 'Basic Coins',
+            description: 'Simple coin counting with common denominations',
+            icon: 'looks_one',
+            category: 'difficulty',
+            values: {
+              problemCount: 10,
+              includeCoins: true,
+              includeBills: false,
+              allowMixed: false,
+              includePennies: true,
+              includeNickels: true,
+              includeDimes: true,
+              includeQuarters: true,
+              includeHalfDollars: false,
+              includeDollars: false,
+              includeFives: false,
+              includeTens: false,
+              includeTwenties: false,
+              maxCoinCount: 10,
+              maxBillCount: 5,
+              maxTotalValue: 5.00,
+              includeWordProblems: false
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'basic-bills',
+            label: 'Basic Bills',
+            description: 'Simple bill counting with small denominations',
+            icon: 'receipt_long',
+            category: 'difficulty',
+            values: {
+              problemCount: 10,
+              includeCoins: false,
+              includeBills: true,
+              allowMixed: false,
+              includePennies: false,
+              includeNickels: false,
+              includeDimes: false,
+              includeQuarters: false,
+              includeHalfDollars: false,
+              includeDollars: true,
+              includeFives: true,
+              includeTens: false,
+              includeTwenties: false,
+              maxCoinCount: 10,
+              maxBillCount: 5,
+              maxTotalValue: 25.00,
+              includeWordProblems: false
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'mixed-money',
+            label: 'Mixed Money',
+            description: 'Practice with both coins and bills together',
+            icon: 'account_balance_wallet',
+            category: 'scope',
+            values: {
+              problemCount: 12,
+              includeCoins: true,
+              includeBills: true,
+              allowMixed: true,
+              includePennies: true,
+              includeNickels: true,
+              includeDimes: true,
+              includeQuarters: true,
+              includeHalfDollars: false,
+              includeDollars: true,
+              includeFives: true,
+              includeTens: false,
+              includeTwenties: false,
+              maxCoinCount: 8,
+              maxBillCount: 3,
+              maxTotalValue: 15.00,
+              includeWordProblems: false
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'real-world-scenarios',
+            label: 'Real-World Scenarios',
+            description: 'Word problems with realistic money contexts',
+            icon: 'business',
+            category: 'scope',
+            values: {
+              problemCount: 10,
+              includeCoins: true,
+              includeBills: true,
+              allowMixed: true,
+              includePennies: true,
+              includeNickels: true,
+              includeDimes: true,
+              includeQuarters: true,
+              includeHalfDollars: false,
+              includeDollars: true,
+              includeFives: false,
+              includeTens: false,
+              includeTwenties: false,
+              maxCoinCount: 6,
+              maxBillCount: 4,
+              maxTotalValue: 20.00,
+              includeWordProblems: true
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'advanced-counting',
+            label: 'Advanced Counting',
+            description: 'Complex problems with larger denominations',
+            icon: 'trending_up',
+            category: 'difficulty',
+            values: {
+              problemCount: 8,
+              includeCoins: true,
+              includeBills: true,
+              allowMixed: true,
+              includePennies: false,
+              includeNickels: true,
+              includeDimes: true,
+              includeQuarters: true,
+              includeHalfDollars: true,
+              includeDollars: true,
+              includeFives: true,
+              includeTens: true,
+              includeTwenties: false,
+              maxCoinCount: 15,
+              maxBillCount: 8,
+              maxTotalValue: 75.00,
+              includeWordProblems: false
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'comprehensive-money',
+            label: 'Comprehensive Money',
+            description: 'Complete practice with all money types',
+            icon: 'all_inclusive',
+            category: 'scope',
+            values: {
+              problemCount: 15,
+              includeCoins: true,
+              includeBills: true,
+              allowMixed: true,
+              includePennies: true,
+              includeNickels: true,
+              includeDimes: true,
+              includeQuarters: true,
+              includeHalfDollars: true,
+              includeDollars: true,
+              includeFives: true,
+              includeTens: true,
+              includeTwenties: true,
+              maxCoinCount: 12,
+              maxBillCount: 6,
+              maxTotalValue: 100.00,
+              includeWordProblems: true
+            }
+          })
+        ]
+      })
     })
   }
 
   generateProblem(parameters = {}) {
     const params = { ...this.defaultParameters, ...parameters }
     
-    const validation = this.validateParameters(params)
+    // Validate parameters using Parameter Schema V2
+    const validation = this.parameterSchema.validate(params)
     if (!validation.isValid) {
       throw new Error(`Invalid parameters: ${validation.errors.join(', ')}`)
     }
     
-    // Additional validation for money types
+    // Additional custom validation
+    const customErrors = []
+    if (!params.includeCoins && !params.includeBills) {
+      customErrors.push('At least one money type (coins or bills) must be enabled')
+    }
     if (params.includeCoins) {
       const hasCoins = params.includePennies || params.includeNickels || params.includeDimes || 
                       params.includeQuarters || params.includeHalfDollars
       if (!hasCoins) {
-        throw new Error('When includeCoins is enabled, at least one coin type must be selected')
+        customErrors.push('When includeCoins is enabled, at least one coin type must be selected')
       }
     }
-    
     if (params.includeBills) {
       const hasBills = params.includeDollars || params.includeFives || 
                       params.includeTens || params.includeTwenties
       if (!hasBills) {
-        throw new Error('When includeBills is enabled, at least one bill type must be selected')
+        customErrors.push('When includeBills is enabled, at least one bill type must be selected')
       }
+    }
+    if (customErrors.length > 0) {
+      throw new Error(`Invalid parameters: ${customErrors.join(', ')}`)
     }
     
     // Build array of enabled problem types

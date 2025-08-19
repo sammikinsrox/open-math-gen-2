@@ -57,6 +57,17 @@ import SymmetryGenerator from './geometry-basic/SymmetryGenerator.js'
 import CoordinateBasicsGenerator from './geometry-basic/CoordinateBasicsGenerator.js'
 import PropertiesGenerator from './geometry-basic/PropertiesGenerator.js'
 
+// Pre-Algebra Generators
+import IntegersGenerator from './pre-algebra/IntegersGenerator.js'
+import AlgebraicExpressionsGenerator from './pre-algebra/AlgebraicExpressionsGenerator.js'
+import OneStepEquationsGenerator from './pre-algebra/OneStepEquationsGenerator.js'
+import TwoStepEquationsGenerator from './pre-algebra/TwoStepEquationsGenerator.js'
+import InequalitiesGenerator from './pre-algebra/InequalitiesGenerator.js'
+import RatiosGenerator from './pre-algebra/RatiosGenerator.js'
+import ProportionsGenerator from './pre-algebra/ProportionsGenerator.js'
+import VariablesGenerator from './pre-algebra/VariablesGenerator.js'
+import GraphingBasicsGenerator from './pre-algebra/GraphingBasicsGenerator.js'
+
 // Algebra Generators
 import LinearEquationsGenerator from './algebra/LinearEquationsGenerator.js'
 
@@ -174,16 +185,15 @@ export const GENERATOR_CATEGORIES = {
     description: 'Integers, expressions, equations, inequalities, ratios, and proportions',
     icon: 'functions',
     generators: {
-      // TODO: Add generators for this category
-      // 'integers': new IntegersGenerator(),
-      // 'algebraic-expressions': new AlgebraicExpressionsGenerator(),
-      // 'one-step-equations': new OneStepEquationsGenerator(),
-      // 'two-step-equations': new TwoStepEquationsGenerator(),
-      // 'inequalities': new InequalitiesGenerator(),
-      // 'ratios': new RatiosGenerator(),
-      // 'proportions': new ProportionsGenerator(),
-      // 'variables': new VariablesGenerator(),
-      // 'graphing-basics': new GraphingBasicsGenerator()
+      'integers': new IntegersGenerator(),
+      'algebraic-expressions': new AlgebraicExpressionsGenerator(),
+      'one-step-equations': new OneStepEquationsGenerator(),
+      'two-step-equations': new TwoStepEquationsGenerator(),
+      'inequalities': new InequalitiesGenerator(),
+      'ratios': new RatiosGenerator(),
+      'proportions': new ProportionsGenerator(),
+      'variables': new VariablesGenerator(),
+      'graphing-basics': new GraphingBasicsGenerator()
     }
   },
   

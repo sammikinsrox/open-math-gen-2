@@ -1,4 +1,5 @@
 import { BaseGenerator } from '../BaseGenerator.js'
+import { ParameterSchemaV2 } from '../ParameterSchemaV2.js'
 
 /**
  * Angles Generator
@@ -8,6 +9,8 @@ import { BaseGenerator } from '../BaseGenerator.js'
  */
 export class AnglesGenerator extends BaseGenerator {
   constructor() {
+    const schemaV2 = new ParameterSchemaV2()
+    
     super({
       name: 'Angles',
       description: 'Angle measurement, types, relationships with visual diagrams',
@@ -46,117 +49,361 @@ export class AnglesGenerator extends BaseGenerator {
         diagramTheme: 'educational'
       },
       
-      // Parameter schema for validation and UI generation
-      parameterSchema: {
-        problemCount: {
-          type: 'number',
-          label: 'Number of Problems',
-          description: 'How many problems to generate',
-          min: 1,
-          max: 50,
-          required: true
+      // Enhanced Parameter Schema V2 with beautiful categorization
+      parameterSchema: schemaV2.createSchema({
+        categories: {
+          general: schemaV2.createCategory({
+            id: 'general',
+            label: 'General Settings',
+            description: 'Basic configuration options',
+            icon: 'settings',
+            color: 'blue',
+            order: 1,
+            parameters: {
+              problemCount: schemaV2.createParameter({
+                type: 'number',
+                label: 'Number of Problems',
+                description: 'How many angle problems to generate',
+                min: 1,
+                max: 50,
+                required: true,
+                slider: true,
+                presets: [5, 8, 10, 15],
+                order: 1
+              })
+            }
+          }),
+          
+          problemTypes: schemaV2.createCategory({
+            id: 'problemTypes',
+            label: 'Problem Types',
+            description: 'Choose which types of angle problems to include',
+            icon: 'category',
+            color: 'green',
+            order: 2,
+            parameters: {
+              includeAngleIdentification: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Angle Identification',
+                description: 'Identify angle types from diagrams',
+                helpText: 'Examples: acute, obtuse, right angle identification',
+                order: 1
+              }),
+              includeAngleMeasurement: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Angle Measurement',
+                description: 'Measure angles using protractor',
+                helpText: 'Reading angle measurements from diagrams',
+                order: 2
+              }),
+              includeAngleClassification: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Angle Classification',
+                description: 'Classify angles by their measurements',
+                helpText: 'Given angle measure, identify the type',
+                order: 3
+              }),
+              includeAnglesInShapes: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Angles in Shapes',
+                description: 'Interior angles of triangles and polygons',
+                helpText: 'Finding missing angles in geometric shapes',
+                order: 4
+              })
+            }
+          }),
+          
+          angleRelationships: schemaV2.createCategory({
+            id: 'angleRelationships',
+            label: 'Angle Relationships',
+            description: 'Problems involving angle relationships',
+            icon: 'share',
+            color: 'purple',
+            order: 3,
+            parameters: {
+              includeComplementaryAngles: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Complementary Angles',
+                description: 'Two angles that sum to 90°',
+                helpText: 'Finding missing complementary angles',
+                order: 1
+              }),
+              includeSupplementaryAngles: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Supplementary Angles',
+                description: 'Two angles that sum to 180°',
+                helpText: 'Finding missing supplementary angles',
+                order: 2
+              }),
+              includeVerticalAngles: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Vertical Angles',
+                description: 'Opposite angles formed by intersecting lines',
+                helpText: 'Properties of vertical angles',
+                order: 3
+              }),
+              includeAngleAddition: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Angle Addition',
+                description: 'Adding and subtracting angle measures',
+                helpText: 'Adjacent angles forming larger angles',
+                order: 4
+              })
+            }
+          }),
+          
+          angleRanges: schemaV2.createCategory({
+            id: 'angleRanges',
+            label: 'Angle Ranges',
+            description: 'Control the range of angle measurements',
+            icon: 'straighten',
+            color: 'orange',
+            order: 4,
+            parameters: {
+              minAngle: schemaV2.createParameter({
+                type: 'number',
+                label: 'Minimum Angle',
+                description: 'Smallest angle measure in degrees',
+                min: 1,
+                max: 179,
+                required: true,
+                slider: true,
+                presets: [5, 10, 15, 30],
+                helpText: 'Lower bound for angle values',
+                order: 1
+              }),
+              maxAngle: schemaV2.createParameter({
+                type: 'number',
+                label: 'Maximum Angle',
+                description: 'Largest angle measure in degrees',
+                min: 1,
+                max: 359,
+                required: true,
+                slider: true,
+                presets: [90, 120, 150, 179],
+                helpText: 'Upper bound for angle values',
+                order: 2
+              }),
+              allowReflex: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Allow Reflex Angles',
+                description: 'Include angles greater than 180°',
+                helpText: 'Enable angles between 180° and 360°',
+                order: 3
+              })
+            }
+          }),
+          
+          visualization: schemaV2.createCategory({
+            id: 'visualization',
+            label: 'Visualization',
+            description: 'Control diagram appearance and features',
+            icon: 'visibility',
+            color: 'teal',
+            order: 5,
+            parameters: {
+              showVisualDiagrams: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Show Visual Diagrams',
+                description: 'Include geometric diagrams',
+                helpText: 'Display angle diagrams with problems',
+                order: 1
+              }),
+              showMeasurements: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Show Measurements',
+                description: 'Display angle measurements in diagrams',
+                helpText: 'Show degree values on diagrams',
+                order: 2
+              }),
+              diagramSize: schemaV2.createParameter({
+                type: 'select',
+                label: 'Diagram Size',
+                description: 'Size of the geometric diagrams',
+                options: [
+                  { value: 'small', label: 'Small' },
+                  { value: 'medium', label: 'Medium' },
+                  { value: 'large', label: 'Large' }
+                ],
+                helpText: 'Controls the size of visual diagrams',
+                order: 3
+              }),
+              diagramTheme: schemaV2.createParameter({
+                type: 'select',
+                label: 'Diagram Theme',
+                description: 'Visual style for diagrams',
+                options: [
+                  { value: 'educational', label: 'Educational' },
+                  { value: 'blueprint', label: 'Blueprint' },
+                  { value: 'minimal', label: 'Minimal' },
+                  { value: 'colorful', label: 'Colorful' }
+                ],
+                helpText: 'Appearance style for geometry diagrams',
+                order: 4
+              })
+            }
+          })
         },
-        includeAngleIdentification: {
-          type: 'boolean',
-          label: 'Angle Identification',
-          description: 'Identify angle types (acute, obtuse, right)'
-        },
-        includeAngleMeasurement: {
-          type: 'boolean',
-          label: 'Angle Measurement',
-          description: 'Measure angles using protractor'
-        },
-        includeAngleClassification: {
-          type: 'boolean',
-          label: 'Angle Classification',
-          description: 'Classify angles by their measurements'
-        },
-        includeComplementaryAngles: {
-          type: 'boolean',
-          label: 'Complementary Angles',
-          description: 'Two angles that sum to 90°'
-        },
-        includeSupplementaryAngles: {
-          type: 'boolean',
-          label: 'Supplementary Angles',
-          description: 'Two angles that sum to 180°'
-        },
-        includeVerticalAngles: {
-          type: 'boolean',
-          label: 'Vertical Angles',
-          description: 'Opposite angles formed by intersecting lines'
-        },
-        includeAngleAddition: {
-          type: 'boolean',
-          label: 'Angle Addition',
-          description: 'Adding and subtracting angle measures'
-        },
-        includeAnglesInShapes: {
-          type: 'boolean',
-          label: 'Angles in Shapes',
-          description: 'Interior angles of triangles and polygons'
-        },
-        minAngle: {
-          type: 'number',
-          label: 'Minimum Angle',
-          description: 'Smallest angle measure in degrees',
-          min: 1,
-          max: 179
-        },
-        maxAngle: {
-          type: 'number',
-          label: 'Maximum Angle',
-          description: 'Largest angle measure in degrees',
-          min: 1,
-          max: 359
-        },
-        allowReflex: {
-          type: 'boolean',
-          label: 'Allow Reflex Angles',
-          description: 'Include angles greater than 180°'
-        },
-        // showAngleMarks: {
-        //   type: 'boolean',
-        //   label: 'Show Angle Marks',
-        //   description: 'Display angle arc marks in diagrams'
-        // },
-        showMeasurements: {
-          type: 'boolean',
-          label: 'Show Measurements',
-          description: 'Display angle measurements in diagrams'
-        },
-        // includeWordProblems: {
-        //   type: 'boolean',
-        //   label: 'Include Word Problems',
-        //   description: 'Include real-world angle problems'
-        // },
-        showVisualDiagrams: {
-          type: 'boolean',
-          label: 'Show Visual Diagrams',
-          description: 'Include geometric diagrams'
-        },
-        diagramSize: {
-          type: 'select',
-          label: 'Diagram Size',
-          description: 'Size of the geometric diagrams',
-          options: [
-            { value: 'small', label: 'Small' },
-            { value: 'medium', label: 'Medium' },
-            { value: 'large', label: 'Large' }
-          ]
-        },
-        diagramTheme: {
-          type: 'select',
-          label: 'Diagram Theme',
-          description: 'Visual style for diagrams',
-          options: [
-            { value: 'educational', label: 'Educational' },
-            { value: 'blueprint', label: 'Blueprint' },
-            { value: 'minimal', label: 'Minimal' },
-            { value: 'colorful', label: 'Colorful' }
-          ]
-        }
-      }
+        
+        // Preset configurations for quick setup
+        presets: [
+          schemaV2.createPreset({
+            id: 'basic-angle-types',
+            label: 'Basic Angle Types',
+            description: 'Fundamental angle identification and classification',
+            icon: 'looks_one',
+            category: 'difficulty',
+            values: {
+              problemCount: 10,
+              includeAngleIdentification: true,
+              includeAngleMeasurement: false,
+              includeAngleClassification: true,
+              includeComplementaryAngles: false,
+              includeSupplementaryAngles: false,
+              includeVerticalAngles: false,
+              includeAngleAddition: false,
+              includeAnglesInShapes: false,
+              minAngle: 10,
+              maxAngle: 170,
+              allowReflex: false,
+              showMeasurements: false,
+              showVisualDiagrams: true,
+              diagramSize: 'medium',
+              diagramTheme: 'educational'
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'angle-measurement',
+            label: 'Angle Measurement',
+            description: 'Practice measuring angles with protractors',
+            icon: 'straighten',
+            category: 'scope',
+            values: {
+              problemCount: 12,
+              includeAngleIdentification: false,
+              includeAngleMeasurement: true,
+              includeAngleClassification: true,
+              includeComplementaryAngles: false,
+              includeSupplementaryAngles: false,
+              includeVerticalAngles: false,
+              includeAngleAddition: false,
+              includeAnglesInShapes: false,
+              minAngle: 15,
+              maxAngle: 165,
+              allowReflex: false,
+              showMeasurements: false,
+              showVisualDiagrams: true,
+              diagramSize: 'large',
+              diagramTheme: 'educational'
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'angle-relationships',
+            label: 'Angle Relationships',
+            description: 'Complementary, supplementary, and vertical angles',
+            icon: 'share',
+            category: 'scope',
+            values: {
+              problemCount: 10,
+              includeAngleIdentification: false,
+              includeAngleMeasurement: false,
+              includeAngleClassification: false,
+              includeComplementaryAngles: true,
+              includeSupplementaryAngles: true,
+              includeVerticalAngles: true,
+              includeAngleAddition: true,
+              includeAnglesInShapes: false,
+              minAngle: 20,
+              maxAngle: 160,
+              allowReflex: false,
+              showMeasurements: true,
+              showVisualDiagrams: true,
+              diagramSize: 'medium',
+              diagramTheme: 'educational'
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'angles-in-shapes',
+            label: 'Angles in Shapes',
+            description: 'Finding angles in triangles and polygons',
+            icon: 'change_history',
+            category: 'scope',
+            values: {
+              problemCount: 8,
+              includeAngleIdentification: false,
+              includeAngleMeasurement: false,
+              includeAngleClassification: false,
+              includeComplementaryAngles: false,
+              includeSupplementaryAngles: false,
+              includeVerticalAngles: false,
+              includeAngleAddition: false,
+              includeAnglesInShapes: true,
+              minAngle: 30,
+              maxAngle: 120,
+              allowReflex: false,
+              showMeasurements: true,
+              showVisualDiagrams: true,
+              diagramSize: 'medium',
+              diagramTheme: 'educational'
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'advanced-angles',
+            label: 'Advanced Angles',
+            description: 'Complex problems with reflex angles and relationships',
+            icon: 'trending_up',
+            category: 'difficulty',
+            values: {
+              problemCount: 12,
+              includeAngleIdentification: true,
+              includeAngleMeasurement: true,
+              includeAngleClassification: true,
+              includeComplementaryAngles: true,
+              includeSupplementaryAngles: true,
+              includeVerticalAngles: true,
+              includeAngleAddition: true,
+              includeAnglesInShapes: false,
+              minAngle: 5,
+              maxAngle: 270,
+              allowReflex: true,
+              showMeasurements: false,
+              showVisualDiagrams: true,
+              diagramSize: 'medium',
+              diagramTheme: 'educational'
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'comprehensive-angles',
+            label: 'Comprehensive Angles',
+            description: 'Complete practice with all angle concepts',
+            icon: 'all_inclusive',
+            category: 'scope',
+            values: {
+              problemCount: 15,
+              includeAngleIdentification: true,
+              includeAngleMeasurement: true,
+              includeAngleClassification: true,
+              includeComplementaryAngles: true,
+              includeSupplementaryAngles: true,
+              includeVerticalAngles: true,
+              includeAngleAddition: true,
+              includeAnglesInShapes: true,
+              minAngle: 10,
+              maxAngle: 170,
+              allowReflex: false,
+              showMeasurements: true,
+              showVisualDiagrams: true,
+              diagramSize: 'medium',
+              diagramTheme: 'educational'
+            }
+          })
+        ]
+      })
     })
   }
 
@@ -168,10 +415,25 @@ export class AnglesGenerator extends BaseGenerator {
   generateProblem(parameters = {}) {
     const params = { ...this.defaultParameters, ...parameters }
     
-    // Validate parameters
-    const validation = this.validateParameters(params)
+    // Validate parameters using Parameter Schema V2
+    const validation = this.parameterSchema.validate(params)
     if (!validation.isValid) {
       throw new Error(`Invalid parameters: ${validation.errors.join(', ')}`)
+    }
+    
+    // Additional custom validation
+    const customErrors = []
+    if (!params.includeAngleIdentification && !params.includeAngleMeasurement && 
+        !params.includeAngleClassification && !params.includeComplementaryAngles &&
+        !params.includeSupplementaryAngles && !params.includeVerticalAngles &&
+        !params.includeAngleAddition && !params.includeAnglesInShapes) {
+      customErrors.push('At least one problem type must be enabled')
+    }
+    if (params.minAngle > params.maxAngle) {
+      customErrors.push('Minimum Angle cannot be greater than Maximum Angle')
+    }
+    if (customErrors.length > 0) {
+      throw new Error(`Invalid parameters: ${customErrors.join(', ')}`)
     }
     
     // Build array of enabled problem types
@@ -560,17 +822,25 @@ export class AnglesGenerator extends BaseGenerator {
     
     const size = sizes[params.diagramSize] || sizes.medium
     
+    // Show two angles that form a right angle (90°)
     return {
       type: 'geometry-renderer',
-      shape: 'complementary-angles',
-      measurements: { angle1, angle2 },
+      shape: 'right-angle-pair',
+      measurements: { 
+        angle1, 
+        angle2,
+        totalAngle: 90
+      },
       config: {
         width: size.width,
         height: size.height,
         theme: params.diagramTheme,
         showMeasurements: params.showMeasurements,
-        showAngleMarks: params.showAngleMarks,
-        center: true
+        showAngleMarks: true,
+        center: true,
+        showRightAngleSymbol: true,
+        labelKnownAngle: true,
+        knownAngle: angle1
       },
       svgId: `complementary-${angle1}-${angle2}-${Date.now()}`
     }
@@ -585,17 +855,25 @@ export class AnglesGenerator extends BaseGenerator {
     
     const size = sizes[params.diagramSize] || sizes.medium
     
+    // Show two angles that form a straight line (180°)
     return {
       type: 'geometry-renderer',
-      shape: 'supplementary-angles',
-      measurements: { angle1, angle2 },
+      shape: 'straight-line-pair',
+      measurements: { 
+        angle1, 
+        angle2,
+        totalAngle: 180
+      },
       config: {
         width: size.width,
         height: size.height,
         theme: params.diagramTheme,
         showMeasurements: params.showMeasurements,
-        showAngleMarks: params.showAngleMarks,
-        center: true
+        showAngleMarks: true,
+        center: true,
+        showStraightLine: true,
+        labelKnownAngle: true,
+        knownAngle: angle1
       },
       svgId: `supplementary-${angle1}-${angle2}-${Date.now()}`
     }
@@ -610,17 +888,25 @@ export class AnglesGenerator extends BaseGenerator {
     
     const size = sizes[params.diagramSize] || sizes.medium
     
+    // Show a triangle with two known angles labeled, third angle unlabeled
     return {
       type: 'geometry-renderer',
-      shape: 'triangle-angles',
-      measurements: { angles },
+      shape: 'triangle',
+      measurements: { 
+        angle1: angles[0],
+        angle2: angles[1], 
+        angle3: angles[2]
+      },
       config: {
         width: size.width,
         height: size.height,
         theme: params.diagramTheme,
         showMeasurements: params.showMeasurements,
-        showAngleMarks: params.showAngleMarks,
-        center: true
+        showAngleMarks: true,
+        center: true,
+        labelKnownAngles: true,
+        knownAngles: [angles[0], angles[1]], // Show first two angles, hide third
+        hideUnknownAngle: true
       },
       svgId: `triangle-angles-${angles.join('-')}-${Date.now()}`
     }
@@ -635,17 +921,26 @@ export class AnglesGenerator extends BaseGenerator {
     
     const size = sizes[params.diagramSize] || sizes.medium
     
+    // Show two intersecting lines with vertical angles highlighted
     return {
       type: 'geometry-renderer',
-      shape: 'vertical-angles',
-      measurements: { angle1, angle2, angle3, angle4 },
+      shape: 'crossed-lines',
+      measurements: { 
+        angle1, 
+        angle2: angle1, // vertical angles are equal
+        angle3, 
+        angle4: angle3  // vertical angles are equal
+      },
       config: {
         width: size.width,
         height: size.height,
         theme: params.diagramTheme,
         showMeasurements: params.showMeasurements,
-        showAngleMarks: params.showAngleMarks,
-        center: true
+        showAngleMarks: true,
+        center: true,
+        highlightVerticalPairs: true,
+        labelKnownAngle: true,
+        knownAngle: angle1
       },
       svgId: `vertical-angles-${angle1}-${angle3}-${Date.now()}`
     }
@@ -660,17 +955,25 @@ export class AnglesGenerator extends BaseGenerator {
     
     const size = sizes[params.diagramSize] || sizes.medium
     
+    // Show two adjacent angles that combine to form a larger angle
     return {
       type: 'geometry-renderer',
-      shape: 'angle-addition',
-      measurements: { angle1, angle2, totalAngle },
+      shape: 'adjacent-angles',
+      measurements: { 
+        angle1, 
+        angle2, 
+        totalAngle
+      },
       config: {
         width: size.width,
         height: size.height,
         theme: params.diagramTheme,
         showMeasurements: params.showMeasurements,
-        showAngleMarks: params.showAngleMarks,
-        center: true
+        showAngleMarks: true,
+        center: true,
+        showSharedRay: true,
+        labelBothAngles: true,
+        showTotalAngle: false // Don't show answer
       },
       svgId: `angle-addition-${angle1}-${angle2}-${Date.now()}`
     }

@@ -1,4 +1,5 @@
 import { BaseGenerator } from '../BaseGenerator.js'
+import { ParameterSchemaV2 } from '../ParameterSchemaV2.js'
 
 /**
  * Profit/Loss Generator
@@ -6,6 +7,8 @@ import { BaseGenerator } from '../BaseGenerator.js'
  */
 export class ProfitLossGenerator extends BaseGenerator {
   constructor() {
+    const schemaV2 = new ParameterSchemaV2()
+    
     super({
       name: 'Profit/Loss',
       description: 'Generate problems involving profit, loss, cost price, and selling price calculations',
@@ -42,123 +45,422 @@ export class ProfitLossGenerator extends BaseGenerator {
         includeBreakEven: false
       },
       
-      parameterSchema: {
-        problemCount: {
-          type: 'number',
-          label: 'Number of Problems',
-          description: 'How many profit/loss problems to generate',
-          min: 1,
-          max: 100,
-          required: true
+      // Enhanced Parameter Schema V2 with beautiful categorization
+      parameterSchema: schemaV2.createSchema({
+        categories: {
+          general: schemaV2.createCategory({
+            id: 'general',
+            label: 'General Settings',
+            description: 'Basic configuration options',
+            icon: 'settings',
+            color: 'blue',
+            order: 1,
+            parameters: {
+              problemCount: schemaV2.createParameter({
+                type: 'number',
+                label: 'Number of Problems',
+                description: 'How many profit/loss problems to generate',
+                min: 1,
+                max: 50,
+                required: true,
+                slider: true,
+                presets: [5, 8, 10, 15],
+                order: 1
+              })
+            }
+          }),
+          
+          problemTypes: schemaV2.createCategory({
+            id: 'problemTypes',
+            label: 'Problem Types',
+            description: 'Choose which profit/loss calculations to include',
+            icon: 'trending_up',
+            color: 'green',
+            order: 2,
+            parameters: {
+              includeFindProfit: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Find Profit Amount',
+                description: 'Calculate profit from cost and selling price',
+                helpText: 'Examples: Cost $80, Sell $100 → Profit $20',
+                order: 1
+              }),
+              includeFindLoss: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Find Loss Amount',
+                description: 'Calculate loss from cost and selling price',
+                helpText: 'Examples: Cost $100, Sell $80 → Loss $20',
+                order: 2
+              }),
+              includeFindProfitPercent: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Find Profit Percentage',
+                description: 'Calculate profit as percentage of cost price',
+                helpText: 'Examples: Profit $20 on cost $80 → 25% profit',
+                order: 3
+              }),
+              includeFindLossPercent: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Find Loss Percentage',
+                description: 'Calculate loss as percentage of cost price',
+                helpText: 'Examples: Loss $20 on cost $100 → 20% loss',
+                order: 4
+              }),
+              includeFindCostPrice: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Find Cost Price',
+                description: 'Find original cost given selling price and profit/loss%',
+                helpText: 'Examples: Sold for $120 at 20% profit → Cost $100',
+                order: 5
+              }),
+              includeFindSellingPrice: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Find Selling Price',
+                description: 'Find selling price given cost and profit/loss%',
+                helpText: 'Examples: Cost $100, 20% profit → Sell for $120',
+                order: 6
+              }),
+              includeBreakEven: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Include Break-Even',
+                description: 'Include scenarios with no profit or loss',
+                helpText: 'Examples: Sell at cost price to break even',
+                order: 7
+              })
+            }
+          }),
+          
+          priceRanges: schemaV2.createCategory({
+            id: 'priceRanges',
+            label: 'Price Ranges',
+            description: 'Control the range of cost prices used',
+            icon: 'attach_money',
+            color: 'purple',
+            order: 3,
+            parameters: {
+              costPriceMin: schemaV2.createParameter({
+                type: 'number',
+                label: 'Minimum Cost Price',
+                description: 'Lowest cost price in dollars',
+                min: 1,
+                max: 10000,
+                required: true,
+                slider: true,
+                presets: [10, 25, 50, 100],
+                helpText: 'Lower bound for item cost prices',
+                order: 1
+              }),
+              costPriceMax: schemaV2.createParameter({
+                type: 'number',
+                label: 'Maximum Cost Price',
+                description: 'Highest cost price in dollars',
+                min: 1,
+                max: 100000,
+                required: true,
+                slider: true,
+                presets: [200, 500, 1000, 2000],
+                helpText: 'Upper bound for item cost prices',
+                order: 2
+              }),
+              allowDecimals: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Allow Decimal Values',
+                description: 'Allow decimal amounts in prices and calculations',
+                helpText: 'Examples: $123.45, 12.5% vs $123, 12%',
+                order: 3
+              })
+            }
+          }),
+          
+          profitRanges: schemaV2.createCategory({
+            id: 'profitRanges',
+            label: 'Profit Ranges',
+            description: 'Control profit percentage ranges',
+            icon: 'trending_up',
+            color: 'orange',
+            order: 4,
+            parameters: {
+              profitPercentMin: schemaV2.createParameter({
+                type: 'number',
+                label: 'Minimum Profit Percentage',
+                description: 'Smallest profit percentage to use',
+                min: 1,
+                max: 200,
+                required: true,
+                slider: true,
+                presets: [5, 10, 15, 20],
+                helpText: 'Lower bound for profit percentages',
+                order: 1
+              }),
+              profitPercentMax: schemaV2.createParameter({
+                type: 'number',
+                label: 'Maximum Profit Percentage',
+                description: 'Largest profit percentage to use',
+                min: 1,
+                max: 500,
+                required: true,
+                slider: true,
+                presets: [30, 50, 75, 100],
+                helpText: 'Upper bound for profit percentages',
+                order: 2
+              })
+            }
+          }),
+          
+          lossRanges: schemaV2.createCategory({
+            id: 'lossRanges',
+            label: 'Loss Ranges',
+            description: 'Control loss percentage ranges',
+            icon: 'trending_down',
+            color: 'red',
+            order: 5,
+            parameters: {
+              lossPercentMin: schemaV2.createParameter({
+                type: 'number',
+                label: 'Minimum Loss Percentage',
+                description: 'Smallest loss percentage to use',
+                min: 1,
+                max: 100,
+                required: true,
+                slider: true,
+                presets: [5, 10, 15, 20],
+                helpText: 'Lower bound for loss percentages',
+                order: 1
+              }),
+              lossPercentMax: schemaV2.createParameter({
+                type: 'number',
+                label: 'Maximum Loss Percentage',
+                description: 'Largest loss percentage to use',
+                min: 1,
+                max: 100,
+                required: true,
+                slider: true,
+                presets: [25, 35, 50, 75],
+                helpText: 'Upper bound for loss percentages',
+                order: 2
+              })
+            }
+          }),
+          
+          problemStyle: schemaV2.createCategory({
+            id: 'problemStyle',
+            label: 'Problem Style',
+            description: 'Control how problems are presented',
+            icon: 'style',
+            color: 'teal',
+            order: 6,
+            parameters: {
+              includeWordProblems: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Include Word Problems',
+                description: 'Include real-world business scenarios with context',
+                helpText: 'Examples: store owner, investor, retailer scenarios',
+                order: 1
+              }),
+              showSteps: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Show Calculation Steps',
+                description: 'Display step-by-step profit/loss calculations',
+                helpText: 'Shows formulas and intermediate calculation steps',
+                order: 2
+              })
+            }
+          })
         },
-        includeFindProfit: {
-          type: 'boolean',
-          label: 'Find Profit Amount',
-          description: 'Include problems finding profit amount'
-        },
-        includeFindLoss: {
-          type: 'boolean',
-          label: 'Find Loss Amount',
-          description: 'Include problems finding loss amount'
-        },
-        includeFindProfitPercent: {
-          type: 'boolean',
-          label: 'Find Profit Percentage',
-          description: 'Include problems finding profit percentage'
-        },
-        includeFindLossPercent: {
-          type: 'boolean',
-          label: 'Find Loss Percentage',
-          description: 'Include problems finding loss percentage'
-        },
-        includeFindCostPrice: {
-          type: 'boolean',
-          label: 'Find Cost Price',
-          description: 'Include problems finding cost price'
-        },
-        includeFindSellingPrice: {
-          type: 'boolean',
-          label: 'Find Selling Price',
-          description: 'Include problems finding selling price'
-        },
-        includeWordProblems: {
-          type: 'boolean',
-          label: 'Include Word Problems',
-          description: 'Include real-world business scenarios'
-        },
-        costPriceMin: {
-          type: 'number',
-          label: 'Minimum Cost Price',
-          description: 'Lowest cost price (in dollars)',
-          min: 1,
-          max: 10000,
-          required: true
-        },
-        costPriceMax: {
-          type: 'number',
-          label: 'Maximum Cost Price',
-          description: 'Highest cost price (in dollars)',
-          min: 1,
-          max: 100000,
-          required: true
-        },
-        profitPercentMin: {
-          type: 'number',
-          label: 'Minimum Profit Percentage',
-          description: 'Smallest profit percentage',
-          min: 1,
-          max: 200,
-          required: true
-        },
-        profitPercentMax: {
-          type: 'number',
-          label: 'Maximum Profit Percentage',
-          description: 'Largest profit percentage',
-          min: 1,
-          max: 500,
-          required: true
-        },
-        lossPercentMin: {
-          type: 'number',
-          label: 'Minimum Loss Percentage',
-          description: 'Smallest loss percentage',
-          min: 1,
-          max: 100,
-          required: true
-        },
-        lossPercentMax: {
-          type: 'number',
-          label: 'Maximum Loss Percentage',
-          description: 'Largest loss percentage',
-          min: 1,
-          max: 100,
-          required: true
-        },
-        allowDecimals: {
-          type: 'boolean',
-          label: 'Allow Decimals',
-          description: 'Allow decimal values in calculations'
-        },
-        showSteps: {
-          type: 'boolean',
-          label: 'Show Calculation Steps',
-          description: 'Show step-by-step calculations'
-        },
-        includeBreakEven: {
-          type: 'boolean',
-          label: 'Include Break-Even',
-          description: 'Include break-even scenarios (no profit/loss)'
-        }
-      }
+        
+        // Preset configurations for quick setup
+        presets: [
+          schemaV2.createPreset({
+            id: 'basic-profit-loss',
+            label: 'Basic Profit & Loss',
+            description: 'Simple profit and loss amount calculations',
+            icon: 'looks_one',
+            category: 'difficulty',
+            values: {
+              problemCount: 10,
+              includeFindProfit: true,
+              includeFindLoss: true,
+              includeFindProfitPercent: false,
+              includeFindLossPercent: false,
+              includeFindCostPrice: false,
+              includeFindSellingPrice: false,
+              includeWordProblems: true,
+              costPriceMin: 25,
+              costPriceMax: 200,
+              profitPercentMin: 10,
+              profitPercentMax: 40,
+              lossPercentMin: 10,
+              lossPercentMax: 25,
+              allowDecimals: false,
+              showSteps: true,
+              includeBreakEven: false
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'percentage-calculations',
+            label: 'Percentage Calculations',
+            description: 'Focus on profit and loss percentage problems',
+            icon: 'percent',
+            category: 'scope',
+            values: {
+              problemCount: 12,
+              includeFindProfit: false,
+              includeFindLoss: false,
+              includeFindProfitPercent: true,
+              includeFindLossPercent: true,
+              includeFindCostPrice: false,
+              includeFindSellingPrice: false,
+              includeWordProblems: true,
+              costPriceMin: 50,
+              costPriceMax: 500,
+              profitPercentMin: 5,
+              profitPercentMax: 50,
+              lossPercentMin: 5,
+              lossPercentMax: 30,
+              allowDecimals: true,
+              showSteps: true,
+              includeBreakEven: false
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'reverse-calculations',
+            label: 'Reverse Calculations',
+            description: 'Find cost or selling price from given information',
+            icon: 'swap_horiz',
+            category: 'difficulty',
+            values: {
+              problemCount: 8,
+              includeFindProfit: false,
+              includeFindLoss: false,
+              includeFindProfitPercent: false,
+              includeFindLossPercent: false,
+              includeFindCostPrice: true,
+              includeFindSellingPrice: true,
+              includeWordProblems: true,
+              costPriceMin: 100,
+              costPriceMax: 800,
+              profitPercentMin: 15,
+              profitPercentMax: 60,
+              lossPercentMin: 10,
+              lossPercentMax: 40,
+              allowDecimals: true,
+              showSteps: true,
+              includeBreakEven: true
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'business-scenarios',
+            label: 'Business Scenarios',
+            description: 'Real-world business profit and loss problems',
+            icon: 'business',
+            category: 'scope',
+            values: {
+              problemCount: 12,
+              includeFindProfit: true,
+              includeFindLoss: true,
+              includeFindProfitPercent: true,
+              includeFindLossPercent: true,
+              includeFindCostPrice: false,
+              includeFindSellingPrice: false,
+              includeWordProblems: true,
+              costPriceMin: 20,
+              costPriceMax: 300,
+              profitPercentMin: 8,
+              profitPercentMax: 45,
+              lossPercentMin: 8,
+              lossPercentMax: 35,
+              allowDecimals: true,
+              showSteps: false,
+              includeBreakEven: false
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'advanced-commerce',
+            label: 'Advanced Commerce',
+            description: 'Complex profit/loss problems with higher values',
+            icon: 'trending_up',
+            category: 'difficulty',
+            values: {
+              problemCount: 10,
+              includeFindProfit: true,
+              includeFindLoss: true,
+              includeFindProfitPercent: true,
+              includeFindLossPercent: true,
+              includeFindCostPrice: true,
+              includeFindSellingPrice: true,
+              includeWordProblems: true,
+              costPriceMin: 200,
+              costPriceMax: 2000,
+              profitPercentMin: 5,
+              profitPercentMax: 100,
+              lossPercentMin: 5,
+              lossPercentMax: 50,
+              allowDecimals: true,
+              showSteps: true,
+              includeBreakEven: true
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'comprehensive-profit-loss',
+            label: 'Comprehensive Profit/Loss',
+            description: 'Complete practice with all profit/loss concepts',
+            icon: 'all_inclusive',
+            category: 'scope',
+            values: {
+              problemCount: 15,
+              includeFindProfit: true,
+              includeFindLoss: true,
+              includeFindProfitPercent: true,
+              includeFindLossPercent: true,
+              includeFindCostPrice: true,
+              includeFindSellingPrice: true,
+              includeWordProblems: true,
+              costPriceMin: 10,
+              costPriceMax: 1000,
+              profitPercentMin: 5,
+              profitPercentMax: 75,
+              lossPercentMin: 5,
+              lossPercentMax: 40,
+              allowDecimals: true,
+              showSteps: true,
+              includeBreakEven: true
+            }
+          })
+        ]
+      })
     })
   }
 
   generateProblem(parameters = {}) {
     const params = { ...this.defaultParameters, ...parameters }
     
-    const validation = this.validateParameters(params)
+    // Validate parameters using Parameter Schema V2
+    const validation = this.parameterSchema.validate(params)
     if (!validation.isValid) {
       throw new Error(`Invalid parameters: ${validation.errors.join(', ')}`)
+    }
+    
+    // Additional custom validation
+    const customErrors = []
+    if (!params.includeFindProfit && !params.includeFindLoss && !params.includeFindProfitPercent && !params.includeFindLossPercent && !params.includeFindCostPrice && !params.includeFindSellingPrice && !params.includeBreakEven) {
+      customErrors.push('At least one problem type must be enabled')
+    }
+    if (params.costPriceMin > params.costPriceMax) {
+      customErrors.push('Minimum Cost Price cannot be greater than Maximum Cost Price')
+    }
+    if (params.profitPercentMin > params.profitPercentMax) {
+      customErrors.push('Minimum Profit Percentage cannot be greater than Maximum Profit Percentage')
+    }
+    if (params.lossPercentMin > params.lossPercentMax) {
+      customErrors.push('Minimum Loss Percentage cannot be greater than Maximum Loss Percentage')
+    }
+    if (customErrors.length > 0) {
+      throw new Error(`Invalid parameters: ${customErrors.join(', ')}`)
     }
     
     // Build array of enabled problem types

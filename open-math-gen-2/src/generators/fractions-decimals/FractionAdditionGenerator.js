@@ -1,4 +1,5 @@
 import { BaseGenerator } from '../BaseGenerator.js'
+import { ParameterSchemaV2 } from '../ParameterSchemaV2.js'
 
 /**
  * Fraction Addition Generator
@@ -6,6 +7,8 @@ import { BaseGenerator } from '../BaseGenerator.js'
  */
 export class FractionAdditionGenerator extends BaseGenerator {
   constructor() {
+    const schemaV2 = new ParameterSchemaV2()
+    
     super({
       name: 'Fraction Addition',
       description: 'Generate fraction addition problems with common and uncommon denominators',
@@ -22,56 +25,196 @@ export class FractionAdditionGenerator extends BaseGenerator {
         commonDenominators: false
       },
       
-      parameterSchema: {
-        problemCount: {
-          type: 'number',
-          label: 'Number of Problems',
-          description: 'How many fraction addition problems to generate',
-          min: 1,
-          max: 100,
-          required: true
+      // Enhanced Parameter Schema V2 with beautiful categorization
+      parameterSchema: schemaV2.createSchema({
+        categories: {
+          general: schemaV2.createCategory({
+            id: 'general',
+            label: 'General Settings',
+            description: 'Basic configuration options',
+            icon: 'settings',
+            color: 'blue',
+            order: 1,
+            parameters: {
+              problemCount: schemaV2.createParameter({
+                type: 'number',
+                label: 'Number of Problems',
+                description: 'How many fraction addition problems to generate',
+                min: 1,
+                max: 50,
+                required: true,
+                slider: true,
+                presets: [5, 8, 10, 15],
+                order: 1
+              })
+            }
+          }),
+          
+          fractionProperties: schemaV2.createCategory({
+            id: 'fractionProperties',
+            label: 'Fraction Properties',
+            description: 'Control the types and complexity of fractions',
+            icon: 'pie_chart',
+            color: 'green',
+            order: 2,
+            parameters: {
+              allowMixedNumbers: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Allow Mixed Numbers',
+                description: 'Include mixed number fractions in problems',
+                helpText: 'Examples: 1 1/2, 2 3/4, 3 2/5',
+                order: 1
+              }),
+              commonDenominators: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Common Denominators Only',
+                description: 'Only generate problems with same denominators',
+                helpText: 'Easier problems like 1/4 + 2/4 instead of 1/3 + 1/4',
+                order: 2
+              })
+            }
+          }),
+          
+          numberRanges: schemaV2.createCategory({
+            id: 'numberRanges',
+            label: 'Number Ranges',
+            description: 'Control the size of numerators and denominators',
+            icon: 'tag',
+            color: 'purple',
+            order: 3,
+            parameters: {
+              maxNumerator: schemaV2.createParameter({
+                type: 'number',
+                label: 'Maximum Numerator',
+                description: 'Largest numerator to use in fractions',
+                min: 1,
+                max: 25,
+                required: true,
+                slider: true,
+                presets: [8, 12, 15, 20],
+                helpText: 'Top number in fractions',
+                order: 1
+              }),
+              maxDenominator: schemaV2.createParameter({
+                type: 'number',
+                label: 'Maximum Denominator',
+                description: 'Largest denominator to use in fractions',
+                min: 2,
+                max: 25,
+                required: true,
+                slider: true,
+                presets: [8, 10, 12, 16],
+                helpText: 'Bottom number in fractions',
+                order: 2
+              })
+            }
+          }),
+          
+          displayOptions: schemaV2.createCategory({
+            id: 'displayOptions',
+            label: 'Display Options',
+            description: 'Control how answers are formatted',
+            icon: 'visibility',
+            color: 'orange',
+            order: 4,
+            parameters: {
+              requireSimplification: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Require Simplification',
+                description: 'Answers must be in simplest form',
+                helpText: 'Convert answers like 6/8 to 3/4',
+                order: 1
+              })
+            }
+          })
         },
-        maxNumerator: {
-          type: 'number',
-          label: 'Maximum Numerator',
-          description: 'Largest numerator to use',
-          min: 1,
-          max: 50,
-          required: true
-        },
-        maxDenominator: {
-          type: 'number',
-          label: 'Maximum Denominator',
-          description: 'Largest denominator to use',
-          min: 2,
-          max: 50,
-          required: true
-        },
-        allowMixedNumbers: {
-          type: 'boolean',
-          label: 'Allow Mixed Numbers',
-          description: 'Include mixed number fractions'
-        },
-        requireSimplification: {
-          type: 'boolean',
-          label: 'Require Simplification',
-          description: 'Answers must be in simplest form'
-        },
-        commonDenominators: {
-          type: 'boolean',
-          label: 'Common Denominators Only',
-          description: 'Only generate problems with same denominators'
-        }
-      }
+        
+        // Preset configurations for quick setup
+        presets: [
+          schemaV2.createPreset({
+            id: 'like-denominators',
+            label: 'Like Denominators',
+            description: 'Simple addition with same denominators',
+            icon: 'looks_one',
+            category: 'difficulty',
+            values: {
+              problemCount: 10,
+              maxNumerator: 8,
+              maxDenominator: 10,
+              allowMixedNumbers: false,
+              requireSimplification: true,
+              commonDenominators: true
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'unlike-denominators',
+            label: 'Unlike Denominators',
+            description: 'Addition requiring common denominators',
+            icon: 'add_circle',
+            category: 'difficulty',
+            values: {
+              problemCount: 12,
+              maxNumerator: 12,
+              maxDenominator: 12,
+              allowMixedNumbers: false,
+              requireSimplification: true,
+              commonDenominators: false
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'mixed-numbers-practice',
+            label: 'Mixed Numbers Practice',
+            description: 'Addition with mixed numbers included',
+            icon: 'layers',
+            category: 'scope',
+            values: {
+              problemCount: 10,
+              maxNumerator: 10,
+              maxDenominator: 8,
+              allowMixedNumbers: true,
+              requireSimplification: true,
+              commonDenominators: false
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'comprehensive-addition',
+            label: 'Comprehensive Addition',
+            description: 'Mixed practice with all fraction addition types',
+            icon: 'all_inclusive',
+            category: 'scope',
+            values: {
+              problemCount: 15,
+              maxNumerator: 15,
+              maxDenominator: 12,
+              allowMixedNumbers: true,
+              requireSimplification: true,
+              commonDenominators: false
+            }
+          })
+        ]
+      })
     })
   }
 
   generateProblem(parameters = {}) {
     const params = { ...this.defaultParameters, ...parameters }
     
-    const validation = this.validateParameters(params)
+    // Validate parameters using Parameter Schema V2
+    const validation = this.parameterSchema.validate(params)
     if (!validation.isValid) {
       throw new Error(`Invalid parameters: ${validation.errors.join(', ')}`)
+    }
+    
+    // Additional custom validation
+    const customErrors = []
+    if (params.maxNumerator > params.maxDenominator && !params.allowMixedNumbers) {
+      customErrors.push('Maximum Numerator should not exceed Maximum Denominator when mixed numbers are not allowed')
+    }
+    if (customErrors.length > 0) {
+      throw new Error(`Invalid parameters: ${customErrors.join(', ')}`)
     }
     
     // Generate two fractions

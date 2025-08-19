@@ -1,4 +1,5 @@
 import { BaseGenerator } from '../BaseGenerator.js'
+import { ParameterSchemaV2 } from '../ParameterSchemaV2.js'
 
 /**
  * Volume/Capacity Generator
@@ -6,6 +7,8 @@ import { BaseGenerator } from '../BaseGenerator.js'
  */
 export class VolumeCapacityGenerator extends BaseGenerator {
   constructor() {
+    const schemaV2 = new ParameterSchemaV2()
+    
     super({
       name: 'Volume/Capacity',
       description: 'Generate problems involving volume and capacity measurements, conversions, and calculations',
@@ -35,73 +38,278 @@ export class VolumeCapacityGenerator extends BaseGenerator {
         maxValue: 100
       },
       
-      parameterSchema: {
-        problemCount: {
-          type: 'number',
-          label: 'Number of Problems',
-          description: 'How many volume/capacity problems to generate',
-          min: 1,
-          max: 100,
-          required: true
+      // Enhanced Parameter Schema V2 with beautiful categorization
+      parameterSchema: schemaV2.createSchema({
+        categories: {
+          general: schemaV2.createCategory({
+            id: 'general',
+            label: 'General Settings',
+            description: 'Basic configuration options',
+            icon: 'settings',
+            color: 'blue',
+            order: 1,
+            parameters: {
+              problemCount: schemaV2.createParameter({
+                type: 'number',
+                label: 'Number of Problems',
+                description: 'How many volume/capacity problems to generate',
+                min: 1,
+                max: 50,
+                required: true,
+                slider: true,
+                presets: [5, 8, 10, 15],
+                order: 1
+              })
+            }
+          }),
+          
+          problemTypes: schemaV2.createCategory({
+            id: 'problemTypes',
+            label: 'Problem Types',
+            description: 'Choose which types of volume/capacity problems to include',
+            icon: 'local_drink',
+            color: 'green',
+            order: 2,
+            parameters: {
+              includeBasicMeasurement: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Basic Measurement',
+                description: 'Problems about measuring and identifying volumes',
+                helpText: 'Examples: "How much does this container hold?", "What is the capacity?"',
+                order: 1
+              }),
+              includeConversion: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Unit Conversions',
+                description: 'Convert between different volume/capacity units',
+                helpText: 'Examples: Convert 2 liters to milliliters, 3 cups to fluid ounces',
+                order: 2
+              }),
+              includeArithmetic: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Volume Arithmetic',
+                description: 'Add and subtract volume measurements',
+                helpText: 'Examples: 2 L + 500 mL = ?, 3 cups - 1 cup = ?',
+                order: 3
+              }),
+              includeComparison: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Volume Comparisons',
+                description: 'Compare different volumes using <, >, =',
+                helpText: 'Examples: 1 L ___ 1000 mL, 2 cups ___ 1 pint',
+                order: 4
+              }),
+              includeWordProblems: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Word Problems',
+                description: 'Real-world volume/capacity scenarios',
+                helpText: 'Examples: recipe ingredients, container capacity, liquid measurements',
+                order: 5
+              })
+            }
+          }),
+          
+          unitSystems: schemaV2.createCategory({
+            id: 'unitSystems',
+            label: 'Unit Systems',
+            description: 'Choose which measurement systems to use',
+            icon: 'public',
+            color: 'purple',
+            order: 3,
+            parameters: {
+              useMetricUnits: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Metric Units',
+                description: 'Include metric volume/capacity units',
+                helpText: 'Units: milliliters (mL), liters (L), cubic meters (m³)',
+                order: 1
+              }),
+              useImperialUnits: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Imperial Units',
+                description: 'Include imperial/US customary volume units',
+                helpText: 'Units: fluid ounces (fl oz), cups, pints (pt), quarts (qt), gallons (gal)',
+                order: 2
+              })
+            }
+          }),
+          
+          numberProperties: schemaV2.createCategory({
+            id: 'numberProperties',
+            label: 'Number Properties',
+            description: 'Control the complexity of numbers used',
+            icon: 'tag',
+            color: 'orange',
+            order: 4,
+            parameters: {
+              maxValue: schemaV2.createParameter({
+                type: 'number',
+                label: 'Maximum Value',
+                description: 'Largest volume value to use in problems',
+                min: 10,
+                max: 500,
+                required: true,
+                slider: true,
+                presets: [50, 100, 200, 500],
+                helpText: 'Controls the size of numbers in volume measurements',
+                order: 1
+              }),
+              allowDecimals: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Allow Decimals',
+                description: 'Allow decimal values in volume measurements',
+                helpText: 'Examples: 2.5 liters, 1.75 cups, 3.2 milliliters',
+                order: 2
+              })
+            }
+          })
         },
-        includeBasicMeasurement: {
-          type: 'boolean',
-          label: 'Include Basic Measurement',
-          description: 'Include problems asking to measure or identify volumes'
-        },
-        includeConversion: {
-          type: 'boolean',
-          label: 'Include Conversions',
-          description: 'Include unit conversion problems'
-        },
-        includeArithmetic: {
-          type: 'boolean',
-          label: 'Include Arithmetic',
-          description: 'Include addition/subtraction of volumes'
-        },
-        includeComparison: {
-          type: 'boolean',
-          label: 'Include Comparisons',
-          description: 'Include problems comparing different volumes'
-        },
-        includeWordProblems: {
-          type: 'boolean',
-          label: 'Include Word Problems',
-          description: 'Include real-world volume word problems'
-        },
-        useMetricUnits: {
-          type: 'boolean',
-          label: 'Use Metric Units',
-          description: 'Include metric units (ml, L, m³)'
-        },
-        useImperialUnits: {
-          type: 'boolean',
-          label: 'Use Imperial Units',
-          description: 'Include imperial units (fl oz, cup, pint, quart, gallon)'
-        },
-        allowDecimals: {
-          type: 'boolean',
-          label: 'Allow Decimals',
-          description: 'Allow decimal values in problems'
-        },
-        maxValue: {
-          type: 'number',
-          label: 'Maximum Value',
-          description: 'Largest volume value to use',
-          min: 1,
-          max: 1000,
-          required: true
-        }
-      }
+        
+        // Preset configurations for quick setup
+        presets: [
+          schemaV2.createPreset({
+            id: 'basic-volume',
+            label: 'Basic Volume',
+            description: 'Simple volume measurement problems for elementary students',
+            icon: 'looks_one',
+            category: 'difficulty',
+            values: {
+              problemCount: 10,
+              includeBasicMeasurement: true,
+              includeConversion: false,
+              includeArithmetic: false,
+              includeComparison: true,
+              includeWordProblems: false,
+              useMetricUnits: true,
+              useImperialUnits: true,
+              allowDecimals: false,
+              maxValue: 50
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'metric-conversions',
+            label: 'Metric Conversions',
+            description: 'Focus on metric system volume/capacity conversions',
+            icon: 'swap_horiz',
+            category: 'scope',
+            values: {
+              problemCount: 12,
+              includeBasicMeasurement: false,
+              includeConversion: true,
+              includeArithmetic: false,
+              includeComparison: false,
+              includeWordProblems: false,
+              useMetricUnits: true,
+              useImperialUnits: false,
+              allowDecimals: true,
+              maxValue: 100
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'imperial-conversions',
+            label: 'Imperial Conversions',
+            description: 'Focus on imperial system volume conversions',
+            icon: 'swap_horiz',
+            category: 'scope',
+            values: {
+              problemCount: 12,
+              includeBasicMeasurement: false,
+              includeConversion: true,
+              includeArithmetic: false,
+              includeComparison: false,
+              includeWordProblems: false,
+              useMetricUnits: false,
+              useImperialUnits: true,
+              allowDecimals: false,
+              maxValue: 100
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'volume-arithmetic',
+            label: 'Volume Arithmetic',
+            description: 'Practice adding and subtracting volumes',
+            icon: 'calculate',
+            category: 'scope',
+            values: {
+              problemCount: 10,
+              includeBasicMeasurement: false,
+              includeConversion: false,
+              includeArithmetic: true,
+              includeComparison: false,
+              includeWordProblems: false,
+              useMetricUnits: true,
+              useImperialUnits: true,
+              allowDecimals: true,
+              maxValue: 100
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'cooking-measurements',
+            label: 'Cooking Measurements',
+            description: 'Real-world cooking and recipe volume problems',
+            icon: 'restaurant',
+            category: 'scope',
+            values: {
+              problemCount: 12,
+              includeBasicMeasurement: true,
+              includeConversion: true,
+              includeArithmetic: true,
+              includeComparison: false,
+              includeWordProblems: true,
+              useMetricUnits: true,
+              useImperialUnits: true,
+              allowDecimals: true,
+              maxValue: 50
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'comprehensive-volume',
+            label: 'Comprehensive Volume',
+            description: 'Mixed practice with all volume/capacity concepts',
+            icon: 'all_inclusive',
+            category: 'scope',
+            values: {
+              problemCount: 15,
+              includeBasicMeasurement: true,
+              includeConversion: true,
+              includeArithmetic: true,
+              includeComparison: true,
+              includeWordProblems: true,
+              useMetricUnits: true,
+              useImperialUnits: true,
+              allowDecimals: true,
+              maxValue: 200
+            }
+          })
+        ]
+      })
     })
   }
 
   generateProblem(parameters = {}) {
     const params = { ...this.defaultParameters, ...parameters }
     
-    const validation = this.validateParameters(params)
+    // Validate parameters using Parameter Schema V2
+    const validation = this.parameterSchema.validate(params)
     if (!validation.isValid) {
       throw new Error(`Invalid parameters: ${validation.errors.join(', ')}`)
+    }
+    
+    // Additional custom validation
+    const customErrors = []
+    if (!params.useMetricUnits && !params.useImperialUnits) {
+      customErrors.push('At least one unit system must be enabled')
+    }
+    if (!params.includeBasicMeasurement && !params.includeConversion && !params.includeArithmetic && !params.includeComparison && !params.includeWordProblems) {
+      customErrors.push('At least one problem type must be enabled')
+    }
+    if (customErrors.length > 0) {
+      throw new Error(`Invalid parameters: ${customErrors.join(', ')}`)
     }
     
     // Build array of enabled problem types

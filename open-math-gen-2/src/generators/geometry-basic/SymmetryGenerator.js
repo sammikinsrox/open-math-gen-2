@@ -1,4 +1,5 @@
 import { BaseGenerator } from '../BaseGenerator.js'
+import { ParameterSchemaV2 } from '../ParameterSchemaV2.js'
 
 /**
  * Symmetry Generator
@@ -8,6 +9,8 @@ import { BaseGenerator } from '../BaseGenerator.js'
  */
 export class SymmetryGenerator extends BaseGenerator {
   constructor() {
+    const schemaV2 = new ParameterSchemaV2()
+    
     super({
       name: 'Symmetry',
       description: 'Line symmetry, rotational symmetry, and reflection problems with visual diagrams',
@@ -42,98 +45,304 @@ export class SymmetryGenerator extends BaseGenerator {
         symmetryComplexity: 'basic'
       },
       
-      // Parameter schema for validation and UI generation
-      parameterSchema: {
-        problemCount: {
-          type: 'number',
-          label: 'Number of Problems',
-          description: 'How many problems to generate',
-          min: 1,
-          max: 50,
-          required: true
+      // Enhanced Parameter Schema V2 with beautiful categorization
+      parameterSchema: schemaV2.createSchema({
+        categories: {
+          general: schemaV2.createCategory({
+            id: 'general',
+            label: 'General Settings',
+            description: 'Basic configuration options',
+            icon: 'settings',
+            color: 'blue',
+            order: 1,
+            parameters: {
+              problemCount: schemaV2.createParameter({
+                type: 'number',
+                label: 'Number of Problems',
+                description: 'How many symmetry problems to generate',
+                min: 1,
+                max: 50,
+                required: true,
+                slider: true,
+                presets: [5, 8, 10, 15],
+                order: 1
+              })
+            }
+          }),
+          
+          problemTypes: schemaV2.createCategory({
+            id: 'problemTypes',
+            label: 'Problem Types',
+            description: 'Choose types of symmetry problems to include',
+            icon: 'balance',
+            color: 'green',
+            order: 2,
+            parameters: {
+              includeLineSymmetry: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Line Symmetry',
+                description: 'Count lines of symmetry in shapes',
+                helpText: 'How many lines of symmetry does this shape have?',
+                order: 1
+              }),
+              includeIdentification: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Symmetry Identification',
+                description: 'Identify if shapes have symmetry',
+                helpText: 'Does this shape have line symmetry?',
+                order: 2
+              }),
+              includeReflection: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Reflection',
+                description: 'Reflection across lines',
+                helpText: 'Draw the reflection across this line',
+                order: 3
+              }),
+              includeCompletion: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Complete Symmetrical Figures',
+                description: 'Complete symmetrical shapes',
+                helpText: 'Complete this symmetrical figure',
+                order: 4
+              }),
+              includeDrawing: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Drawing Problems',
+                description: 'Draw lines of symmetry',
+                helpText: 'Draw all lines of symmetry for this shape',
+                order: 5
+              }),
+              includeRotationalSymmetry: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Rotational Symmetry',
+                description: 'Identify rotational symmetry',
+                helpText: 'Advanced: rotational symmetry order',
+                order: 6
+              })
+            }
+          }),
+          
+          subjects: schemaV2.createCategory({
+            id: 'subjects',
+            label: 'Subjects',
+            description: 'Choose what to use for symmetry problems',
+            icon: 'category',
+            color: 'purple',
+            order: 3,
+            parameters: {
+              includeShapes: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Include Geometric Shapes',
+                description: 'Use geometric shapes for symmetry',
+                helpText: 'Squares, triangles, circles, hexagons, etc.',
+                order: 1
+              })
+            }
+          }),
+          
+          complexity: schemaV2.createCategory({
+            id: 'complexity',
+            label: 'Complexity',
+            description: 'Control the complexity of symmetry problems',
+            icon: 'tune',
+            color: 'orange',
+            order: 4,
+            parameters: {
+              symmetryComplexity: schemaV2.createParameter({
+                type: 'select',
+                label: 'Complexity Level',
+                description: 'Complexity of symmetry problems',
+                options: [
+                  { value: 'basic', label: 'Basic (simple shapes)' },
+                  { value: 'intermediate', label: 'Intermediate (complex shapes)' },
+                  { value: 'advanced', label: 'Advanced (complex figures)' }
+                ],
+                helpText: 'Controls shape complexity and problem difficulty',
+                order: 1
+              })
+            }
+          }),
+          
+          visualization: schemaV2.createCategory({
+            id: 'visualization',
+            label: 'Visualization',
+            description: 'Control diagram appearance and features',
+            icon: 'visibility',
+            color: 'teal',
+            order: 5,
+            parameters: {
+              showVisualDiagrams: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Show Visual Diagrams',
+                description: 'Include geometric diagrams',
+                helpText: 'Display visual shapes for symmetry analysis',
+                order: 1
+              }),
+              diagramSize: schemaV2.createParameter({
+                type: 'select',
+                label: 'Diagram Size',
+                description: 'Size of the geometric diagrams',
+                options: [
+                  { value: 'small', label: 'Small' },
+                  { value: 'medium', label: 'Medium' },
+                  { value: 'large', label: 'Large' }
+                ],
+                helpText: 'Controls the size of symmetry diagrams',
+                order: 2
+              }),
+              diagramTheme: schemaV2.createParameter({
+                type: 'select',
+                label: 'Diagram Theme',
+                description: 'Visual style for diagrams',
+                options: [
+                  { value: 'educational', label: 'Educational' },
+                  { value: 'blueprint', label: 'Blueprint' },
+                  { value: 'minimal', label: 'Minimal' },
+                  { value: 'colorful', label: 'Colorful' }
+                ],
+                helpText: 'Appearance style for symmetry diagrams',
+                order: 3
+              })
+            }
+          })
         },
-        includeLineSymmetry: {
-          type: 'boolean',
-          label: 'Line Symmetry',
-          description: 'Count lines of symmetry in shapes'
-        },
-        includeRotationalSymmetry: {
-          type: 'boolean',
-          label: 'Rotational Symmetry',
-          description: 'Identify rotational symmetry'
-        },
-        includeReflection: {
-          type: 'boolean',
-          label: 'Reflection',
-          description: 'Reflection across lines'
-        },
-        includeCompletion: {
-          type: 'boolean',
-          label: 'Complete Symmetrical Figures',
-          description: 'Complete symmetrical shapes'
-        },
-        includeIdentification: {
-          type: 'boolean',
-          label: 'Symmetry Identification',
-          description: 'Identify if shapes have symmetry'
-        },
-        includeDrawing: {
-          type: 'boolean',
-          label: 'Drawing Problems',
-          description: 'Draw lines of symmetry'
-        },
-        includeShapes: {
-          type: 'boolean',
-          label: 'Include Geometric Shapes',
-          description: 'Use geometric shapes for symmetry'
-        },
-        // includeLetters: {
-        //   type: 'boolean',
-        //   label: 'Include Letters',
-        //   description: 'Use letters for symmetry identification'
-        // },
-        // includePatterns: {
-        //   type: 'boolean',
-        //   label: 'Include Patterns',
-        //   description: 'Use patterns and designs'
-        // },
-        showVisualDiagrams: {
-          type: 'boolean',
-          label: 'Show Visual Diagrams',
-          description: 'Include geometric diagrams'
-        },
-        diagramSize: {
-          type: 'select',
-          label: 'Diagram Size',
-          description: 'Size of the geometric diagrams',
-          options: [
-            { value: 'small', label: 'Small' },
-            { value: 'medium', label: 'Medium' },
-            { value: 'large', label: 'Large' }
-          ]
-        },
-        diagramTheme: {
-          type: 'select',
-          label: 'Diagram Theme',
-          description: 'Visual style for diagrams',
-          options: [
-            { value: 'educational', label: 'Educational' },
-            { value: 'blueprint', label: 'Blueprint' },
-            { value: 'minimal', label: 'Minimal' },
-            { value: 'colorful', label: 'Colorful' }
-          ]
-        },
-        symmetryComplexity: {
-          type: 'select',
-          label: 'Complexity Level',
-          description: 'Complexity of symmetry problems',
-          options: [
-            { value: 'basic', label: 'Basic (simple shapes)' },
-            { value: 'intermediate', label: 'Intermediate (complex shapes)' },
-            { value: 'advanced', label: 'Advanced (complex figures)' }
-          ]
-        }
-      }
+        
+        // Preset configurations for quick setup
+        presets: [
+          schemaV2.createPreset({
+            id: 'basic-line-symmetry',
+            label: 'Basic Line Symmetry',
+            description: 'Simple line symmetry identification and counting',
+            icon: 'looks_one',
+            category: 'difficulty',
+            values: {
+              problemCount: 10,
+              includeLineSymmetry: true,
+              includeRotationalSymmetry: false,
+              includeReflection: false,
+              includeCompletion: false,
+              includeIdentification: true,
+              includeDrawing: false,
+              includeShapes: true,
+              showVisualDiagrams: true,
+              diagramSize: 'medium',
+              diagramTheme: 'educational',
+              symmetryComplexity: 'basic'
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'reflection-practice',
+            label: 'Reflection Practice',
+            description: 'Focus on reflection and mirroring exercises',
+            icon: 'flip',
+            category: 'scope',
+            values: {
+              problemCount: 8,
+              includeLineSymmetry: false,
+              includeRotationalSymmetry: false,
+              includeReflection: true,
+              includeCompletion: true,
+              includeIdentification: false,
+              includeDrawing: false,
+              includeShapes: true,
+              showVisualDiagrams: true,
+              diagramSize: 'medium',
+              diagramTheme: 'educational',
+              symmetryComplexity: 'basic'
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'drawing-symmetry',
+            label: 'Drawing Symmetry',
+            description: 'Practice drawing lines of symmetry and completing shapes',
+            icon: 'edit',
+            category: 'scope',
+            values: {
+              problemCount: 10,
+              includeLineSymmetry: false,
+              includeRotationalSymmetry: false,
+              includeReflection: false,
+              includeCompletion: true,
+              includeIdentification: false,
+              includeDrawing: true,
+              includeShapes: true,
+              showVisualDiagrams: true,
+              diagramSize: 'medium',
+              diagramTheme: 'educational',
+              symmetryComplexity: 'intermediate'
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'intermediate-symmetry',
+            label: 'Intermediate Symmetry',
+            description: 'Mixed symmetry problems with moderate complexity',
+            icon: 'looks_two',
+            category: 'difficulty',
+            values: {
+              problemCount: 12,
+              includeLineSymmetry: true,
+              includeRotationalSymmetry: false,
+              includeReflection: true,
+              includeCompletion: true,
+              includeIdentification: true,
+              includeDrawing: false,
+              includeShapes: true,
+              showVisualDiagrams: true,
+              diagramSize: 'medium',
+              diagramTheme: 'educational',
+              symmetryComplexity: 'intermediate'
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'advanced-symmetry',
+            label: 'Advanced Symmetry',
+            description: 'Complex symmetry with rotational symmetry included',
+            icon: 'trending_up',
+            category: 'difficulty',
+            values: {
+              problemCount: 10,
+              includeLineSymmetry: true,
+              includeRotationalSymmetry: true,
+              includeReflection: false,
+              includeCompletion: false,
+              includeIdentification: true,
+              includeDrawing: true,
+              includeShapes: true,
+              showVisualDiagrams: true,
+              diagramSize: 'medium',
+              diagramTheme: 'educational',
+              symmetryComplexity: 'advanced'
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'comprehensive-symmetry',
+            label: 'Comprehensive Symmetry',
+            description: 'Complete practice with all symmetry concepts',
+            icon: 'all_inclusive',
+            category: 'scope',
+            values: {
+              problemCount: 15,
+              includeLineSymmetry: true,
+              includeRotationalSymmetry: true,
+              includeReflection: true,
+              includeCompletion: true,
+              includeIdentification: true,
+              includeDrawing: true,
+              includeShapes: true,
+              showVisualDiagrams: true,
+              diagramSize: 'medium',
+              diagramTheme: 'educational',
+              symmetryComplexity: 'intermediate'
+            }
+          })
+        ]
+      })
     })
   }
 
@@ -145,10 +354,23 @@ export class SymmetryGenerator extends BaseGenerator {
   generateProblem(parameters = {}) {
     const params = { ...this.defaultParameters, ...parameters }
     
-    // Validate parameters
-    const validation = this.validateParameters(params)
+    // Validate parameters using Parameter Schema V2
+    const validation = this.parameterSchema.validate(params)
     if (!validation.isValid) {
       throw new Error(`Invalid parameters: ${validation.errors.join(', ')}`)
+    }
+    
+    // Additional custom validation
+    const customErrors = []
+    if (!params.includeLineSymmetry && !params.includeRotationalSymmetry && !params.includeReflection &&
+        !params.includeCompletion && !params.includeIdentification && !params.includeDrawing) {
+      customErrors.push('At least one problem type must be enabled')
+    }
+    if (!params.includeShapes) {
+      customErrors.push('At least one subject type must be enabled')
+    }
+    if (customErrors.length > 0) {
+      throw new Error(`Invalid parameters: ${customErrors.join(', ')}`)
     }
     
     // Build array of enabled problem types

@@ -1,4 +1,5 @@
 import { BaseGenerator } from '../BaseGenerator.js'
+import { ParameterSchemaV2 } from '../ParameterSchemaV2.js'
 
 /**
  * Prime and Composite Numbers Generator
@@ -6,6 +7,8 @@ import { BaseGenerator } from '../BaseGenerator.js'
  */
 export class PrimeCompositeGenerator extends BaseGenerator {
   constructor() {
+    const schemaV2 = new ParameterSchemaV2()
+    
     super({
       name: 'Prime & Composite Numbers',
       description: 'Generate problems about identifying prime and composite numbers',
@@ -32,62 +35,235 @@ export class PrimeCompositeGenerator extends BaseGenerator {
         mixedQuestions: true
       },
       
-      parameterSchema: {
-        problemCount: {
-          type: 'number',
-          label: 'Number of Problems',
-          description: 'How many prime/composite problems to generate',
-          min: 1,
-          max: 100,
-          required: true
+      // Enhanced Parameter Schema V2 with beautiful categorization
+      parameterSchema: schemaV2.createSchema({
+        categories: {
+          general: schemaV2.createCategory({
+            id: 'general',
+            label: 'General Settings',
+            description: 'Basic configuration options',
+            icon: 'settings',
+            color: 'blue',
+            order: 1,
+            parameters: {
+              problemCount: schemaV2.createParameter({
+                type: 'number',
+                label: 'Number of Problems',
+                description: 'How many prime/composite problems to generate',
+                min: 1,
+                max: 50,
+                required: true,
+                slider: true,
+                presets: [5, 8, 10, 15],
+                order: 1
+              })
+            }
+          }),
+          
+          problemTypes: schemaV2.createCategory({
+            id: 'problemTypes',
+            label: 'Problem Types',
+            description: 'Choose what type of prime/composite questions to generate',
+            icon: 'quiz',
+            color: 'green',
+            order: 2,
+            parameters: {
+              problemType: schemaV2.createParameter({
+                type: 'select',
+                label: 'Question Type',
+                description: 'Type of prime/composite problem to generate',
+                variant: 'cards',
+                options: [
+                  {
+                    value: 'identify',
+                    label: 'Identify Classification',
+                    description: 'Ask if a number is prime, composite, or neither'
+                  },
+                  {
+                    value: 'list-factors',
+                    label: 'List Factors',
+                    description: 'Ask students to list all factors of a number'
+                  },
+                  {
+                    value: 'find-primes',
+                    label: 'Find Prime Numbers',
+                    description: 'Find all prime numbers in a given range'
+                  },
+                  {
+                    value: 'find-composites',
+                    label: 'Find Composite Numbers',
+                    description: 'Find all composite numbers in a given range'
+                  },
+                  {
+                    value: 'mixed',
+                    label: 'Mixed Question Types',
+                    description: 'Random combination of all question types'
+                  }
+                ],
+                order: 1
+              }),
+              mixedQuestions: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Mixed Prime/Composite',
+                description: 'Include both prime and composite numbers in identification problems',
+                helpText: 'When enabled, problems will include a mix of prime and composite numbers',
+                order: 2
+              }),
+              includeOne: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Include Number 1',
+                description: 'Include questions about the number 1 (neither prime nor composite)',
+                helpText: 'Number 1 is a special case - it is neither prime nor composite',
+                order: 3
+              })
+            }
+          }),
+          
+          numberRanges: schemaV2.createCategory({
+            id: 'numberRanges',
+            label: 'Number Ranges',
+            description: 'Control the range of numbers used in problems',
+            icon: 'tag',
+            color: 'purple',
+            order: 3,
+            parameters: {
+              minNumber: schemaV2.createParameter({
+                type: 'number',
+                label: 'Minimum Number',
+                description: 'Smallest number to use in problems',
+                min: 1,
+                max: 500,
+                required: true,
+                presets: [1, 2, 5, 10],
+                helpText: 'Starting point for number range',
+                order: 1
+              }),
+              maxNumber: schemaV2.createParameter({
+                type: 'number',
+                label: 'Maximum Number',
+                description: 'Largest number to use in problems',
+                min: 2,
+                max: 1000,
+                required: true,
+                presets: [50, 100, 200, 500],
+                helpText: 'Ending point for number range',
+                order: 2
+              })
+            }
+          }),
+          
+          displayOptions: schemaV2.createCategory({
+            id: 'displayOptions',
+            label: 'Display Options',
+            description: 'Control how solutions and steps are shown',
+            icon: 'visibility',
+            color: 'orange',
+            order: 4,
+            parameters: {
+              showFactors: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Show Factors in Steps',
+                description: 'Include complete factor lists in solution steps',
+                helpText: 'Helpful for understanding why a number is prime or composite',
+                order: 1
+              })
+            }
+          })
         },
-        minNumber: {
-          type: 'number',
-          label: 'Minimum Number',
-          description: 'Smallest number to use',
-          min: 1,
-          max: 100,
-          required: true
-        },
-        maxNumber: {
-          type: 'number',
-          label: 'Maximum Number',
-          description: 'Largest number to use',
-          min: 2,
-          max: 200,
-          required: true
-        },
-        problemType: {
-          type: 'string',
-          label: 'Problem Type',
-          description: 'Type of prime/composite problem',
-          options: ['identify', 'list-factors', 'find-primes', 'find-composites', 'mixed']
-        },
-        includeOne: {
-          type: 'boolean',
-          label: 'Include Number 1',
-          description: 'Include questions about the number 1 (neither prime nor composite)'
-        },
-        showFactors: {
-          type: 'boolean',
-          label: 'Show Factors in Steps',
-          description: 'Include factor lists in solution steps'
-        },
-        mixedQuestions: {
-          type: 'boolean',
-          label: 'Mixed Prime/Composite',
-          description: 'Include both prime and composite numbers in problems'
-        }
-      }
+        
+        // Preset configurations for quick setup
+        presets: [
+          schemaV2.createPreset({
+            id: 'elementary-basics',
+            label: 'Elementary Basics',
+            description: 'Simple prime/composite identification for grades 4-5',
+            icon: 'looks_one',
+            category: 'difficulty',
+            values: {
+              problemCount: 10,
+              problemType: 'identify',
+              minNumber: 2,
+              maxNumber: 25,
+              mixedQuestions: true,
+              includeOne: true,
+              showFactors: false
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'factor-practice',
+            label: 'Factor Practice',
+            description: 'Focus on finding factors and understanding prime/composite',
+            icon: 'list',
+            category: 'scope',
+            values: {
+              problemCount: 8,
+              problemType: 'list-factors',
+              minNumber: 6,
+              maxNumber: 50,
+              mixedQuestions: true,
+              includeOne: false,
+              showFactors: true
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'range-finding',
+            label: 'Range Finding',
+            description: 'Find all primes or composites in number ranges',
+            icon: 'search',
+            category: 'scope',
+            values: {
+              problemCount: 6,
+              problemType: 'mixed',
+              minNumber: 10,
+              maxNumber: 100,
+              mixedQuestions: true,
+              includeOne: false,
+              showFactors: false
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'advanced-theory',
+            label: 'Advanced Number Theory',
+            description: 'Challenging problems with larger numbers',
+            icon: 'functions',
+            category: 'difficulty',
+            values: {
+              problemCount: 12,
+              problemType: 'mixed',
+              minNumber: 50,
+              maxNumber: 200,
+              mixedQuestions: true,
+              includeOne: false,
+              showFactors: true
+            }
+          })
+        ]
+      })
     })
   }
 
   generateProblem(parameters = {}) {
     const params = { ...this.defaultParameters, ...parameters }
     
-    const validation = this.validateParameters(params)
+    // Validate parameters using Parameter Schema V2
+    const validation = this.parameterSchema.validate(params)
     if (!validation.isValid) {
       throw new Error(`Invalid parameters: ${validation.errors.join(', ')}`)
+    }
+    
+    // Additional custom validation for min/max relationships
+    const customErrors = []
+    if (params.minNumber > params.maxNumber) {
+      customErrors.push('Minimum Number cannot be greater than Maximum Number')
+    }
+    if (params.minNumber < 1) {
+      customErrors.push('Minimum Number must be at least 1')
+    }
+    if (customErrors.length > 0) {
+      throw new Error(`Invalid parameters: ${customErrors.join(', ')}`)
     }
     
     // Choose problem type

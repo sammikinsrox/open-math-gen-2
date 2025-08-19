@@ -1,4 +1,5 @@
 import { BaseGenerator } from '../BaseGenerator.js'
+import { ParameterSchemaV2 } from '../ParameterSchemaV2.js'
 
 /**
  * Percentages Generator
@@ -6,6 +7,8 @@ import { BaseGenerator } from '../BaseGenerator.js'
  */
 export class PercentagesGenerator extends BaseGenerator {
   constructor() {
+    const schemaV2 = new ParameterSchemaV2()
+    
     super({
       name: 'Percentages',
       description: 'Generate problems involving percentages, conversions between fractions/decimals/percentages, and percentage calculations',
@@ -38,97 +41,335 @@ export class PercentagesGenerator extends BaseGenerator {
         includeWordProblems: false
       },
       
-      parameterSchema: {
-        problemCount: {
-          type: 'number',
-          label: 'Number of Problems',
-          description: 'How many percentage problems to generate',
-          min: 1,
-          max: 100,
-          required: true
+      // Enhanced Parameter Schema V2 with beautiful categorization
+      parameterSchema: schemaV2.createSchema({
+        categories: {
+          general: schemaV2.createCategory({
+            id: 'general',
+            label: 'General Settings',
+            description: 'Basic configuration options',
+            icon: 'settings',
+            color: 'blue',
+            order: 1,
+            parameters: {
+              problemCount: schemaV2.createParameter({
+                type: 'number',
+                label: 'Number of Problems',
+                description: 'How many percentage problems to generate',
+                min: 1,
+                max: 50,
+                required: true,
+                slider: true,
+                presets: [5, 8, 10, 15],
+                order: 1
+              })
+            }
+          }),
+          
+          problemTypes: schemaV2.createCategory({
+            id: 'problemTypes',
+            label: 'Problem Types',
+            description: 'Choose which types of percentage problems to include',
+            icon: 'percent',
+            color: 'green',
+            order: 2,
+            parameters: {
+              includePercentOfNumber: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Percent of Number',
+                description: 'Find a percentage of a given number',
+                helpText: 'Example: What is 25% of 80? (Answer: 20)',
+                order: 1
+              }),
+              includeConversionToPercent: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Convert to Percent',
+                description: 'Convert fractions/decimals to percentages',
+                helpText: 'Example: 0.25 = ?% (Answer: 25%)',
+                order: 2
+              }),
+              includeConversionFromPercent: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Convert from Percent',
+                description: 'Convert percentages to fractions/decimals',
+                helpText: 'Example: 25% = ? (Answer: 0.25 or 1/4)',
+                order: 3
+              }),
+              includeFindWhole: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Find the Whole',
+                description: 'Find the whole when given part and percentage',
+                helpText: 'Example: 20 is 25% of ? (Answer: 80)',
+                order: 4
+              }),
+              includeFindPercent: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Find the Percent',
+                description: 'Find what percent one number is of another',
+                helpText: 'Example: 20 is ?% of 80 (Answer: 25%)',
+                order: 5
+              })
+            }
+          }),
+          
+          percentageProperties: schemaV2.createCategory({
+            id: 'percentageProperties',
+            label: 'Percentage Properties',
+            description: 'Control the types and complexity of percentages',
+            icon: 'tune',
+            color: 'purple',
+            order: 3,
+            parameters: {
+              includeCommonPercentages: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Include Common Percentages',
+                description: 'Include frequently used percentages',
+                helpText: 'Examples: 10%, 25%, 50%, 75%, 20%, 40%, 60%, 80%',
+                order: 1
+              }),
+              allowDecimals: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Allow Decimal Results',
+                description: 'Allow problems with decimal answers',
+                helpText: 'Enables more complex percentages like 12.5%, 33.3%',
+                order: 2
+              }),
+              includeWordProblems: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Include Word Problems',
+                description: 'Include real-world percentage scenarios',
+                helpText: 'Examples: sales tax, tips, discounts, test scores',
+                order: 3
+              })
+            }
+          }),
+          
+          numberRanges: schemaV2.createCategory({
+            id: 'numberRanges',
+            label: 'Number Ranges',
+            description: 'Control the size of percentages and numbers used',
+            icon: 'tag',
+            color: 'orange',
+            order: 4,
+            parameters: {
+              percentageMin: schemaV2.createParameter({
+                type: 'number',
+                label: 'Minimum Percentage',
+                description: 'Smallest percentage to use in problems',
+                min: 1,
+                max: 99,
+                required: true,
+                slider: true,
+                presets: [5, 10, 15, 20],
+                helpText: 'Lower bound for percentage values',
+                order: 1
+              }),
+              percentageMax: schemaV2.createParameter({
+                type: 'number',
+                label: 'Maximum Percentage',
+                description: 'Largest percentage to use in problems',
+                min: 1,
+                max: 99,
+                required: true,
+                slider: true,
+                presets: [75, 85, 95, 99],
+                helpText: 'Upper bound for percentage values',
+                order: 2
+              }),
+              numberMin: schemaV2.createParameter({
+                type: 'number',
+                label: 'Minimum Number',
+                description: 'Smallest whole number to use in problems',
+                min: 1,
+                max: 500,
+                required: true,
+                slider: true,
+                presets: [10, 20, 50, 100],
+                helpText: 'Lower bound for numerical values',
+                order: 3
+              }),
+              numberMax: schemaV2.createParameter({
+                type: 'number',
+                label: 'Maximum Number',
+                description: 'Largest whole number to use in problems',
+                min: 10,
+                max: 1000,
+                required: true,
+                slider: true,
+                presets: [100, 200, 500, 1000],
+                helpText: 'Upper bound for numerical values',
+                order: 4
+              })
+            }
+          })
         },
-        includePercentOfNumber: {
-          type: 'boolean',
-          label: 'Include Percent of Number',
-          description: 'Include problems like "25% of 80 = ?"'
-        },
-        includeConversionToPercent: {
-          type: 'boolean',
-          label: 'Include Conversion to Percent',
-          description: 'Include problems like "0.25 = ?%"'
-        },
-        includeConversionFromPercent: {
-          type: 'boolean',
-          label: 'Include Conversion from Percent',
-          description: 'Include problems like "25% = ?"'
-        },
-        includeFindWhole: {
-          type: 'boolean',
-          label: 'Include Find the Whole',
-          description: 'Include problems like "20 is 25% of ?"'
-        },
-        includeFindPercent: {
-          type: 'boolean',
-          label: 'Include Find the Percent',
-          description: 'Include problems like "20 is ?% of 80"'
-        },
-        percentageMin: {
-          type: 'number',
-          label: 'Minimum Percentage',
-          description: 'Smallest percentage to use',
-          min: 1,
-          max: 99,
-          required: true
-        },
-        percentageMax: {
-          type: 'number',
-          label: 'Maximum Percentage',
-          description: 'Largest percentage to use',
-          min: 1,
-          max: 99,
-          required: true
-        },
-        numberMin: {
-          type: 'number',
-          label: 'Minimum Number',
-          description: 'Smallest number to use in problems',
-          min: 1,
-          max: 1000,
-          required: true
-        },
-        numberMax: {
-          type: 'number',
-          label: 'Maximum Number',
-          description: 'Largest number to use in problems',
-          min: 1,
-          max: 1000,
-          required: true
-        },
-        includeCommonPercentages: {
-          type: 'boolean',
-          label: 'Include Common Percentages',
-          description: 'Include common percentages like 10%, 25%, 50%, 75%'
-        },
-        allowDecimals: {
-          type: 'boolean',
-          label: 'Allow Decimal Results',
-          description: 'Allow problems with decimal answers'
-        },
-        includeWordProblems: {
-          type: 'boolean',
-          label: 'Include Word Problems',
-          description: 'Include real-world percentage word problems'
-        }
-      }
+        
+        // Preset configurations for quick setup
+        presets: [
+          schemaV2.createPreset({
+            id: 'basic-percentages',
+            label: 'Basic Percentages',
+            description: 'Simple percentage calculations with common percentages',
+            icon: 'looks_one',
+            category: 'difficulty',
+            values: {
+              problemCount: 10,
+              includePercentOfNumber: true,
+              includeConversionToPercent: true,
+              includeConversionFromPercent: false,
+              includeFindWhole: false,
+              includeFindPercent: false,
+              percentageMin: 10,
+              percentageMax: 90,
+              numberMin: 20,
+              numberMax: 100,
+              includeCommonPercentages: true,
+              allowDecimals: false,
+              includeWordProblems: false
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'percent-calculations',
+            label: 'Percent Calculations',
+            description: 'Focus on calculating percentages of numbers',
+            icon: 'calculate',
+            category: 'scope',
+            values: {
+              problemCount: 12,
+              includePercentOfNumber: true,
+              includeConversionToPercent: false,
+              includeConversionFromPercent: false,
+              includeFindWhole: false,
+              includeFindPercent: false,
+              percentageMin: 5,
+              percentageMax: 95,
+              numberMin: 25,
+              numberMax: 200,
+              includeCommonPercentages: true,
+              allowDecimals: true,
+              includeWordProblems: false
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'conversions-practice',
+            label: 'Conversions Practice',
+            description: 'Practice converting between percentages, decimals, and fractions',
+            icon: 'swap_horiz',
+            category: 'scope',
+            values: {
+              problemCount: 10,
+              includePercentOfNumber: false,
+              includeConversionToPercent: true,
+              includeConversionFromPercent: true,
+              includeFindWhole: false,
+              includeFindPercent: false,
+              percentageMin: 5,
+              percentageMax: 95,
+              numberMin: 10,
+              numberMax: 100,
+              includeCommonPercentages: true,
+              allowDecimals: true,
+              includeWordProblems: false
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'advanced-problems',
+            label: 'Advanced Problems',
+            description: 'Complex problems including finding whole and percent',
+            icon: 'functions',
+            category: 'difficulty',
+            values: {
+              problemCount: 8,
+              includePercentOfNumber: true,
+              includeConversionToPercent: false,
+              includeConversionFromPercent: false,
+              includeFindWhole: true,
+              includeFindPercent: true,
+              percentageMin: 10,
+              percentageMax: 80,
+              numberMin: 50,
+              numberMax: 300,
+              includeCommonPercentages: false,
+              allowDecimals: true,
+              includeWordProblems: false
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'real-world-applications',
+            label: 'Real-World Applications',
+            description: 'Word problems with real-world percentage scenarios',
+            icon: 'public',
+            category: 'scope',
+            values: {
+              problemCount: 10,
+              includePercentOfNumber: true,
+              includeConversionToPercent: false,
+              includeConversionFromPercent: false,
+              includeFindWhole: true,
+              includeFindPercent: true,
+              percentageMin: 5,
+              percentageMax: 95,
+              numberMin: 20,
+              numberMax: 500,
+              includeCommonPercentages: true,
+              allowDecimals: true,
+              includeWordProblems: true
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'comprehensive-percentages',
+            label: 'Comprehensive Percentages',
+            description: 'Mixed practice with all percentage concepts',
+            icon: 'all_inclusive',
+            category: 'scope',
+            values: {
+              problemCount: 15,
+              includePercentOfNumber: true,
+              includeConversionToPercent: true,
+              includeConversionFromPercent: true,
+              includeFindWhole: true,
+              includeFindPercent: true,
+              percentageMin: 5,
+              percentageMax: 95,
+              numberMin: 25,
+              numberMax: 400,
+              includeCommonPercentages: true,
+              allowDecimals: true,
+              includeWordProblems: true
+            }
+          })
+        ]
+      })
     })
   }
 
   generateProblem(parameters = {}) {
     const params = { ...this.defaultParameters, ...parameters }
     
-    const validation = this.validateParameters(params)
+    // Validate parameters using Parameter Schema V2
+    const validation = this.parameterSchema.validate(params)
     if (!validation.isValid) {
       throw new Error(`Invalid parameters: ${validation.errors.join(', ')}`)
+    }
+    
+    // Additional custom validation
+    const customErrors = []
+    if (params.percentageMin > params.percentageMax) {
+      customErrors.push('Minimum Percentage cannot be greater than Maximum Percentage')
+    }
+    if (params.numberMin > params.numberMax) {
+      customErrors.push('Minimum Number cannot be greater than Maximum Number')
+    }
+    if (!params.includePercentOfNumber && !params.includeConversionToPercent && !params.includeConversionFromPercent && !params.includeFindWhole && !params.includeFindPercent) {
+      customErrors.push('At least one problem type must be enabled')
+    }
+    if (customErrors.length > 0) {
+      throw new Error(`Invalid parameters: ${customErrors.join(', ')}`)
     }
     
     // Build array of enabled problem types

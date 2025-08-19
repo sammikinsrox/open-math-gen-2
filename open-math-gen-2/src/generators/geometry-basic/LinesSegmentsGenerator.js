@@ -1,4 +1,5 @@
 import { BaseGenerator } from '../BaseGenerator.js'
+import { ParameterSchemaV2 } from '../ParameterSchemaV2.js'
 
 /**
  * Lines and Segments Generator
@@ -8,6 +9,8 @@ import { BaseGenerator } from '../BaseGenerator.js'
  */
 export class LinesSegmentsGenerator extends BaseGenerator {
   constructor() {
+    const schemaV2 = new ParameterSchemaV2()
+    
     super({
       name: 'Lines & Segments',
       description: 'Lines, line segments, rays, parallel and perpendicular lines with visual diagrams',
@@ -42,98 +45,317 @@ export class LinesSegmentsGenerator extends BaseGenerator {
         complexityLevel: 'basic'
       },
       
-      // Parameter schema for validation and UI generation
-      parameterSchema: {
-        problemCount: {
-          type: 'number',
-          label: 'Number of Problems',
-          description: 'How many problems to generate',
-          min: 1,
-          max: 50,
-          required: true
+      // Enhanced Parameter Schema V2 with beautiful categorization
+      parameterSchema: schemaV2.createSchema({
+        categories: {
+          general: schemaV2.createCategory({
+            id: 'general',
+            label: 'General Settings',
+            description: 'Basic configuration options',
+            icon: 'settings',
+            color: 'blue',
+            order: 1,
+            parameters: {
+              problemCount: schemaV2.createParameter({
+                type: 'number',
+                label: 'Number of Problems',
+                description: 'How many line and segment problems to generate',
+                min: 1,
+                max: 50,
+                required: true,
+                slider: true,
+                presets: [5, 8, 10, 15],
+                order: 1
+              })
+            }
+          }),
+          
+          problemTypes: schemaV2.createCategory({
+            id: 'problemTypes',
+            label: 'Problem Types',
+            description: 'Choose types of line and segment problems',
+            icon: 'timeline',
+            color: 'green',
+            order: 2,
+            parameters: {
+              includeIdentification: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Line Identification',
+                description: 'Identify lines, segments, and rays',
+                helpText: 'Is this a line, segment, or ray?',
+                order: 1
+              }),
+              includeCounting: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Counting Problems',
+                description: 'Count lines and segments in figures',
+                helpText: 'How many line segments are shown?',
+                order: 2
+              }),
+              includeRays: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Include Rays',
+                description: 'Include ray identification problems',
+                helpText: 'Lines that extend infinitely in one direction',
+                order: 3
+              }),
+              includeMeasurement: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Line Measurement',
+                description: 'Measure line segments',
+                helpText: 'Find the length of line segments',
+                order: 4
+              })
+            }
+          }),
+          
+          lineRelationships: schemaV2.createCategory({
+            id: 'lineRelationships',
+            label: 'Line Relationships',
+            description: 'Different ways lines can relate to each other',
+            icon: 'compare_arrows',
+            color: 'purple',
+            order: 3,
+            parameters: {
+              includeParallelLines: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Parallel Lines',
+                description: 'Lines that never intersect',
+                helpText: 'Lines that run in the same direction',
+                order: 1
+              }),
+              includePerpendicularLines: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Perpendicular Lines',
+                description: 'Lines that meet at right angles',
+                helpText: 'Lines that form 90° angles',
+                order: 2
+              }),
+              includeIntersectingLines: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Intersecting Lines',
+                description: 'Lines that cross each other',
+                helpText: 'Lines that meet at a point',
+                order: 3
+              }),
+              includeLineRelationships: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Line Relationships',
+                description: 'Identify relationships between lines',
+                helpText: 'Analyze how lines relate to each other',
+                order: 4
+              })
+            }
+          }),
+          
+          complexity: schemaV2.createCategory({
+            id: 'complexity',
+            label: 'Complexity',
+            description: 'Control the complexity of geometric figures',
+            icon: 'tune',
+            color: 'orange',
+            order: 4,
+            parameters: {
+              complexityLevel: schemaV2.createParameter({
+                type: 'select',
+                label: 'Complexity Level',
+                description: 'Complexity of the geometric figures',
+                options: [
+                  { value: 'basic', label: 'Basic (2-3 lines)' },
+                  { value: 'medium', label: 'Medium (4-6 lines)' },
+                  { value: 'complex', label: 'Complex (7+ lines)' }
+                ],
+                helpText: 'Number of lines in diagrams',
+                order: 1
+              })
+            }
+          }),
+          
+          visualization: schemaV2.createCategory({
+            id: 'visualization',
+            label: 'Visualization',
+            description: 'Control diagram appearance and features',
+            icon: 'visibility',
+            color: 'teal',
+            order: 5,
+            parameters: {
+              showVisualDiagrams: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Show Visual Diagrams',
+                description: 'Include geometric diagrams',
+                helpText: 'Display visual line diagrams with problems',
+                order: 1
+              }),
+              diagramSize: schemaV2.createParameter({
+                type: 'select',
+                label: 'Diagram Size',
+                description: 'Size of the geometric diagrams',
+                options: [
+                  { value: 'small', label: 'Small' },
+                  { value: 'medium', label: 'Medium' },
+                  { value: 'large', label: 'Large' }
+                ],
+                helpText: 'Controls the size of line diagrams',
+                order: 2
+              }),
+              diagramTheme: schemaV2.createParameter({
+                type: 'select',
+                label: 'Diagram Theme',
+                description: 'Visual style for diagrams',
+                options: [
+                  { value: 'educational', label: 'Educational' },
+                  { value: 'blueprint', label: 'Blueprint' },
+                  { value: 'minimal', label: 'Minimal' },
+                  { value: 'colorful', label: 'Colorful' }
+                ],
+                helpText: 'Appearance style for geometric diagrams',
+                order: 3
+              })
+            }
+          })
         },
-        includeIdentification: {
-          type: 'boolean',
-          label: 'Line Identification',
-          description: 'Identify lines, segments, and rays'
-        },
-        includeCounting: {
-          type: 'boolean',
-          label: 'Counting Problems',
-          description: 'Count lines and segments in figures'
-        },
-        includeParallelLines: {
-          type: 'boolean',
-          label: 'Parallel Lines',
-          description: 'Identify and work with parallel lines'
-        },
-        includePerpendicularLines: {
-          type: 'boolean',
-          label: 'Perpendicular Lines',
-          description: 'Identify and work with perpendicular lines'
-        },
-        includeIntersectingLines: {
-          type: 'boolean',
-          label: 'Intersecting Lines',
-          description: 'Work with intersecting lines'
-        },
-        includeRays: {
-          type: 'boolean',
-          label: 'Include Rays',
-          description: 'Include ray identification problems'
-        },
-        includeMeasurement: {
-          type: 'boolean',
-          label: 'Line Measurement',
-          description: 'Measure line segments'
-        },
-        includeLineRelationships: {
-          type: 'boolean',
-          label: 'Line Relationships',
-          description: 'Identify relationships between lines'
-        },
-        // includeWordProblems: {
-        //   type: 'boolean',
-        //   label: 'Include Word Problems',
-        //   description: 'Include real-world line problems'
-        // },
-        showVisualDiagrams: {
-          type: 'boolean',
-          label: 'Show Visual Diagrams',
-          description: 'Include geometric diagrams'
-        },
-        diagramSize: {
-          type: 'select',
-          label: 'Diagram Size',
-          description: 'Size of the geometric diagrams',
-          options: [
-            { value: 'small', label: 'Small' },
-            { value: 'medium', label: 'Medium' },
-            { value: 'large', label: 'Large' }
-          ]
-        },
-        diagramTheme: {
-          type: 'select',
-          label: 'Diagram Theme',
-          description: 'Visual style for diagrams',
-          options: [
-            { value: 'educational', label: 'Educational' },
-            { value: 'blueprint', label: 'Blueprint' },
-            { value: 'minimal', label: 'Minimal' },
-            { value: 'colorful', label: 'Colorful' }
-          ]
-        },
-        complexityLevel: {
-          type: 'select',
-          label: 'Complexity Level',
-          description: 'Complexity of the geometric figures',
-          options: [
-            { value: 'basic', label: 'Basic (2-3 lines)' },
-            { value: 'medium', label: 'Medium (4-6 lines)' },
-            { value: 'complex', label: 'Complex (7+ lines)' }
-          ]
-        }
-      }
+        
+        // Preset configurations for quick setup
+        presets: [
+          schemaV2.createPreset({
+            id: 'basic-lines',
+            label: 'Basic Lines',
+            description: 'Simple line and segment identification',
+            icon: 'looks_one',
+            category: 'difficulty',
+            values: {
+              problemCount: 10,
+              includeIdentification: true,
+              includeCounting: true,
+              includeParallelLines: false,
+              includePerpendicularLines: false,
+              includeIntersectingLines: false,
+              includeRays: false,
+              includeMeasurement: false,
+              includeLineRelationships: false,
+              showVisualDiagrams: true,
+              diagramSize: 'medium',
+              diagramTheme: 'educational',
+              complexityLevel: 'basic'
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'line-relationships',
+            label: 'Line Relationships',
+            description: 'Parallel, perpendicular, and intersecting lines',
+            icon: 'compare_arrows',
+            category: 'scope',
+            values: {
+              problemCount: 12,
+              includeIdentification: false,
+              includeCounting: false,
+              includeParallelLines: true,
+              includePerpendicularLines: true,
+              includeIntersectingLines: true,
+              includeRays: false,
+              includeMeasurement: false,
+              includeLineRelationships: true,
+              showVisualDiagrams: true,
+              diagramSize: 'medium',
+              diagramTheme: 'educational',
+              complexityLevel: 'medium'
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'rays-and-lines',
+            label: 'Rays & Lines',
+            description: 'Practice with lines, segments, and rays',
+            icon: 'trending_up',
+            category: 'scope',
+            values: {
+              problemCount: 10,
+              includeIdentification: true,
+              includeCounting: true,
+              includeParallelLines: false,
+              includePerpendicularLines: false,
+              includeIntersectingLines: true,
+              includeRays: true,
+              includeMeasurement: false,
+              includeLineRelationships: false,
+              showVisualDiagrams: true,
+              diagramSize: 'medium',
+              diagramTheme: 'educational',
+              complexityLevel: 'medium'
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'measurement-practice',
+            label: 'Measurement Practice',
+            description: 'Measuring line segments and distances',
+            icon: 'straighten',
+            category: 'scope',
+            values: {
+              problemCount: 8,
+              includeIdentification: false,
+              includeCounting: false,
+              includeParallelLines: false,
+              includePerpendicularLines: false,
+              includeIntersectingLines: false,
+              includeRays: false,
+              includeMeasurement: true,
+              includeLineRelationships: false,
+              showVisualDiagrams: true,
+              diagramSize: 'medium',
+              diagramTheme: 'educational',
+              complexityLevel: 'basic'
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'complex-figures',
+            label: 'Complex Figures',
+            description: 'Advanced problems with multiple lines',
+            icon: 'account_tree',
+            category: 'difficulty',
+            values: {
+              problemCount: 8,
+              includeIdentification: true,
+              includeCounting: true,
+              includeParallelLines: true,
+              includePerpendicularLines: true,
+              includeIntersectingLines: true,
+              includeRays: false,
+              includeMeasurement: false,
+              includeLineRelationships: true,
+              showVisualDiagrams: true,
+              diagramSize: 'medium',
+              diagramTheme: 'educational',
+              complexityLevel: 'complex'
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'comprehensive-lines',
+            label: 'Comprehensive Lines',
+            description: 'Complete practice with all line concepts',
+            icon: 'all_inclusive',
+            category: 'scope',
+            values: {
+              problemCount: 15,
+              includeIdentification: true,
+              includeCounting: true,
+              includeParallelLines: true,
+              includePerpendicularLines: true,
+              includeIntersectingLines: true,
+              includeRays: true,
+              includeMeasurement: true,
+              includeLineRelationships: true,
+              showVisualDiagrams: true,
+              diagramSize: 'medium',
+              diagramTheme: 'educational',
+              complexityLevel: 'medium'
+            }
+          })
+        ]
+      })
     })
   }
 
@@ -145,10 +367,21 @@ export class LinesSegmentsGenerator extends BaseGenerator {
   generateProblem(parameters = {}) {
     const params = { ...this.defaultParameters, ...parameters }
     
-    // Validate parameters
-    const validation = this.validateParameters(params)
+    // Validate parameters using Parameter Schema V2
+    const validation = this.parameterSchema.validate(params)
     if (!validation.isValid) {
       throw new Error(`Invalid parameters: ${validation.errors.join(', ')}`)
+    }
+    
+    // Additional custom validation
+    const customErrors = []
+    if (!params.includeIdentification && !params.includeCounting && !params.includeParallelLines &&
+        !params.includePerpendicularLines && !params.includeIntersectingLines && !params.includeRays &&
+        !params.includeMeasurement && !params.includeLineRelationships) {
+      customErrors.push('At least one problem type must be enabled')
+    }
+    if (customErrors.length > 0) {
+      throw new Error(`Invalid parameters: ${customErrors.join(', ')}`)
     }
     
     // Build array of enabled problem types

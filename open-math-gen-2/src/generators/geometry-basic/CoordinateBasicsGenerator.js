@@ -1,4 +1,5 @@
 import { BaseGenerator } from '../BaseGenerator.js'
+import { ParameterSchemaV2 } from '../ParameterSchemaV2.js'
 
 /**
  * Coordinate Basics Generator
@@ -8,6 +9,8 @@ import { BaseGenerator } from '../BaseGenerator.js'
  */
 export class CoordinateBasicsGenerator extends BaseGenerator {
   constructor() {
+    const schemaV2 = new ParameterSchemaV2()
+    
     super({
       name: 'Coordinate Basics',
       description: 'Coordinate plane, plotting points, reading coordinates with visual grids',
@@ -46,120 +49,387 @@ export class CoordinateBasicsGenerator extends BaseGenerator {
         diagramTheme: 'educational'
       },
       
-      // Parameter schema for validation and UI generation
-      parameterSchema: {
-        problemCount: {
-          type: 'number',
-          label: 'Number of Problems',
-          description: 'How many problems to generate',
-          min: 1,
-          max: 50,
-          required: true
+      // Enhanced Parameter Schema V2 with beautiful categorization
+      parameterSchema: schemaV2.createSchema({
+        categories: {
+          general: schemaV2.createCategory({
+            id: 'general',
+            label: 'General Settings',
+            description: 'Basic configuration options',
+            icon: 'settings',
+            color: 'blue',
+            order: 1,
+            parameters: {
+              problemCount: schemaV2.createParameter({
+                type: 'number',
+                label: 'Number of Problems',
+                description: 'How many coordinate problems to generate',
+                min: 1,
+                max: 50,
+                required: true,
+                slider: true,
+                presets: [5, 8, 10, 15],
+                order: 1
+              })
+            }
+          }),
+          
+          problemTypes: schemaV2.createCategory({
+            id: 'problemTypes',
+            label: 'Problem Types',
+            description: 'Choose types of coordinate problems to include',
+            icon: 'grid_on',
+            color: 'green',
+            order: 2,
+            parameters: {
+              includePlotting: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Plotting Points',
+                description: 'Plot points on coordinate plane',
+                helpText: 'Plot point (3, 4) on the grid',
+                order: 1
+              }),
+              includeReading: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Reading Coordinates',
+                description: 'Read coordinates of plotted points',
+                helpText: 'What are the coordinates of point A?',
+                order: 2
+              }),
+              includeQuadrants: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Quadrant Identification',
+                description: 'Identify which quadrant points are in',
+                helpText: 'Which quadrant contains point (3, -2)?',
+                order: 3
+              }),
+              includeDistance: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Distance Between Points',
+                description: 'Find distance between two points',
+                helpText: 'Distance from (0,0) to (3,4)',
+                order: 4
+              }),
+              includeMidpoint: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Midpoint',
+                description: 'Find midpoint between two points',
+                helpText: 'Midpoint between (1,2) and (5,6)',
+                order: 5
+              }),
+              includePatterns: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Coordinate Patterns',
+                description: 'Find patterns in coordinate sequences',
+                helpText: 'Continue the pattern: (1,2), (2,4), (3,6)...',
+                order: 6
+              })
+            }
+          }),
+          
+          coordinateRanges: schemaV2.createCategory({
+            id: 'coordinateRanges',
+            label: 'Coordinate Ranges',
+            description: 'Control the range and type of coordinates used',
+            icon: 'straighten',
+            color: 'purple',
+            order: 3,
+            parameters: {
+              coordinateRange: schemaV2.createParameter({
+                type: 'number',
+                label: 'Coordinate Range',
+                description: 'Maximum coordinate value (both positive and negative)',
+                min: 5,
+                max: 20,
+                required: true,
+                slider: true,
+                presets: [5, 8, 10, 15],
+                helpText: 'Sets bounds like -10 to +10',
+                order: 1
+              }),
+              allowNegatives: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Allow Negative Coordinates',
+                description: 'Include negative coordinates',
+                helpText: 'Points like (-3, 2) or (4, -5)',
+                order: 2
+              }),
+              allowDecimals: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Allow Decimal Coordinates',
+                description: 'Include decimal coordinate values',
+                helpText: 'Points like (2.5, 3.7)',
+                order: 3
+              }),
+              includeOrigin: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Include Origin',
+                description: 'Include problems involving the origin (0,0)',
+                helpText: 'The center point where axes meet',
+                order: 4
+              })
+            }
+          }),
+          
+          gridDisplay: schemaV2.createCategory({
+            id: 'gridDisplay',
+            label: 'Grid Display',
+            description: 'Control how the coordinate grid is displayed',
+            icon: 'apps',
+            color: 'orange',
+            order: 4,
+            parameters: {
+              showAxesLabels: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Show Axes Labels',
+                description: 'Show x and y axis labels',
+                helpText: 'Display "x" and "y" labels on axes',
+                order: 1
+              }),
+              showGridNumbers: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Show Grid Numbers',
+                description: 'Show numbers on grid lines',
+                helpText: 'Display 1, 2, 3... on grid lines',
+                order: 2
+              }),
+              gridSize: schemaV2.createParameter({
+                type: 'select',
+                label: 'Grid Size',
+                description: 'Spacing between grid lines',
+                options: [
+                  { value: 1, label: '1 unit' },
+                  { value: 2, label: '2 units' },
+                  { value: 5, label: '5 units' }
+                ],
+                helpText: 'How far apart grid lines are',
+                order: 3
+              }),
+              includeWordProblems: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Include Word Problems',
+                description: 'Include real-world coordinate problems',
+                helpText: 'Map locations, treasure hunts, etc.',
+                order: 4
+              })
+            }
+          }),
+          
+          visualization: schemaV2.createCategory({
+            id: 'visualization',
+            label: 'Visualization',
+            description: 'Control diagram appearance and features',
+            icon: 'visibility',
+            color: 'teal',
+            order: 5,
+            parameters: {
+              showVisualDiagrams: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Show Visual Diagrams',
+                description: 'Include coordinate grid diagrams',
+                helpText: 'Display visual coordinate grids with problems',
+                order: 1
+              }),
+              diagramSize: schemaV2.createParameter({
+                type: 'select',
+                label: 'Diagram Size',
+                description: 'Size of the coordinate grid diagrams',
+                options: [
+                  { value: 'small', label: 'Small' },
+                  { value: 'medium', label: 'Medium' },
+                  { value: 'large', label: 'Large' }
+                ],
+                helpText: 'Controls the size of coordinate grids',
+                order: 2
+              }),
+              diagramTheme: schemaV2.createParameter({
+                type: 'select',
+                label: 'Diagram Theme',
+                description: 'Visual style for diagrams',
+                options: [
+                  { value: 'educational', label: 'Educational' },
+                  { value: 'blueprint', label: 'Blueprint' },
+                  { value: 'minimal', label: 'Minimal' },
+                  { value: 'colorful', label: 'Colorful' }
+                ],
+                helpText: 'Appearance style for coordinate grids',
+                order: 3
+              })
+            }
+          })
         },
-        includePlotting: {
-          type: 'boolean',
-          label: 'Plotting Points',
-          description: 'Plot points on coordinate plane'
-        },
-        includeReading: {
-          type: 'boolean',
-          label: 'Reading Coordinates',
-          description: 'Read coordinates of plotted points'
-        },
-        includeDistance: {
-          type: 'boolean',
-          label: 'Distance Between Points',
-          description: 'Find distance between two points'
-        },
-        includeQuadrants: {
-          type: 'boolean',
-          label: 'Quadrant Identification',
-          description: 'Identify which quadrant points are in'
-        },
-        includeMidpoint: {
-          type: 'boolean',
-          label: 'Midpoint',
-          description: 'Find midpoint between two points'
-        },
-        includePatterns: {
-          type: 'boolean',
-          label: 'Coordinate Patterns',
-          description: 'Find patterns in coordinate sequences'
-        },
-        includeWordProblems: {
-          type: 'boolean',
-          label: 'Include Word Problems',
-          description: 'Include real-world coordinate problems'
-        },
-        coordinateRange: {
-          type: 'number',
-          label: 'Coordinate Range',
-          description: 'Maximum coordinate value (both positive and negative)',
-          min: 5,
-          max: 20
-        },
-        allowNegatives: {
-          type: 'boolean',
-          label: 'Allow Negative Coordinates',
-          description: 'Include negative coordinates'
-        },
-        allowDecimals: {
-          type: 'boolean',
-          label: 'Allow Decimal Coordinates',
-          description: 'Include decimal coordinate values'
-        },
-        includeOrigin: {
-          type: 'boolean',
-          label: 'Include Origin',
-          description: 'Include problems involving the origin (0,0)'
-        },
-        showAxesLabels: {
-          type: 'boolean',
-          label: 'Show Axes Labels',
-          description: 'Show x and y axis labels'
-        },
-        showGridNumbers: {
-          type: 'boolean',
-          label: 'Show Grid Numbers',
-          description: 'Show numbers on grid lines'
-        },
-        gridSize: {
-          type: 'select',
-          label: 'Grid Size',
-          description: 'Spacing between grid lines',
-          options: [
-            { value: 1, label: '1 unit' },
-            { value: 2, label: '2 units' },
-            { value: 5, label: '5 units' }
-          ]
-        },
-        showVisualDiagrams: {
-          type: 'boolean',
-          label: 'Show Visual Diagrams',
-          description: 'Include coordinate grid diagrams'
-        },
-        diagramSize: {
-          type: 'select',
-          label: 'Diagram Size',
-          description: 'Size of the coordinate grid diagrams',
-          options: [
-            { value: 'small', label: 'Small' },
-            { value: 'medium', label: 'Medium' },
-            { value: 'large', label: 'Large' }
-          ]
-        },
-        diagramTheme: {
-          type: 'select',
-          label: 'Diagram Theme',
-          description: 'Visual style for diagrams',
-          options: [
-            { value: 'educational', label: 'Educational' },
-            { value: 'blueprint', label: 'Blueprint' },
-            { value: 'minimal', label: 'Minimal' },
-            { value: 'colorful', label: 'Colorful' }
-          ]
-        }
-      }
+        
+        // Preset configurations for quick setup
+        presets: [
+          schemaV2.createPreset({
+            id: 'basic-coordinates',
+            label: 'Basic Coordinates',
+            description: 'Simple plotting and reading in first quadrant',
+            icon: 'looks_one',
+            category: 'difficulty',
+            values: {
+              problemCount: 10,
+              includePlotting: true,
+              includeReading: true,
+              includeDistance: false,
+              includeQuadrants: false,
+              includeMidpoint: false,
+              includePatterns: false,
+              includeWordProblems: false,
+              coordinateRange: 8,
+              allowNegatives: false,
+              allowDecimals: false,
+              includeOrigin: true,
+              showAxesLabels: true,
+              showGridNumbers: true,
+              gridSize: 1,
+              showVisualDiagrams: true,
+              diagramSize: 'medium',
+              diagramTheme: 'educational'
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'four-quadrants',
+            label: 'Four Quadrants',
+            description: 'Practice with all four quadrants and negative coordinates',
+            icon: 'grid_4x4',
+            category: 'scope',
+            values: {
+              problemCount: 12,
+              includePlotting: true,
+              includeReading: true,
+              includeDistance: false,
+              includeQuadrants: true,
+              includeMidpoint: false,
+              includePatterns: false,
+              includeWordProblems: false,
+              coordinateRange: 10,
+              allowNegatives: true,
+              allowDecimals: false,
+              includeOrigin: true,
+              showAxesLabels: true,
+              showGridNumbers: true,
+              gridSize: 1,
+              showVisualDiagrams: true,
+              diagramSize: 'medium',
+              diagramTheme: 'educational'
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'distance-and-midpoint',
+            label: 'Distance & Midpoint',
+            description: 'Calculate distances and midpoints between coordinates',
+            icon: 'straighten',
+            category: 'scope',
+            values: {
+              problemCount: 8,
+              includePlotting: false,
+              includeReading: false,
+              includeDistance: true,
+              includeQuadrants: false,
+              includeMidpoint: true,
+              includePatterns: false,
+              includeWordProblems: false,
+              coordinateRange: 8,
+              allowNegatives: false,
+              allowDecimals: false,
+              includeOrigin: true,
+              showAxesLabels: true,
+              showGridNumbers: true,
+              gridSize: 1,
+              showVisualDiagrams: true,
+              diagramSize: 'medium',
+              diagramTheme: 'educational'
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'coordinate-patterns',
+            label: 'Coordinate Patterns',
+            description: 'Explore patterns and sequences in coordinates',
+            icon: 'trending_up',
+            category: 'scope',
+            values: {
+              problemCount: 10,
+              includePlotting: false,
+              includeReading: false,
+              includeDistance: false,
+              includeQuadrants: false,
+              includeMidpoint: false,
+              includePatterns: true,
+              includeWordProblems: false,
+              coordinateRange: 10,
+              allowNegatives: false,
+              allowDecimals: false,
+              includeOrigin: true,
+              showAxesLabels: true,
+              showGridNumbers: true,
+              gridSize: 1,
+              showVisualDiagrams: true,
+              diagramSize: 'medium',
+              diagramTheme: 'educational'
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'real-world-coordinates',
+            label: 'Real-World Coordinates',
+            description: 'Word problems with coordinate applications',
+            icon: 'business',
+            category: 'scope',
+            values: {
+              problemCount: 8,
+              includePlotting: true,
+              includeReading: true,
+              includeDistance: true,
+              includeQuadrants: true,
+              includeMidpoint: false,
+              includePatterns: false,
+              includeWordProblems: true,
+              coordinateRange: 10,
+              allowNegatives: true,
+              allowDecimals: false,
+              includeOrigin: true,
+              showAxesLabels: true,
+              showGridNumbers: true,
+              gridSize: 1,
+              showVisualDiagrams: true,
+              diagramSize: 'medium',
+              diagramTheme: 'colorful'
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'comprehensive-coordinates',
+            label: 'Comprehensive Coordinates',
+            description: 'Complete practice with all coordinate concepts',
+            icon: 'all_inclusive',
+            category: 'scope',
+            values: {
+              problemCount: 15,
+              includePlotting: true,
+              includeReading: true,
+              includeDistance: true,
+              includeQuadrants: true,
+              includeMidpoint: true,
+              includePatterns: true,
+              includeWordProblems: false,
+              coordinateRange: 10,
+              allowNegatives: true,
+              allowDecimals: false,
+              includeOrigin: true,
+              showAxesLabels: true,
+              showGridNumbers: true,
+              gridSize: 1,
+              showVisualDiagrams: true,
+              diagramSize: 'medium',
+              diagramTheme: 'educational'
+            }
+          })
+        ]
+      })
     })
   }
 
@@ -171,10 +441,20 @@ export class CoordinateBasicsGenerator extends BaseGenerator {
   generateProblem(parameters = {}) {
     const params = { ...this.defaultParameters, ...parameters }
     
-    // Validate parameters
-    const validation = this.validateParameters(params)
+    // Validate parameters using Parameter Schema V2
+    const validation = this.parameterSchema.validate(params)
     if (!validation.isValid) {
       throw new Error(`Invalid parameters: ${validation.errors.join(', ')}`)
+    }
+    
+    // Additional custom validation
+    const customErrors = []
+    if (!params.includePlotting && !params.includeReading && !params.includeDistance &&
+        !params.includeQuadrants && !params.includeMidpoint && !params.includePatterns) {
+      customErrors.push('At least one problem type must be enabled')
+    }
+    if (customErrors.length > 0) {
+      throw new Error(`Invalid parameters: ${customErrors.join(', ')}`)
     }
     
     // Build array of enabled problem types

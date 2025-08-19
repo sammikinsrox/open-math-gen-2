@@ -1,4 +1,5 @@
 import { BaseGenerator } from '../BaseGenerator.js'
+import { ParameterSchemaV2 } from '../ParameterSchemaV2.js'
 
 /**
  * Place Value Generator
@@ -6,6 +7,8 @@ import { BaseGenerator } from '../BaseGenerator.js'
  */
 export class PlaceValueGenerator extends BaseGenerator {
   constructor() {
+    const schemaV2 = new ParameterSchemaV2()
+    
     super({
       name: 'Place Value',
       description: 'Generate place value problems with digit identification and number forms',
@@ -29,80 +32,261 @@ export class PlaceValueGenerator extends BaseGenerator {
         problemType: 'identify-place',
         includeDecimals: false,
         maxDecimalPlaces: 2,
-        questionStyle: 'standard'
+        questionStyle: 'standard',
+        complexityLevel: 'basic'
       },
       
-      parameterSchema: {
-        problemCount: {
-          type: 'number',
-          label: 'Number of Problems',
-          description: 'How many place value problems to generate',
-          min: 1,
-          max: 100,
-          required: true
+      // Enhanced Parameter Schema V2 with beautiful categorization
+      parameterSchema: schemaV2.createSchema({
+        categories: {
+          general: schemaV2.createCategory({
+            id: 'general',
+            label: 'General Settings',
+            description: 'Basic configuration options',
+            icon: 'settings',
+            color: 'blue',
+            order: 1,
+            parameters: {
+              problemCount: schemaV2.createParameter({
+                type: 'number',
+                label: 'Number of Problems',
+                description: 'How many place value problems to generate',
+                min: 1,
+                max: 50,
+                required: true,
+                slider: true,
+                presets: [5, 10, 15, 20],
+                order: 1
+              }),
+              complexityLevel: schemaV2.createParameter({
+                type: 'select',
+                label: 'Complexity Level',
+                description: 'Controls the difficulty and number ranges',
+                variant: 'cards',
+                options: [
+                  { 
+                    value: 'basic', 
+                    label: 'Basic',
+                    description: '2-3 digit numbers, whole numbers only'
+                  },
+                  { 
+                    value: 'intermediate', 
+                    label: 'Intermediate',
+                    description: '3-5 digit numbers, optional decimals'
+                  },
+                  { 
+                    value: 'advanced', 
+                    label: 'Advanced',
+                    description: 'Large numbers with decimals up to millions'
+                  }
+                ],
+                order: 2
+              })
+            }
+          }),
+          
+          numberRanges: schemaV2.createCategory({
+            id: 'numberRanges',
+            label: 'Number Configuration',
+            description: 'Control the size and type of numbers used',
+            icon: 'tag',
+            color: 'green',
+            order: 2,
+            parameters: {
+              minDigits: schemaV2.createParameter({
+                type: 'number',
+                label: 'Minimum Digits',
+                description: 'Minimum number of digits in whole number part',
+                min: 1,
+                max: 8,
+                required: true,
+                presets: [1, 2, 3, 4],
+                helpText: 'Controls the smallest numbers used (1 digit = 1-9, 2 digits = 10-99, etc.)',
+                order: 1
+              }),
+              maxDigits: schemaV2.createParameter({
+                type: 'number',
+                label: 'Maximum Digits',
+                description: 'Maximum number of digits in whole number part',
+                min: 1,
+                max: 10,
+                required: true,
+                presets: [3, 5, 6, 8, 10],
+                helpText: 'Controls the largest numbers used (5 digits = up to 99,999)',
+                order: 2
+              }),
+              includeDecimals: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Include Decimal Numbers',
+                description: 'Include decimal numbers in place value problems',
+                helpText: 'Adds tenths, hundredths, thousandths places',
+                order: 3
+              }),
+              maxDecimalPlaces: schemaV2.createParameter({
+                type: 'number',
+                label: 'Maximum Decimal Places',
+                description: 'Maximum number of decimal places when decimals are included',
+                min: 1,
+                max: 4,
+                required: true,
+                presets: [1, 2, 3, 4],
+                helpText: '2 places = hundredths, 3 places = thousandths, etc.',
+                order: 4
+              })
+            }
+          }),
+          
+          problemTypes: schemaV2.createCategory({
+            id: 'problemTypes',
+            label: 'Problem Types',
+            description: 'Choose what types of place value problems to generate',
+            icon: 'quiz',
+            color: 'purple',
+            order: 3,
+            parameters: {
+              problemType: schemaV2.createParameter({
+                type: 'select',
+                label: 'Problem Type Focus',
+                description: 'Type of place value problems to generate',
+                variant: 'cards',
+                options: [
+                  {
+                    value: 'identify-place',
+                    label: 'Identify Digit',
+                    description: 'What digit is in the tens place in 345?'
+                  },
+                  {
+                    value: 'write-expanded',
+                    label: 'Write Expanded Form',
+                    description: 'Write 345 in expanded form (300 + 40 + 5)'
+                  },
+                  {
+                    value: 'write-standard',
+                    label: 'Write Standard Form',
+                    description: 'Convert expanded form back to standard number'
+                  },
+                  {
+                    value: 'mixed',
+                    label: 'Mixed Practice',
+                    description: 'Random combination of all problem types'
+                  }
+                ],
+                order: 1
+              }),
+              questionStyle: schemaV2.createParameter({
+                type: 'select',
+                label: 'Question Style',
+                description: 'How to present the questions and numbers',
+                options: [
+                  { value: 'standard', label: 'Standard Notation', description: 'Use regular number format (345)' },
+                  { value: 'word-form', label: 'Word Form', description: 'Use written numbers (three hundred forty-five)' },
+                  { value: 'mixed', label: 'Mixed Styles', description: 'Randomly use both formats' }
+                ],
+                order: 2
+              })
+            }
+          })
         },
-        minDigits: {
-          type: 'number',
-          label: 'Minimum Digits',
-          description: 'Minimum number of digits in the numbers',
-          min: 1,
-          max: 8,
-          required: true
-        },
-        maxDigits: {
-          type: 'number',
-          label: 'Maximum Digits',
-          description: 'Maximum number of digits in the numbers',
-          min: 1,
-          max: 10,
-          required: true
-        },
-        problemType: {
-          type: 'string',
-          label: 'Problem Type',
-          description: 'Type of place value problem',
-          options: ['identify-place', 'write-expanded', 'write-standard', 'mixed']
-        },
-        includeDecimals: {
-          type: 'boolean',
-          label: 'Include Decimals',
-          description: 'Include decimal numbers in problems'
-        },
-        maxDecimalPlaces: {
-          type: 'number',
-          label: 'Maximum Decimal Places',
-          description: 'Maximum number of decimal places when decimals are included',
-          min: 1,
-          max: 4,
-          required: true
-        },
-        questionStyle: {
-          type: 'string',
-          label: 'Question Style',
-          description: 'How to present the questions',
-          options: ['standard', 'word-form', 'mixed']
-        }
-      }
+        
+        // Preset configurations for quick setup
+        presets: [
+          schemaV2.createPreset({
+            id: 'elementary-basics',
+            label: 'Elementary Basics',
+            description: 'Simple 2-3 digit place value for grades 2-3',
+            icon: 'school',
+            category: 'difficulty',
+            values: {
+              problemCount: 10,
+              complexityLevel: 'basic',
+              minDigits: 2,
+              maxDigits: 3,
+              problemType: 'identify-place',
+              includeDecimals: false,
+              maxDecimalPlaces: 1,
+              questionStyle: 'standard'
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'expanded-form-practice',
+            label: 'Expanded Form Practice',
+            description: 'Focus on writing numbers in expanded form',
+            icon: 'expand_more',
+            category: 'scope',
+            values: {
+              problemCount: 12,
+              complexityLevel: 'intermediate',
+              minDigits: 3,
+              maxDigits: 5,
+              problemType: 'write-expanded',
+              includeDecimals: false,
+              maxDecimalPlaces: 2,
+              questionStyle: 'standard'
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'decimal-place-value',
+            label: 'Decimal Place Value',
+            description: 'Practice with decimal numbers and places',
+            icon: 'more_horiz',
+            category: 'difficulty',
+            values: {
+              problemCount: 8,
+              complexityLevel: 'intermediate',
+              minDigits: 2,
+              maxDigits: 4,
+              problemType: 'identify-place',
+              includeDecimals: true,
+              maxDecimalPlaces: 3,
+              questionStyle: 'standard'
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'comprehensive-practice',
+            label: 'Comprehensive Practice',
+            description: 'Mixed problems with large numbers and decimals',
+            icon: 'all_inclusive',
+            category: 'scope',
+            values: {
+              problemCount: 15,
+              complexityLevel: 'advanced',
+              minDigits: 4,
+              maxDigits: 7,
+              problemType: 'mixed',
+              includeDecimals: true,
+              maxDecimalPlaces: 3,
+              questionStyle: 'mixed'
+            }
+          })
+        ]
+      })
     })
   }
 
   generateProblem(parameters = {}) {
     const params = { ...this.defaultParameters, ...parameters }
     
-    const validation = this.validateParameters(params)
+    // Apply complexity level overrides for better defaults
+    const adjustedParams = this.applyComplexityLevelAdjustments(params)
+    
+    // Validate parameters
+    const validation = this.validateParameters(adjustedParams)
     if (!validation.isValid) {
       throw new Error(`Invalid parameters: ${validation.errors.join(', ')}`)
     }
     
     // Generate a random number within the digit range
-    const number = this.generateNumber(params)
+    const number = this.generateNumber(adjustedParams)
     
     // Choose problem type
-    const problemType = params.problemType === 'mixed' ? 
+    const problemType = adjustedParams.problemType === 'mixed' ? 
       this.getRandomElement(['identify-place', 'write-expanded', 'write-standard']) :
-      params.problemType
+      adjustedParams.problemType
     
-    return this.createProblemByType(number, problemType, params)
+    return this.createProblemByType(number, problemType, adjustedParams)
   }
 
   generateNumber(params) {
@@ -198,6 +382,9 @@ export class PlaceValueGenerator extends BaseGenerator {
         number: number,
         place: place,
         digit: digit,
+        complexityLevel: params.complexityLevel,
+        hasDecimals: number.toString().includes('.'),
+        digitCount: number.toString().replace('.', '').length,
         difficulty: this.difficulty,
         estimatedTime: '45 seconds'
       }
@@ -223,6 +410,9 @@ export class PlaceValueGenerator extends BaseGenerator {
         operation: 'place-value-expanded',
         number: number,
         expanded: expanded,
+        complexityLevel: params.complexityLevel,
+        hasDecimals: number.toString().includes('.'),
+        digitCount: number.toString().replace('.', '').length,
         difficulty: this.difficulty,
         estimatedTime: '60 seconds'
       }
@@ -248,6 +438,9 @@ export class PlaceValueGenerator extends BaseGenerator {
         operation: 'place-value-standard',
         number: number,
         expanded: expanded,
+        complexityLevel: params.complexityLevel,
+        hasDecimals: number.toString().includes('.'),
+        digitCount: number.toString().replace('.', '').length,
         difficulty: this.difficulty,
         estimatedTime: '60 seconds'
       }
@@ -320,6 +513,42 @@ export class PlaceValueGenerator extends BaseGenerator {
 
   getRandomElement(array) {
     return array[Math.floor(Math.random() * array.length)]
+  }
+
+  /**
+   * Apply complexity level adjustments to parameters
+   * @param {Object} params - Original parameters
+   * @returns {Object} - Adjusted parameters
+   */
+  applyComplexityLevelAdjustments(params) {
+    const adjusted = { ...params }
+    
+    // Apply complexity level overrides for better defaults
+    if (params.complexityLevel === 'basic') {
+      // Basic: simple 2-3 digit numbers, no decimals
+      adjusted.minDigits = Math.max(1, Math.min(adjusted.minDigits, 3))
+      adjusted.maxDigits = Math.min(adjusted.maxDigits, 3)
+      adjusted.maxDecimalPlaces = Math.min(adjusted.maxDecimalPlaces, 1)
+      // Prefer no decimals for basic level
+      if (!adjusted.hasOwnProperty('includeDecimals')) {
+        adjusted.includeDecimals = false
+      }
+    } else if (params.complexityLevel === 'intermediate') {
+      // Intermediate: 3-5 digit numbers, optional decimals
+      adjusted.minDigits = Math.max(2, Math.min(adjusted.minDigits, 5))
+      adjusted.maxDigits = Math.min(adjusted.maxDigits, 5)
+      adjusted.maxDecimalPlaces = Math.min(adjusted.maxDecimalPlaces, 3)
+    } else if (params.complexityLevel === 'advanced') {
+      // Advanced: large numbers with decimals
+      adjusted.maxDigits = Math.max(adjusted.maxDigits, 5)
+      adjusted.maxDecimalPlaces = Math.max(adjusted.maxDecimalPlaces, 2)
+      // Enable decimals for advanced level
+      if (!adjusted.hasOwnProperty('includeDecimals')) {
+        adjusted.includeDecimals = true
+      }
+    }
+    
+    return adjusted
   }
 }
 

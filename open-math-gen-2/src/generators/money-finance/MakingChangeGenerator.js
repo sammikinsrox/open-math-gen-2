@@ -1,4 +1,5 @@
 import { BaseGenerator } from '../BaseGenerator.js'
+import { ParameterSchemaV2 } from '../ParameterSchemaV2.js'
 
 /**
  * Making Change Generator
@@ -6,6 +7,8 @@ import { BaseGenerator } from '../BaseGenerator.js'
  */
 export class MakingChangeGenerator extends BaseGenerator {
   constructor() {
+    const schemaV2 = new ParameterSchemaV2()
+    
     super({
       name: 'Making Change',
       description: 'Generate problems involving calculating change from purchases and transactions',
@@ -39,105 +42,340 @@ export class MakingChangeGenerator extends BaseGenerator {
         maxItems: 3
       },
       
-      parameterSchema: {
-        problemCount: {
-          type: 'number',
-          label: 'Number of Problems',
-          description: 'How many change-making problems to generate',
-          min: 1,
-          max: 100,
-          required: true
+      // Enhanced Parameter Schema V2 with beautiful categorization
+      parameterSchema: schemaV2.createSchema({
+        categories: {
+          general: schemaV2.createCategory({
+            id: 'general',
+            label: 'General Settings',
+            description: 'Basic configuration options',
+            icon: 'settings',
+            color: 'blue',
+            order: 1,
+            parameters: {
+              problemCount: schemaV2.createParameter({
+                type: 'number',
+                label: 'Number of Problems',
+                description: 'How many change-making problems to generate',
+                min: 1,
+                max: 50,
+                required: true,
+                slider: true,
+                presets: [5, 8, 10, 15],
+                order: 1
+              })
+            }
+          }),
+          
+          problemTypes: schemaV2.createCategory({
+            id: 'problemTypes',
+            label: 'Problem Types',
+            description: 'Choose which types of change problems to include',
+            icon: 'point_of_sale',
+            color: 'green',
+            order: 2,
+            parameters: {
+              includeBasicChange: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Basic Change',
+                description: 'Simple single-item change problems',
+                helpText: 'Example: Item costs $3.75, pay with $5.00, get $1.25 change',
+                order: 1
+              }),
+              includeMultipleItems: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Multiple Items',
+                description: 'Problems with multiple items to purchase',
+                helpText: 'Example: Buy 3 items totaling $12.50, pay with $20.00',
+                order: 2
+              }),
+              includeTaxCalculation: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Tax Calculation',
+                description: 'Include problems with sales tax',
+                helpText: 'Example: Item costs $10.00 + 8% tax = $10.80 total',
+                order: 3
+              }),
+              includeExactChange: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Exact Change',
+                description: 'Problems asking for exact payment amount',
+                helpText: 'Example: What exact amount is needed for a $4.37 item?',
+                order: 4
+              }),
+              includeWordProblems: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Word Problems',
+                description: 'Real-world shopping scenarios with context',
+                helpText: 'Examples: Sarah buys a toy, Mike at the store, Emma shopping',
+                order: 5
+              })
+            }
+          }),
+          
+          priceRanges: schemaV2.createCategory({
+            id: 'priceRanges',
+            label: 'Price Ranges',
+            description: 'Control the range of item prices',
+            icon: 'attach_money',
+            color: 'purple',
+            order: 3,
+            parameters: {
+              itemPriceMin: schemaV2.createParameter({
+                type: 'number',
+                label: 'Minimum Item Price',
+                description: 'Lowest price for items (in dollars)',
+                min: 0.01,
+                max: 100.00,
+                required: true,
+                slider: true,
+                presets: [0.25, 0.50, 1.00, 2.00],
+                helpText: 'Controls the cheapest items in problems',
+                order: 1
+              }),
+              itemPriceMax: schemaV2.createParameter({
+                type: 'number',
+                label: 'Maximum Item Price',
+                description: 'Highest price for items (in dollars)',
+                min: 0.01,
+                max: 1000.00,
+                required: true,
+                slider: true,
+                presets: [5.00, 10.00, 20.00, 50.00],
+                helpText: 'Controls the most expensive items in problems',
+                order: 2
+              }),
+              allowCentsInPrice: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Allow Cents in Prices',
+                description: 'Allow prices with cents (not just whole dollars)',
+                helpText: 'Examples: $3.47, $12.99 vs $3.00, $12.00',
+                order: 3
+              })
+            }
+          }),
+          
+          paymentOptions: schemaV2.createCategory({
+            id: 'paymentOptions',
+            label: 'Payment Options',
+            description: 'Control how customers pay for items',
+            icon: 'credit_card',
+            color: 'orange',
+            order: 4,
+            parameters: {
+              useCommonPayments: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Use Common Payment Amounts',
+                description: 'Use realistic bill denominations',
+                helpText: 'Uses $1, $5, $10, $20, $50, $100 bills instead of random amounts',
+                order: 1
+              }),
+              paymentMin: schemaV2.createParameter({
+                type: 'number',
+                label: 'Minimum Payment',
+                description: 'Smallest payment amount (in dollars)',
+                min: 0.01,
+                max: 100.00,
+                required: true,
+                slider: true,
+                presets: [1.00, 5.00, 10.00, 20.00],
+                helpText: 'Lower bound for payment amounts',
+                order: 2
+              }),
+              paymentMax: schemaV2.createParameter({
+                type: 'number',
+                label: 'Maximum Payment',
+                description: 'Largest payment amount (in dollars)',
+                min: 1.00,
+                max: 10000.00,
+                required: true,
+                slider: true,
+                presets: [20.00, 50.00, 100.00, 200.00],
+                helpText: 'Upper bound for payment amounts',
+                order: 3
+              })
+            }
+          }),
+          
+          displayOptions: schemaV2.createCategory({
+            id: 'displayOptions',
+            label: 'Display Options',
+            description: 'Control how solutions are presented',
+            icon: 'visibility',
+            color: 'teal',
+            order: 5,
+            parameters: {
+              showSteps: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Show Calculation Steps',
+                description: 'Display step-by-step change calculation',
+                helpText: 'Shows: Payment - Cost = Change with intermediate steps',
+                order: 1
+              }),
+              maxItems: schemaV2.createParameter({
+                type: 'number',
+                label: 'Maximum Items per Problem',
+                description: 'Maximum number of items in multi-item problems',
+                min: 2,
+                max: 5,
+                required: true,
+                slider: true,
+                presets: [2, 3, 4, 5],
+                helpText: 'Only applies to multiple item problems',
+                order: 2
+              })
+            }
+          })
         },
-        includeBasicChange: {
-          type: 'boolean',
-          label: 'Include Basic Change',
-          description: 'Include simple single-item change problems'
-        },
-        includeMultipleItems: {
-          type: 'boolean',
-          label: 'Include Multiple Items',
-          description: 'Include problems with multiple items'
-        },
-        includeTaxCalculation: {
-          type: 'boolean',
-          label: 'Include Tax Calculation',
-          description: 'Include problems with sales tax'
-        },
-        includeExactChange: {
-          type: 'boolean',
-          label: 'Include Exact Change',
-          description: 'Include problems asking for exact change'
-        },
-        includeWordProblems: {
-          type: 'boolean',
-          label: 'Include Word Problems',
-          description: 'Include real-world shopping scenarios'
-        },
-        itemPriceMin: {
-          type: 'number',
-          label: 'Minimum Item Price',
-          description: 'Lowest price for items (in dollars)',
-          min: 0.01,
-          max: 100.00,
-          required: true
-        },
-        itemPriceMax: {
-          type: 'number',
-          label: 'Maximum Item Price',
-          description: 'Highest price for items (in dollars)',
-          min: 0.01,
-          max: 1000.00,
-          required: true
-        },
-        allowCentsInPrice: {
-          type: 'boolean',
-          label: 'Allow Cents in Prices',
-          description: 'Allow prices with cents (e.g., $3.47)'
-        },
-        paymentMin: {
-          type: 'number',
-          label: 'Minimum Payment',
-          description: 'Smallest payment amount (in dollars)',
-          min: 0.01,
-          max: 100.00,
-          required: true
-        },
-        paymentMax: {
-          type: 'number',
-          label: 'Maximum Payment',
-          description: 'Largest payment amount (in dollars)',
-          min: 1.00,
-          max: 10000.00,
-          required: true
-        },
-        useCommonPayments: {
-          type: 'boolean',
-          label: 'Use Common Payments',
-          description: 'Use common payment amounts ($1, $5, $10, $20)'
-        },
-        showSteps: {
-          type: 'boolean',
-          label: 'Show Calculation Steps',
-          description: 'Show step-by-step change calculation'
-        },
-        maxItems: {
-          type: 'number',
-          label: 'Maximum Items',
-          description: 'Maximum number of items in multi-item problems',
-          min: 2,
-          max: 5,
-          required: true
-        }
-      }
+        
+        // Preset configurations for quick setup
+        presets: [
+          schemaV2.createPreset({
+            id: 'basic-change',
+            label: 'Basic Change',
+            description: 'Simple change problems for beginners',
+            icon: 'looks_one',
+            category: 'difficulty',
+            values: {
+              problemCount: 10,
+              includeBasicChange: true,
+              includeMultipleItems: false,
+              includeTaxCalculation: false,
+              includeExactChange: false,
+              includeWordProblems: true,
+              itemPriceMin: 0.25,
+              itemPriceMax: 10.00,
+              allowCentsInPrice: true,
+              paymentMin: 1.00,
+              paymentMax: 20.00,
+              useCommonPayments: true,
+              showSteps: true,
+              maxItems: 3
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'shopping-practice',
+            label: 'Shopping Practice',
+            description: 'Real-world shopping scenarios with multiple items',
+            icon: 'shopping_cart',
+            category: 'scope',
+            values: {
+              problemCount: 12,
+              includeBasicChange: true,
+              includeMultipleItems: true,
+              includeTaxCalculation: false,
+              includeExactChange: false,
+              includeWordProblems: true,
+              itemPriceMin: 0.50,
+              itemPriceMax: 15.00,
+              allowCentsInPrice: true,
+              paymentMin: 5.00,
+              paymentMax: 50.00,
+              useCommonPayments: true,
+              showSteps: true,
+              maxItems: 4
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'tax-included',
+            label: 'Tax Included',
+            description: 'Practice with sales tax calculations',
+            icon: 'receipt',
+            category: 'scope',
+            values: {
+              problemCount: 10,
+              includeBasicChange: true,
+              includeMultipleItems: false,
+              includeTaxCalculation: true,
+              includeExactChange: false,
+              includeWordProblems: true,
+              itemPriceMin: 1.00,
+              itemPriceMax: 20.00,
+              allowCentsInPrice: false,
+              paymentMin: 5.00,
+              paymentMax: 50.00,
+              useCommonPayments: true,
+              showSteps: true,
+              maxItems: 3
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'exact-change-practice',
+            label: 'Exact Change Practice',
+            description: 'Practice identifying exact payment amounts',
+            icon: 'payments',
+            category: 'scope',
+            values: {
+              problemCount: 8,
+              includeBasicChange: false,
+              includeMultipleItems: false,
+              includeTaxCalculation: false,
+              includeExactChange: true,
+              includeWordProblems: false,
+              itemPriceMin: 0.25,
+              itemPriceMax: 25.00,
+              allowCentsInPrice: true,
+              paymentMin: 1.00,
+              paymentMax: 50.00,
+              useCommonPayments: false,
+              showSteps: false,
+              maxItems: 3
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'comprehensive-change',
+            label: 'Comprehensive Change',
+            description: 'Mixed practice with all change problem types',
+            icon: 'all_inclusive',
+            category: 'scope',
+            values: {
+              problemCount: 15,
+              includeBasicChange: true,
+              includeMultipleItems: true,
+              includeTaxCalculation: true,
+              includeExactChange: true,
+              includeWordProblems: true,
+              itemPriceMin: 0.25,
+              itemPriceMax: 30.00,
+              allowCentsInPrice: true,
+              paymentMin: 1.00,
+              paymentMax: 100.00,
+              useCommonPayments: true,
+              showSteps: true,
+              maxItems: 5
+            }
+          })
+        ]
+      })
     })
   }
 
   generateProblem(parameters = {}) {
     const params = { ...this.defaultParameters, ...parameters }
     
-    const validation = this.validateParameters(params)
+    // Validate parameters using Parameter Schema V2
+    const validation = this.parameterSchema.validate(params)
     if (!validation.isValid) {
       throw new Error(`Invalid parameters: ${validation.errors.join(', ')}`)
+    }
+    
+    // Additional custom validation
+    const customErrors = []
+    if (params.itemPriceMin > params.itemPriceMax) {
+      customErrors.push('Minimum Item Price cannot be greater than Maximum Item Price')
+    }
+    if (params.paymentMin > params.paymentMax) {
+      customErrors.push('Minimum Payment cannot be greater than Maximum Payment')
+    }
+    if (!params.includeBasicChange && !params.includeMultipleItems && !params.includeTaxCalculation && !params.includeExactChange) {
+      customErrors.push('At least one problem type must be enabled')
+    }
+    if (customErrors.length > 0) {
+      throw new Error(`Invalid parameters: ${customErrors.join(', ')}`)
     }
     
     // Build array of enabled problem types

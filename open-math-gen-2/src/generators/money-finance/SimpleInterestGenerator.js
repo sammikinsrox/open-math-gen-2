@@ -1,4 +1,5 @@
 import { BaseGenerator } from '../BaseGenerator.js'
+import { ParameterSchemaV2 } from '../ParameterSchemaV2.js'
 
 /**
  * Simple Interest Generator
@@ -6,6 +7,8 @@ import { BaseGenerator } from '../BaseGenerator.js'
  */
 export class SimpleInterestGenerator extends BaseGenerator {
   constructor() {
+    const schemaV2 = new ParameterSchemaV2()
+    
     super({
       name: 'Simple Interest',
       description: 'Generate problems involving simple interest calculations and financial scenarios',
@@ -42,123 +45,422 @@ export class SimpleInterestGenerator extends BaseGenerator {
         showSteps: true
       },
       
-      parameterSchema: {
-        problemCount: {
-          type: 'number',
-          label: 'Number of Problems',
-          description: 'How many simple interest problems to generate',
-          min: 1,
-          max: 100,
-          required: true
+      // Enhanced Parameter Schema V2 with beautiful categorization
+      parameterSchema: schemaV2.createSchema({
+        categories: {
+          general: schemaV2.createCategory({
+            id: 'general',
+            label: 'General Settings',
+            description: 'Basic configuration options',
+            icon: 'settings',
+            color: 'blue',
+            order: 1,
+            parameters: {
+              problemCount: schemaV2.createParameter({
+                type: 'number',
+                label: 'Number of Problems',
+                description: 'How many simple interest problems to generate',
+                min: 1,
+                max: 50,
+                required: true,
+                slider: true,
+                presets: [5, 8, 10, 15],
+                order: 1
+              })
+            }
+          }),
+          
+          calculationTypes: schemaV2.createCategory({
+            id: 'calculationTypes',
+            label: 'Calculation Types',
+            description: 'Choose which simple interest calculations to include',
+            icon: 'account_balance',
+            color: 'green',
+            order: 2,
+            parameters: {
+              includeFindInterest: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Find Interest Amount',
+                description: 'Calculate interest earned or owed (I = PRT)',
+                helpText: 'Examples: $1000 at 5% for 2 years → Interest = $100',
+                order: 1
+              }),
+              includeFindPrincipal: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Find Principal Amount',
+                description: 'Find original amount invested or borrowed',
+                helpText: 'Examples: Interest $100, 5% for 2 years → Principal = $1000',
+                order: 2
+              }),
+              includeFindRate: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Find Interest Rate',
+                description: 'Calculate the annual interest rate',
+                helpText: 'Examples: $1000 earns $100 in 2 years → Rate = 5%',
+                order: 3
+              }),
+              includeFindTime: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Find Time Period',
+                description: 'Calculate how long money is invested/borrowed',
+                helpText: 'Examples: $1000 at 5% earns $100 → Time = 2 years',
+                order: 4
+              }),
+              includeFindTotal: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Find Total Amount',
+                description: 'Calculate principal plus interest',
+                helpText: 'Examples: $1000 at 5% for 2 years → Total = $1100',
+                order: 5
+              })
+            }
+          }),
+          
+          principalRanges: schemaV2.createCategory({
+            id: 'principalRanges',
+            label: 'Principal Ranges',
+            description: 'Control the range of principal amounts',
+            icon: 'paid',
+            color: 'purple',
+            order: 3,
+            parameters: {
+              principalMin: schemaV2.createParameter({
+                type: 'number',
+                label: 'Minimum Principal',
+                description: 'Smallest principal amount in dollars',
+                min: 1,
+                max: 100000,
+                required: true,
+                slider: true,
+                presets: [100, 500, 1000, 2000],
+                helpText: 'Lower bound for investment/loan amounts',
+                order: 1
+              }),
+              principalMax: schemaV2.createParameter({
+                type: 'number',
+                label: 'Maximum Principal',
+                description: 'Largest principal amount in dollars',
+                min: 1,
+                max: 1000000,
+                required: true,
+                slider: true,
+                presets: [5000, 10000, 25000, 50000],
+                helpText: 'Upper bound for investment/loan amounts',
+                order: 2
+              })
+            }
+          }),
+          
+          interestRates: schemaV2.createCategory({
+            id: 'interestRates',
+            label: 'Interest Rates',
+            description: 'Control the range of interest rates',
+            icon: 'percent',
+            color: 'orange',
+            order: 4,
+            parameters: {
+              rateMin: schemaV2.createParameter({
+                type: 'number',
+                label: 'Minimum Interest Rate',
+                description: 'Lowest annual interest rate as percentage',
+                min: 0.1,
+                max: 50,
+                required: true,
+                slider: true,
+                presets: [1, 2, 3, 5],
+                helpText: 'Lower bound for annual interest rates',
+                order: 1
+              }),
+              rateMax: schemaV2.createParameter({
+                type: 'number',
+                label: 'Maximum Interest Rate',
+                description: 'Highest annual interest rate as percentage',
+                min: 0.1,
+                max: 100,
+                required: true,
+                slider: true,
+                presets: [8, 12, 15, 20],
+                helpText: 'Upper bound for annual interest rates',
+                order: 2
+              }),
+              usePercentages: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Express Rates as Percentages',
+                description: 'Show rates as percentages instead of decimals',
+                helpText: 'Examples: 5% vs 0.05, 12% vs 0.12',
+                order: 3
+              })
+            }
+          }),
+          
+          timePeriods: schemaV2.createCategory({
+            id: 'timePeriods',
+            label: 'Time Periods',
+            description: 'Control the range of time periods',
+            icon: 'schedule',
+            color: 'teal',
+            order: 5,
+            parameters: {
+              timeMin: schemaV2.createParameter({
+                type: 'number',
+                label: 'Minimum Time Period',
+                description: 'Shortest time period in years',
+                min: 0.25,
+                max: 20,
+                required: true,
+                slider: true,
+                presets: [0.5, 1, 2, 3],
+                helpText: 'Lower bound for investment/loan duration',
+                order: 1
+              }),
+              timeMax: schemaV2.createParameter({
+                type: 'number',
+                label: 'Maximum Time Period',
+                description: 'Longest time period in years',
+                min: 0.25,
+                max: 50,
+                required: true,
+                slider: true,
+                presets: [5, 8, 10, 15],
+                helpText: 'Upper bound for investment/loan duration',
+                order: 2
+              }),
+              allowDecimals: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Allow Decimal Values',
+                description: 'Allow decimal amounts and time periods',
+                helpText: 'Examples: $1250.50, 2.5 years, 4.25% vs round numbers',
+                order: 3
+              })
+            }
+          }),
+          
+          problemStyle: schemaV2.createCategory({
+            id: 'problemStyle',
+            label: 'Problem Style',
+            description: 'Control how problems are presented',
+            icon: 'style',
+            color: 'pink',
+            order: 6,
+            parameters: {
+              includeWordProblems: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Include Word Problems',
+                description: 'Include real-world financial scenarios with context',
+                helpText: 'Examples: bank accounts, loans, investments, savings',
+                order: 1
+              }),
+              showFormula: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Show Simple Interest Formula',
+                description: 'Display the formula I = PRT in solution steps',
+                helpText: 'Educational feature showing mathematical formulas',
+                order: 2
+              }),
+              showSteps: schemaV2.createParameter({
+                type: 'boolean',
+                label: 'Show Calculation Steps',
+                description: 'Display detailed step-by-step calculations',
+                helpText: 'Shows substitution and intermediate calculation steps',
+                order: 3
+              })
+            }
+          })
         },
-        includeFindInterest: {
-          type: 'boolean',
-          label: 'Find Interest Amount',
-          description: 'Include problems finding the interest earned/owed'
-        },
-        includeFindPrincipal: {
-          type: 'boolean',
-          label: 'Find Principal',
-          description: 'Include problems finding the principal amount'
-        },
-        includeFindRate: {
-          type: 'boolean',
-          label: 'Find Interest Rate',
-          description: 'Include problems finding the interest rate'
-        },
-        includeFindTime: {
-          type: 'boolean',
-          label: 'Find Time Period',
-          description: 'Include problems finding the time period'
-        },
-        includeFindTotal: {
-          type: 'boolean',
-          label: 'Find Total Amount',
-          description: 'Include problems finding principal + interest'
-        },
-        includeWordProblems: {
-          type: 'boolean',
-          label: 'Include Word Problems',
-          description: 'Include real-world financial scenarios'
-        },
-        principalMin: {
-          type: 'number',
-          label: 'Minimum Principal',
-          description: 'Smallest principal amount (in dollars)',
-          min: 1,
-          max: 100000,
-          required: true
-        },
-        principalMax: {
-          type: 'number',
-          label: 'Maximum Principal',
-          description: 'Largest principal amount (in dollars)',
-          min: 1,
-          max: 1000000,
-          required: true
-        },
-        rateMin: {
-          type: 'number',
-          label: 'Minimum Interest Rate',
-          description: 'Lowest interest rate (as percentage)',
-          min: 0.1,
-          max: 50,
-          required: true
-        },
-        rateMax: {
-          type: 'number',
-          label: 'Maximum Interest Rate',
-          description: 'Highest interest rate (as percentage)',
-          min: 0.1,
-          max: 100,
-          required: true
-        },
-        timeMin: {
-          type: 'number',
-          label: 'Minimum Time Period',
-          description: 'Shortest time period (in years)',
-          min: 0.25,
-          max: 20,
-          required: true
-        },
-        timeMax: {
-          type: 'number',
-          label: 'Maximum Time Period',
-          description: 'Longest time period (in years)',
-          min: 0.25,
-          max: 50,
-          required: true
-        },
-        allowDecimals: {
-          type: 'boolean',
-          label: 'Allow Decimals',
-          description: 'Allow decimal values in calculations'
-        },
-        usePercentages: {
-          type: 'boolean',
-          label: 'Use Percentages',
-          description: 'Express rates as percentages (vs decimals)'
-        },
-        showFormula: {
-          type: 'boolean',
-          label: 'Show Formula',
-          description: 'Display the simple interest formula'
-        },
-        showSteps: {
-          type: 'boolean',
-          label: 'Show Calculation Steps',
-          description: 'Show step-by-step calculations'
-        }
-      }
+        
+        // Preset configurations for quick setup
+        presets: [
+          schemaV2.createPreset({
+            id: 'basic-interest',
+            label: 'Basic Interest',
+            description: 'Simple interest calculation for beginners',
+            icon: 'looks_one',
+            category: 'difficulty',
+            values: {
+              problemCount: 10,
+              includeFindInterest: true,
+              includeFindPrincipal: false,
+              includeFindRate: false,
+              includeFindTime: false,
+              includeFindTotal: true,
+              includeWordProblems: true,
+              principalMin: 500,
+              principalMax: 5000,
+              rateMin: 2,
+              rateMax: 10,
+              timeMin: 1,
+              timeMax: 5,
+              allowDecimals: false,
+              usePercentages: true,
+              showFormula: true,
+              showSteps: true
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'reverse-calculations',
+            label: 'Reverse Calculations',
+            description: 'Find principal, rate, or time from given information',
+            icon: 'swap_horiz',
+            category: 'difficulty',
+            values: {
+              problemCount: 10,
+              includeFindInterest: false,
+              includeFindPrincipal: true,
+              includeFindRate: true,
+              includeFindTime: true,
+              includeFindTotal: false,
+              includeWordProblems: true,
+              principalMin: 1000,
+              principalMax: 8000,
+              rateMin: 3,
+              rateMax: 12,
+              timeMin: 1,
+              timeMax: 8,
+              allowDecimals: true,
+              usePercentages: true,
+              showFormula: true,
+              showSteps: true
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'banking-scenarios',
+            label: 'Banking Scenarios',
+            description: 'Real-world banking and savings problems',
+            icon: 'account_balance',
+            category: 'scope',
+            values: {
+              problemCount: 12,
+              includeFindInterest: true,
+              includeFindPrincipal: false,
+              includeFindRate: false,
+              includeFindTime: false,
+              includeFindTotal: true,
+              includeWordProblems: true,
+              principalMin: 250,
+              principalMax: 15000,
+              rateMin: 1,
+              rateMax: 8,
+              timeMin: 0.5,
+              timeMax: 10,
+              allowDecimals: true,
+              usePercentages: true,
+              showFormula: false,
+              showSteps: false
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'investment-planning',
+            label: 'Investment Planning',
+            description: 'Investment and loan calculation problems',
+            icon: 'trending_up',
+            category: 'scope',
+            values: {
+              problemCount: 10,
+              includeFindInterest: true,
+              includeFindPrincipal: true,
+              includeFindRate: false,
+              includeFindTime: true,
+              includeFindTotal: true,
+              includeWordProblems: true,
+              principalMin: 2000,
+              principalMax: 25000,
+              rateMin: 4,
+              rateMax: 15,
+              timeMin: 1,
+              timeMax: 15,
+              allowDecimals: true,
+              usePercentages: true,
+              showFormula: true,
+              showSteps: true
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'advanced-finance',
+            label: 'Advanced Finance',
+            description: 'Complex problems with all calculation types',
+            icon: 'account_balance_wallet',
+            category: 'difficulty',
+            values: {
+              problemCount: 8,
+              includeFindInterest: true,
+              includeFindPrincipal: true,
+              includeFindRate: true,
+              includeFindTime: true,
+              includeFindTotal: true,
+              includeWordProblems: true,
+              principalMin: 5000,
+              principalMax: 50000,
+              rateMin: 2,
+              rateMax: 18,
+              timeMin: 0.25,
+              timeMax: 20,
+              allowDecimals: true,
+              usePercentages: true,
+              showFormula: true,
+              showSteps: true
+            }
+          }),
+          
+          schemaV2.createPreset({
+            id: 'comprehensive-interest',
+            label: 'Comprehensive Interest',
+            description: 'Complete practice with all simple interest concepts',
+            icon: 'all_inclusive',
+            category: 'scope',
+            values: {
+              problemCount: 15,
+              includeFindInterest: true,
+              includeFindPrincipal: true,
+              includeFindRate: true,
+              includeFindTime: true,
+              includeFindTotal: true,
+              includeWordProblems: true,
+              principalMin: 100,
+              principalMax: 20000,
+              rateMin: 1,
+              rateMax: 15,
+              timeMin: 0.5,
+              timeMax: 12,
+              allowDecimals: true,
+              usePercentages: true,
+              showFormula: true,
+              showSteps: true
+            }
+          })
+        ]
+      })
     })
   }
 
   generateProblem(parameters = {}) {
     const params = { ...this.defaultParameters, ...parameters }
     
-    const validation = this.validateParameters(params)
+    // Validate parameters using Parameter Schema V2
+    const validation = this.parameterSchema.validate(params)
     if (!validation.isValid) {
       throw new Error(`Invalid parameters: ${validation.errors.join(', ')}`)
+    }
+    
+    // Additional custom validation
+    const customErrors = []
+    if (!params.includeFindInterest && !params.includeFindPrincipal && !params.includeFindRate && !params.includeFindTime && !params.includeFindTotal) {
+      customErrors.push('At least one calculation type must be enabled')
+    }
+    if (params.principalMin > params.principalMax) {
+      customErrors.push('Minimum Principal cannot be greater than Maximum Principal')
+    }
+    if (params.rateMin > params.rateMax) {
+      customErrors.push('Minimum Interest Rate cannot be greater than Maximum Interest Rate')
+    }
+    if (params.timeMin > params.timeMax) {
+      customErrors.push('Minimum Time Period cannot be greater than Maximum Time Period')
+    }
+    if (customErrors.length > 0) {
+      throw new Error(`Invalid parameters: ${customErrors.join(', ')}`)
     }
     
     // Build array of enabled problem types

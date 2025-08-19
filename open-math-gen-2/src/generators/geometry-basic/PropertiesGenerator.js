@@ -37,7 +37,7 @@ export class PropertiesGenerator extends BaseGenerator {
         includeAngleProperties: true,
         includeSideProperties: true,
         includeRegularIrregular: false,
-        includeConvexConcave: false,
+        // includeConvexConcave: false,
         includeQuadrilaterals: true,
         includeTriangleTypes: true,
         includeMultipleChoice: false,
@@ -178,14 +178,14 @@ export class PropertiesGenerator extends BaseGenerator {
                 description: 'Distinguish between regular and irregular polygons',
                 helpText: 'All sides and angles equal vs. not equal',
                 order: 3
-              }),
-              includeConvexConcave: schemaV2.createParameter({
-                type: 'boolean',
-                label: 'Convex vs Concave',
-                description: 'Identify convex and concave polygons',
-                helpText: 'All interior angles < 180° vs. some > 180°',
-                order: 4
               })
+              // includeConvexConcave: schemaV2.createParameter({
+              //   type: 'boolean',
+              //   label: 'Convex vs Concave',
+              //   description: 'Identify convex and concave polygons',
+              //   helpText: 'All interior angles < 180° vs. some > 180°',
+              //   order: 4
+              // })
             }
           }),
           
@@ -298,7 +298,7 @@ export class PropertiesGenerator extends BaseGenerator {
               includeQuadrilaterals: false,
               includeTriangleTypes: false,
               includeRegularIrregular: false,
-              includeConvexConcave: false,
+              // includeConvexConcave: false,
               showVisualDiagrams: true,
               includeMultipleChoice: false,
               diagramSize: 'large',
@@ -324,7 +324,7 @@ export class PropertiesGenerator extends BaseGenerator {
               includeQuadrilaterals: true,
               includeTriangleTypes: true,
               includeRegularIrregular: false,
-              includeConvexConcave: false,
+              // includeConvexConcave: false,
               showVisualDiagrams: true,
               includeMultipleChoice: false,
               diagramSize: 'medium',
@@ -376,7 +376,7 @@ export class PropertiesGenerator extends BaseGenerator {
               includeQuadrilaterals: true,
               includeTriangleTypes: true,
               includeRegularIrregular: false,
-              includeConvexConcave: false,
+              // includeConvexConcave: false,
               showVisualDiagrams: true,
               includeMultipleChoice: false,
               diagramSize: 'large',
@@ -411,7 +411,7 @@ export class PropertiesGenerator extends BaseGenerator {
     if (params.includeAngleProperties) problemTypes.push('angleProperties')
     if (params.includeSideProperties) problemTypes.push('sideProperties')
     if (params.includeRegularIrregular) problemTypes.push('regularIrregular')
-    if (params.includeConvexConcave) problemTypes.push('convexConcave')
+    // if (params.includeConvexConcave) problemTypes.push('convexConcave')
     if (params.includeQuadrilaterals) problemTypes.push('quadrilaterals')
     if (params.includeTriangleTypes) problemTypes.push('triangleTypes')
     
