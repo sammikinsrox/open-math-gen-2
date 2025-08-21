@@ -50,7 +50,7 @@ const goToFeatures = () => {
           <div class="ml-10 flex items-baseline space-x-8">
             <button @click="goToFeatures" class="text-slate-300 hover:text-orange-400 px-3 py-2 text-sm font-medium transition-colors">Features</button>
             <button @click="navigateTo('worksheet-builder')" :class="currentPage === 'worksheet-builder' ? 'text-orange-400' : 'text-slate-300 hover:text-orange-400'" class="px-3 py-2 text-sm font-medium transition-colors">Worksheet Builder</button>
-            <a href="#templates" class="text-slate-300 hover:text-orange-400 px-3 py-2 text-sm font-medium transition-colors">Templates</a>
+            <button @click="navigateTo('templates')" :class="currentPage === 'templates' ? 'text-orange-400' : 'text-slate-300 hover:text-orange-400'" class="px-3 py-2 text-sm font-medium transition-colors">Templates</button>
             <a href="#docs" class="text-slate-300 hover:text-orange-400 px-3 py-2 text-sm font-medium transition-colors">Docs</a>
           </div>
         </div>
@@ -82,7 +82,7 @@ const goToFeatures = () => {
       <div class="px-2 pt-2 pb-3 space-y-1">
         <button @click="goToFeatures" class="text-slate-300 hover:text-orange-400 block px-3 py-2 text-base font-medium text-left w-full">Features</button>
         <button @click="navigateTo('worksheet-builder')" :class="currentPage === 'worksheet-builder' ? 'text-orange-400' : 'text-slate-300 hover:text-orange-400'" class="block px-3 py-2 text-base font-medium text-left w-full">Worksheet Builder</button>
-        <a href="#templates" class="text-slate-300 hover:text-orange-400 block px-3 py-2 text-base font-medium">Templates</a>
+        <button @click="navigateTo('templates')" :class="currentPage === 'templates' ? 'text-orange-400' : 'text-slate-300 hover:text-orange-400'" class="block px-3 py-2 text-base font-medium text-left w-full">Templates</button>
         <a href="#docs" class="text-slate-300 hover:text-orange-400 block px-3 py-2 text-base font-medium">Docs</a>
         <button @click="navigateTo('worksheet-builder')" class="w-full mt-4 bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-lg font-medium transition-colors">
           Get Started

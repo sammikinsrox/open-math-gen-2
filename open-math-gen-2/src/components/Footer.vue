@@ -25,8 +25,8 @@ const emit = defineEmits(['navigate'])
           <h4 class="text-white font-semibold mb-4">Product</h4>
           <ul class="space-y-2">
             <li><a href="#" class="text-slate-300 hover:text-orange-400 transition-colors text-sm">Features</a></li>
-            <li><a href="#" class="text-slate-300 hover:text-orange-400 transition-colors text-sm">Worksheet Builder</a></li>
-            <li><a href="#" class="text-slate-300 hover:text-orange-400 transition-colors text-sm">Templates</a></li>
+            <li><button @click="emit('navigate', 'worksheet-builder')" class="text-slate-300 hover:text-orange-400 transition-colors text-sm bg-transparent border-none cursor-pointer p-0 font-inherit">Worksheet Builder</button></li>
+            <li><button @click="emit('navigate', 'templates')" class="text-slate-300 hover:text-orange-400 transition-colors text-sm bg-transparent border-none cursor-pointer p-0 font-inherit">Templates</button></li>
             <li><a href="#" class="text-slate-300 hover:text-orange-400 transition-colors text-sm">Changelog</a></li>
           </ul>
         </div>

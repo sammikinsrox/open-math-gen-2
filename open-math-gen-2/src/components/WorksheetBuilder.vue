@@ -1,5 +1,13 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
+
+const props = defineProps({
+  templateData: {
+    type: Object,
+    default: null
+  }
+})
+
 import { GENERATOR_CATEGORIES, getAllGenerators, getGeneratorsByCategory, getGenerator, searchGenerators } from '../generators/index.js'
 import GeneratorCard from './GeneratorCard.vue'
 import ProblemSetConfig from './ProblemSetConfig.vue'
@@ -131,7 +139,71 @@ onMounted(() => {
       console.warn('Failed to load saved worksheet state:', error)
     }
   }
+  
+  // Load template data if provided
+  loadTemplateData()
 })
+
+const loadTemplateData = () => {
+  if (props.templateData) {
+    console.log('Loading template:', props.templateData)
+    
+    // Set worksheet title
+    worksheetTitle.value = props.templateData.name
+    
+    // Clear existing problem sets
+    problemSets.value = []
+    
+    // Create problem sets from template
+    props.templateData.generators.forEach((generatorId, index) => {
+      // Find the generator
+      const generator = findGeneratorByCategory(props.templateData.subject, generatorId)
+      if (generator) {
+        const parameters = props.templateData.parameters[generatorId] || {}
+        
+        // Add problem count if not specified
+        if (!parameters.problemCount) {
+          // Distribute problems evenly across generators
+          const totalGenerators = props.templateData.generators.length
+          const baseCount = Math.floor(parseInt(props.templateData.problemCount) / totalGenerators)
+          parameters.problemCount = baseCount
+        }
+        
+        const problemSet = {
+          id: Date.now() + index,
+          generatorInfo: generator.getInfo(),
+          generatorClass: generator.constructor.name,
+          generator: generator,
+          parameters: parameters,
+          problemCount: parameters.problemCount
+        }
+        
+        problemSets.value.push(problemSet)
+      } else {
+        console.warn(`Generator not found: ${generatorId} in category ${props.templateData.subject}`)
+      }
+    })
+    
+    saveState()
+  }
+}
+
+const findGeneratorByCategory = (categoryId, generatorId) => {
+  // First try the specified category
+  const category = GENERATOR_CATEGORIES[categoryId]
+  if (category && category.generators[generatorId]) {
+    return category.generators[generatorId]
+  }
+  
+  // If not found, search all categories
+  for (const [catId, cat] of Object.entries(GENERATOR_CATEGORIES)) {
+    if (cat.generators[generatorId]) {
+      return cat.generators[generatorId]
+    }
+  }
+  
+  return null
+}
 
 const findGeneratorByInfo = (generatorInfo) => {
   // Find generator by category and name

@@ -8,9 +8,11 @@ import Footer from './components/Footer.vue'
 import WorksheetBuilder from './components/WorksheetBuilder.vue'
 import ContactUs from './components/ContactUs.vue'
 import PrivacyPolicy from './components/PrivacyPolicy.vue'
+import Templates from './components/Templates.vue'
 
 const loaded = ref(false)
 const currentPage = ref('home')
+const templateData = ref(null)
 
 onMounted(() => {
   setTimeout(() => {
@@ -18,8 +20,15 @@ onMounted(() => {
   }, 100)
 })
 
-const navigateTo = (page) => {
+const navigateTo = (page, data = null) => {
   currentPage.value = page
+  
+  // Handle template data for worksheet builder
+  if (page === 'worksheet-builder' && data) {
+    templateData.value = data
+  } else if (page !== 'worksheet-builder') {
+    templateData.value = null
+  }
   
   // If navigating to home from worksheet builder, scroll to features after a short delay
   if (page === 'home') {
@@ -46,7 +55,7 @@ const navigateTo = (page) => {
     
     <!-- Worksheet Builder Page -->
     <div v-else-if="currentPage === 'worksheet-builder'">
-      <WorksheetBuilder />
+      <WorksheetBuilder :template-data="templateData" />
     </div>
     
     <!-- Contact Us Page -->
@@ -57,6 +66,11 @@ const navigateTo = (page) => {
     <!-- Privacy Policy Page -->
     <div v-else-if="currentPage === 'privacy'">
       <PrivacyPolicy @navigate="navigateTo" />
+    </div>
+    
+    <!-- Templates Page -->
+    <div v-else-if="currentPage === 'templates'">
+      <Templates @navigate="navigateTo" />
     </div>
     
     <Footer @navigate="navigateTo" />
