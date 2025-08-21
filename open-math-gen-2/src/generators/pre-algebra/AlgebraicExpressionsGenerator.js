@@ -820,6 +820,7 @@ export class AlgebraicExpressionsGenerator extends BaseGenerator {
         situation: 'store pricing',
         description: 'A store charges $3 for each item plus a $5 handling fee',
         expression: '3n + 5',
+        expressionLaTeX: '3n + 5',
         variable: 'n',
         variableDescription: 'number of items'
       },
@@ -827,6 +828,7 @@ export class AlgebraicExpressionsGenerator extends BaseGenerator {
         situation: 'car rental',
         description: 'A car rental costs $25 per day plus $0.15 per mile',
         expression: '25d + 0.15m',
+        expressionLaTeX: '25d + 0.15m',
         variable: 'd',
         variableDescription: 'number of days'
       },
@@ -834,6 +836,7 @@ export class AlgebraicExpressionsGenerator extends BaseGenerator {
         situation: 'phone plan',
         description: 'A phone plan costs $30 per month plus $2 for each gigabyte of data',
         expression: '30 + 2g',
+        expressionLaTeX: '30 + 2g',
         variable: 'g',
         variableDescription: 'gigabytes of data'
       }
@@ -845,14 +848,14 @@ export class AlgebraicExpressionsGenerator extends BaseGenerator {
     if (params.showSteps) {
       steps.push(`\\text{Identify what varies (the variable)}`)
       steps.push(`\\text{Identify fixed costs and variable costs}`)
-      steps.push(`\\text{Expression: } ${scenario.expression}`)
+      steps.push(`\\text{Expression: } ${scenario.expressionLaTeX}`)
     }
     
     return {
       question: `Write an algebraic expression for: ${scenario.description}. Use ${scenario.variable} for ${scenario.variableDescription}.`,
       questionLaTeX: `\\text{Write an algebraic expression for: ${scenario.description}.} \\\\\\\\ \\text{Use } ${scenario.variable} \\text{ for ${scenario.variableDescription}.}`,
       answer: scenario.expression,
-      answerLaTeX: scenario.expression,
+      answerLaTeX: scenario.expressionLaTeX,
       steps: steps,
       metadata: {
         problemType: 'wordProblem',
@@ -869,6 +872,17 @@ export class AlgebraicExpressionsGenerator extends BaseGenerator {
    * Helper methods
    */
   generateCoefficient(params) {
+    if (params.allowFractions && Math.random() < 0.3) {
+      const numerator = Math.floor(Math.random() * 3) + 1 // 1-3
+      const denominator = this.getRandomElement([2, 3, 4, 5])
+      const fraction = numerator / denominator
+      
+      if (params.allowNegatives && Math.random() < 0.3) {
+        return -fraction
+      }
+      return fraction
+    }
+    
     let coeff = Math.floor(Math.random() * params.maxCoefficient) + 1
     if (params.allowNegatives && Math.random() < 0.3) {
       coeff = -coeff
@@ -887,6 +901,16 @@ export class AlgebraicExpressionsGenerator extends BaseGenerator {
   formatCoefficient(coeff) {
     if (coeff === 1) return ''
     if (coeff === -1) return '-'
+    
+    // Handle fractions
+    if (coeff % 1 !== 0) {
+      const fraction = this.decimalToFraction(Math.abs(coeff))
+      if (coeff < 0) {
+        return `-\\frac{${fraction.numerator}}{${fraction.denominator}}`
+      }
+      return `\\frac{${fraction.numerator}}{${fraction.denominator}}`
+    }
+    
     return coeff.toString()
   }
   
@@ -953,6 +977,38 @@ export class AlgebraicExpressionsGenerator extends BaseGenerator {
       [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
     }
     return shuffled
+  }
+
+  /**
+   * Convert decimal to fraction
+   * @param {number} decimal - Decimal number
+   * @returns {Object} Object with numerator and denominator
+   */
+  decimalToFraction(decimal) {
+    const denominators = [2, 3, 4, 5, 6, 8, 10]
+    
+    for (const denom of denominators) {
+      const num = decimal * denom
+      if (Math.abs(num - Math.round(num)) < 0.001) {
+        return { numerator: Math.round(num), denominator: denom }
+      }
+    }
+    
+    // Fallback - convert to simple fraction
+    const num = Math.round(decimal * 10)
+    const denom = 10
+    const gcd = this.gcd(num, denom)
+    return { numerator: num / gcd, denominator: denom / gcd }
+  }
+  
+  /**
+   * Calculate greatest common divisor
+   * @param {number} a - First number
+   * @param {number} b - Second number
+   * @returns {number} GCD
+   */
+  gcd(a, b) {
+    return b === 0 ? a : this.gcd(b, a % b)
   }
 
   /**

@@ -57,6 +57,15 @@ import SymmetryGenerator from './geometry-basic/SymmetryGenerator.js'
 import CoordinateBasicsGenerator from './geometry-basic/CoordinateBasicsGenerator.js'
 import PropertiesGenerator from './geometry-basic/PropertiesGenerator.js'
 
+// Advanced Geometry Generators
+import ComplexAreaGenerator from './geometry-advanced/ComplexAreaGenerator.js'
+import CirclesGenerator from './geometry-advanced/CirclesGenerator.js'
+import VolumeSurfaceAreaGenerator from './geometry-advanced/VolumeSurfaceAreaGenerator.js'
+import PythagoreanTheoremGenerator from './geometry-advanced/PythagoreanTheoremGenerator.js'
+import CoordinateGeometryGenerator from './geometry-advanced/CoordinateGeometryGenerator.js'
+// import TransformationsGenerator from './geometry-advanced/TransformationsGenerator.js'
+import SimilarCongruentGenerator from './geometry-advanced/SimilarCongruentGenerator.js'
+
 // Pre-Algebra Generators
 import IntegersGenerator from './pre-algebra/IntegersGenerator.js'
 import AlgebraicExpressionsGenerator from './pre-algebra/AlgebraicExpressionsGenerator.js'
@@ -70,6 +79,13 @@ import GraphingBasicsGenerator from './pre-algebra/GraphingBasicsGenerator.js'
 
 // Algebra Generators
 import LinearEquationsGenerator from './algebra/LinearEquationsGenerator.js'
+import SystemsOfEquationsGenerator from './algebra/SystemsOfEquationsGenerator.js'
+import QuadraticEquationsGenerator from './algebra/QuadraticEquationsGenerator.js'
+import PolynomialsGenerator from './algebra/PolynomialsGenerator.js'
+import FactoringGenerator from './algebra/FactoringGenerator.js'
+import ExponentsRadicalsGenerator from './algebra/ExponentsRadicalsGenerator.js'
+import FunctionsGenerator from './algebra/FunctionsGenerator.js'
+import GraphingGenerator from './algebra/GraphingGenerator.js'
 
 /**
  * Generator Categories
@@ -166,17 +182,16 @@ export const GENERATOR_CATEGORIES = {
   
   'geometry-advanced': {
     name: 'Advanced Geometry',
-    description: 'Complex areas, circles, volume, Pythagorean theorem, and transformations',
+    description: 'Complex areas, circles, volume, Pythagorean theorem, coordinate geometry, transformations, and similarity',
     icon: 'analytics',
     generators: {
-      // TODO: Add generators for this category
-      // 'complex-area': new ComplexAreaGenerator(),
-      // 'circles': new CirclesGenerator(),
-      // 'volume-surface-area': new VolumeSurfaceAreaGenerator(),
-      // 'pythagorean-theorem': new PythagoreanTheoremGenerator(),
-      // 'coordinate-geometry': new CoordinateGeometryGenerator(),
+      'complex-area': new ComplexAreaGenerator(),
+      'circles': new CirclesGenerator(),
+      'volume-surface-area': new VolumeSurfaceAreaGenerator(),
+      'pythagorean-theorem': new PythagoreanTheoremGenerator(),
+      'coordinate-geometry': new CoordinateGeometryGenerator(),
       // 'transformations': new TransformationsGenerator(),
-      // 'similar-congruent': new SimilarCongruentGenerator()
+      'similar-congruent': new SimilarCongruentGenerator()
     }
   },
   
@@ -202,15 +217,14 @@ export const GENERATOR_CATEGORIES = {
     description: 'Linear equations, systems, quadratics, polynomials, and functions',
     icon: 'science',
     generators: {
-      'linear-equations': new LinearEquationsGenerator()
-      // TODO: Add more generators for this category
-      // 'systems-of-equations': new SystemsOfEquationsGenerator(),
-      // 'quadratic-equations': new QuadraticEquationsGenerator(),
-      // 'polynomials': new PolynomialsGenerator(),
-      // 'factoring': new FactoringGenerator(),
-      // 'exponents-radicals': new ExponentsRadicalsGenerator(),
-      // 'functions': new FunctionsGenerator(),
-      // 'graphing': new GraphingGenerator()
+      'linear-equations': new LinearEquationsGenerator(),
+      'systems-of-equations': new SystemsOfEquationsGenerator(),
+      'quadratic-equations': new QuadraticEquationsGenerator(),
+      'polynomials': new PolynomialsGenerator(),
+      'factoring': new FactoringGenerator(),
+      'exponents-radicals': new ExponentsRadicalsGenerator(),
+      'functions': new FunctionsGenerator(),
+      'graphing': new GraphingGenerator()
     }
   },
   

@@ -117,6 +117,21 @@ export class DiagramRenderer {
       case 'circle':
         this.renderCircle(renderer, measurements, unit, theme, config);
         break;
+      case 'arc':
+        this.renderArc(renderer, measurements, unit, theme, config);
+        break;
+      case 'sector':
+        this.renderSector(renderer, measurements, unit, theme, config);
+        break;
+      case 'inscribed-square':
+        this.renderInscribedSquare(renderer, measurements, unit, theme, config);
+        break;
+      case 'circumscribed-circle':
+        this.renderCircumscribedCircle(renderer, measurements, unit, theme, config);
+        break;
+      case 'tangent':
+        this.renderTangent(renderer, measurements, unit, theme, config);
+        break;
       case 'parallelogram':
         this.renderParallelogram(renderer, measurements, unit, theme, config);
         break;
@@ -124,7 +139,7 @@ export class DiagramRenderer {
         this.renderTrapezoid(renderer, measurements, unit, theme, config);
         break;
       case 'coordinate-plane':
-        this.renderCoordinatePlane(renderer, diagramConfig.data, theme, config);
+        this.renderCoordinatePlane(renderer, diagramConfig.data || {}, theme, config);
         break;
       case 'angle':
         this.renderAngle(renderer, measurements, theme, config);
@@ -167,6 +182,41 @@ export class DiagramRenderer {
         break;
       case 'comparison':
         this.renderComparison(renderer, diagramConfig, theme, config);
+        break;
+      // 3D Shapes
+      case 'rectangularPrism':
+      case 'cube':
+        this.renderRectangularPrism(renderer, measurements, unit, theme, config);
+        break;
+      case 'cylinder':
+        this.renderCylinder(renderer, measurements, unit, theme, config);
+        break;
+      case 'cone':
+        this.renderCone(renderer, measurements, unit, theme, config);
+        break;
+      case 'sphere':
+        this.renderSphere(renderer, measurements, unit, theme, config);
+        break;
+      case 'triangularPrism':
+        this.renderTriangularPrism(renderer, measurements, unit, theme, config);
+        break;
+      case 'pyramid':
+        this.renderPyramid(renderer, measurements, unit, theme, config);
+        break;
+      case 'composite':
+        this.renderComposite3D(renderer, measurements, unit, theme, config);
+        break;
+      case 'right-triangle':
+        this.renderRightTriangle(renderer, measurements, unit, theme, config);
+        break;
+      case 'distance-points':
+        this.renderDistancePoints(renderer, measurements, unit, theme, config);
+        break;
+      case 'transformation':
+        this.renderTransformation(renderer, measurements, unit, theme, config);
+        break;
+      case 'composite-transformation':
+        this.renderCompositeTransformation(renderer, measurements, unit, theme, config);
         break;
       default:
         this.renderBasicShape(renderer, shape, measurements, unit, theme, config);
@@ -284,6 +334,284 @@ export class DiagramRenderer {
     }
 
     renderer.add(circle);
+  }
+
+  renderArc(renderer, measurements, unit, theme, config) {
+    const { radius = 3, angle = 90 } = measurements;
+    
+    // Calculate scale and center position
+    const availableSize = Math.min(renderer.getContentWidth(), renderer.getContentHeight()) * 0.8;
+    const scale = Math.min(availableSize / (radius * 2), 80);
+    const centerX = renderer.getContentWidth() / 2;
+    const centerY = renderer.getContentHeight() / 2;
+    
+    // Create arc using SVG path
+    const scaledRadius = radius * scale;
+    const startAngle = 0;
+    const endAngle = (angle * Math.PI) / 180;
+    
+    const startX = centerX + scaledRadius * Math.cos(startAngle);
+    const startY = centerY + scaledRadius * Math.sin(startAngle);
+    const endX = centerX + scaledRadius * Math.cos(endAngle);
+    const endY = centerY + scaledRadius * Math.sin(endAngle);
+    
+    const largeArcFlag = angle > 180 ? 1 : 0;
+    const pathData = `M ${centerX} ${centerY} L ${startX} ${startY} A ${scaledRadius} ${scaledRadius} 0 ${largeArcFlag} 1 ${endX} ${endY}`;
+    
+    const group = renderer.mainGroup.append('g').attr('class', 'arc-shape');
+    
+    // Draw the arc
+    group.append('path')
+      .attr('d', pathData)
+      .attr('fill', 'none')
+      .attr('stroke', theme.accentColor)
+      .attr('stroke-width', theme.strokeWidth);
+    
+    // Draw radius lines
+    group.append('line')
+      .attr('x1', centerX).attr('y1', centerY)
+      .attr('x2', startX).attr('y2', startY)
+      .attr('stroke', theme.strokeColor)
+      .attr('stroke-width', 1);
+    
+    group.append('line')
+      .attr('x1', centerX).attr('y1', centerY)
+      .attr('x2', endX).attr('y2', endY)
+      .attr('stroke', theme.strokeColor)
+      .attr('stroke-width', 1);
+    
+    if (config.showMeasurements) {
+      // Add radius measurement
+      group.append('text')
+        .attr('x', centerX + scaledRadius/2)
+        .attr('y', centerY - 10)
+        .attr('text-anchor', 'middle')
+        .attr('font-size', '12px')
+        .attr('fill', theme.strokeColor)
+        .text(`r = ${radius} ${unit}`);
+      
+      // Add angle measurement
+      group.append('text')
+        .attr('x', centerX + 15)
+        .attr('y', centerY + 15)
+        .attr('text-anchor', 'middle')
+        .attr('font-size', '12px')
+        .attr('fill', theme.strokeColor)
+        .text(`${angle}°`);
+    }
+  }
+
+  renderSector(renderer, measurements, unit, theme, config) {
+    const { radius = 3, angle = 90 } = measurements;
+    
+    // Calculate scale and center position
+    const availableSize = Math.min(renderer.getContentWidth(), renderer.getContentHeight()) * 0.8;
+    const scale = Math.min(availableSize / (radius * 2), 80);
+    const centerX = renderer.getContentWidth() / 2;
+    const centerY = renderer.getContentHeight() / 2;
+    
+    // Create sector using SVG path
+    const scaledRadius = radius * scale;
+    const startAngle = 0;
+    const endAngle = (angle * Math.PI) / 180;
+    
+    const startX = centerX + scaledRadius * Math.cos(startAngle);
+    const startY = centerY + scaledRadius * Math.sin(startAngle);
+    const endX = centerX + scaledRadius * Math.cos(endAngle);
+    const endY = centerY + scaledRadius * Math.sin(endAngle);
+    
+    const largeArcFlag = angle > 180 ? 1 : 0;
+    const pathData = `M ${centerX} ${centerY} L ${startX} ${startY} A ${scaledRadius} ${scaledRadius} 0 ${largeArcFlag} 1 ${endX} ${endY} Z`;
+    
+    const group = renderer.mainGroup.append('g').attr('class', 'sector-shape');
+    
+    // Draw the sector
+    group.append('path')
+      .attr('d', pathData)
+      .attr('fill', theme.accentColor)
+      .attr('fill-opacity', theme.fillOpacity)
+      .attr('stroke', theme.strokeColor)
+      .attr('stroke-width', theme.strokeWidth);
+    
+    if (config.showMeasurements) {
+      // Add radius measurement
+      group.append('text')
+        .attr('x', centerX + scaledRadius/2)
+        .attr('y', centerY - 10)
+        .attr('text-anchor', 'middle')
+        .attr('font-size', '12px')
+        .attr('fill', theme.strokeColor)
+        .text(`r = ${radius} ${unit}`);
+      
+      // Add angle measurement
+      group.append('text')
+        .attr('x', centerX + 15)
+        .attr('y', centerY + 15)
+        .attr('text-anchor', 'middle')
+        .attr('font-size', '12px')
+        .attr('fill', theme.strokeColor)
+        .text(`${angle}°`);
+    }
+  }
+
+  renderInscribedSquare(renderer, measurements, unit, theme, config) {
+    const { radius = 3, sideLength = 4 } = measurements;
+    
+    // Calculate scale and center position
+    const availableSize = Math.min(renderer.getContentWidth(), renderer.getContentHeight()) * 0.8;
+    const scale = Math.min(availableSize / (radius * 2), 80);
+    const centerX = renderer.getContentWidth() / 2;
+    const centerY = renderer.getContentHeight() / 2;
+    
+    const group = renderer.mainGroup.append('g').attr('class', 'inscribed-square-shape');
+    
+    // Draw the circle first
+    const scaledRadius = radius * scale;
+    group.append('circle')
+      .attr('cx', centerX)
+      .attr('cy', centerY)
+      .attr('r', scaledRadius)
+      .attr('fill', 'none')
+      .attr('stroke', theme.strokeColor)
+      .attr('stroke-width', theme.strokeWidth);
+    
+    // Draw the inscribed square
+    const squareRadius = scaledRadius / Math.sqrt(2);
+    const squarePoints = [
+      { x: centerX - squareRadius, y: centerY - squareRadius },
+      { x: centerX + squareRadius, y: centerY - squareRadius },
+      { x: centerX + squareRadius, y: centerY + squareRadius },
+      { x: centerX - squareRadius, y: centerY + squareRadius }
+    ];
+    
+    group.append('polygon')
+      .attr('points', squarePoints.map(p => `${p.x},${p.y}`).join(' '))
+      .attr('fill', theme.primaryColor)
+      .attr('fill-opacity', theme.fillOpacity)
+      .attr('stroke', theme.accentColor)
+      .attr('stroke-width', theme.strokeWidth);
+    
+    if (config.showMeasurements) {
+      group.append('text')
+        .attr('x', centerX)
+        .attr('y', centerY - scaledRadius - 15)
+        .attr('text-anchor', 'middle')
+        .attr('font-size', '12px')
+        .attr('fill', theme.strokeColor)
+        .text(`r = ${radius} ${unit}`);
+    }
+  }
+
+  renderCircumscribedCircle(renderer, measurements, unit, theme, config) {
+    const { radius = 3, sideLength = 4 } = measurements;
+    
+    // Calculate scale and center position
+    const availableSize = Math.min(renderer.getContentWidth(), renderer.getContentHeight()) * 0.8;
+    const scale = Math.min(availableSize / (sideLength * 1.2), 80);
+    const centerX = renderer.getContentWidth() / 2;
+    const centerY = renderer.getContentHeight() / 2;
+    
+    const group = renderer.mainGroup.append('g').attr('class', 'circumscribed-circle-shape');
+    
+    // Draw the square first
+    const scaledSide = sideLength * scale;
+    group.append('rect')
+      .attr('x', centerX - scaledSide/2)
+      .attr('y', centerY - scaledSide/2)
+      .attr('width', scaledSide)
+      .attr('height', scaledSide)
+      .attr('fill', theme.primaryColor)
+      .attr('fill-opacity', theme.fillOpacity)
+      .attr('stroke', theme.strokeColor)
+      .attr('stroke-width', theme.strokeWidth);
+    
+    // Draw the circumscribed circle
+    const scaledRadius = radius * scale;
+    group.append('circle')
+      .attr('cx', centerX)
+      .attr('cy', centerY)
+      .attr('r', scaledRadius)
+      .attr('fill', 'none')
+      .attr('stroke', theme.accentColor)
+      .attr('stroke-width', theme.strokeWidth);
+    
+    if (config.showMeasurements) {
+      group.append('text')
+        .attr('x', centerX)
+        .attr('y', centerY - scaledRadius - 15)
+        .attr('text-anchor', 'middle')
+        .attr('font-size', '12px')
+        .attr('fill', theme.strokeColor)
+        .text(`r = ${radius} ${unit}`);
+    }
+  }
+
+  renderTangent(renderer, measurements, unit, theme, config) {
+    const { radius = 3, distance = 5, tangentLength = 4 } = measurements;
+    
+    // Calculate scale and center position
+    const availableSize = Math.min(renderer.getContentWidth(), renderer.getContentHeight()) * 0.8;
+    const scale = Math.min(availableSize / (distance * 2), 60);
+    const centerX = renderer.getContentWidth() / 2;
+    const centerY = renderer.getContentHeight() / 2;
+    
+    const group = renderer.mainGroup.append('g').attr('class', 'tangent-shape');
+    
+    // Draw the circle
+    const scaledRadius = radius * scale;
+    group.append('circle')
+      .attr('cx', centerX)
+      .attr('cy', centerY)
+      .attr('r', scaledRadius)
+      .attr('fill', theme.accentColor)
+      .attr('fill-opacity', theme.fillOpacity)
+      .attr('stroke', theme.strokeColor)
+      .attr('stroke-width', theme.strokeWidth);
+    
+    // Draw the external point and tangent line
+    const scaledDistance = distance * scale;
+    const externalPointX = centerX + scaledDistance;
+    const externalPointY = centerY;
+    
+    // Calculate tangent point (simplified for horizontal tangent)
+    const tangentPointX = centerX + scaledRadius * (scaledRadius / scaledDistance);
+    const tangentPointY = centerY - scaledRadius * Math.sqrt(1 - (scaledRadius / scaledDistance) ** 2);
+    
+    // Draw tangent line
+    group.append('line')
+      .attr('x1', externalPointX)
+      .attr('y1', externalPointY)
+      .attr('x2', tangentPointX)
+      .attr('y2', tangentPointY)
+      .attr('stroke', theme.primaryColor)
+      .attr('stroke-width', theme.strokeWidth);
+    
+    // Draw radius to tangent point
+    group.append('line')
+      .attr('x1', centerX)
+      .attr('y1', centerY)
+      .attr('x2', tangentPointX)
+      .attr('y2', tangentPointY)
+      .attr('stroke', theme.strokeColor)
+      .attr('stroke-width', 1)
+      .attr('stroke-dasharray', '3,3');
+    
+    // Mark external point
+    group.append('circle')
+      .attr('cx', externalPointX)
+      .attr('cy', externalPointY)
+      .attr('r', 3)
+      .attr('fill', theme.primaryColor);
+    
+    if (config.showMeasurements) {
+      group.append('text')
+        .attr('x', centerX + scaledDistance/2)
+        .attr('y', centerY + 20)
+        .attr('text-anchor', 'middle')
+        .attr('font-size', '12px')
+        .attr('fill', theme.strokeColor)
+        .text(`${distance} ${unit}`);
+    }
   }
 
   renderParallelogram(renderer, measurements, unit, theme, config) {
@@ -461,7 +789,7 @@ export class DiagramRenderer {
   }
 
   renderCoordinatePlane(renderer, data, theme, config) {
-    const { point, pointLabel = 'P', coordinateRange = 10, allowNegatives = true, showGridNumbers = true, problemType } = data || {};
+    const { points = [], problemType = 'empty', coordinateRange = 10, allowNegatives = true, showGridNumbers = true, point = null, pointLabel = 'P' } = data || {};
     
     // Calculate grid parameters
     const contentWidth = renderer.getContentWidth();
@@ -469,23 +797,50 @@ export class DiagramRenderer {
     const centerX = contentWidth / 2;
     const centerY = contentHeight / 2;
     
+    // Determine coordinate range - expand to include all points if necessary
+    let xRange = config.xRange || [-coordinateRange, coordinateRange];
+    let yRange = config.yRange || [-coordinateRange, coordinateRange];
+    
+    // Check if we need to expand range to include all points
+    const allPoints = points.concat(point ? [point] : []);
+    if (allPoints.length > 0) {
+      const pointXs = allPoints.map(p => p.x);
+      const pointYs = allPoints.map(p => p.y);
+      const minPointX = Math.min(...pointXs);
+      const maxPointX = Math.max(...pointXs);
+      const minPointY = Math.min(...pointYs);
+      const maxPointY = Math.max(...pointYs);
+      
+      // Expand range by 1 unit on each side to provide padding
+      const paddedMinX = Math.min(xRange[0], minPointX - 1);
+      const paddedMaxX = Math.max(xRange[1], maxPointX + 1);
+      const paddedMinY = Math.min(yRange[0], minPointY - 1);
+      const paddedMaxY = Math.max(yRange[1], maxPointY + 1);
+      
+      xRange = [paddedMinX, paddedMaxX];
+      yRange = [paddedMinY, paddedMaxY];
+    }
+    
+    const rangeX = Math.max(Math.abs(xRange[0]), Math.abs(xRange[1]));
+    const rangeY = Math.max(Math.abs(yRange[0]), Math.abs(yRange[1]));
+    const maxRange = Math.max(rangeX, rangeY);
+    
     // Calculate grid spacing based on coordinate range and available space
-    const range = coordinateRange;
     const gridSpacing = Math.min(
-      (contentWidth * 0.8) / (range * 2), 
-      (contentHeight * 0.8) / (range * 2)
+      (contentWidth * 0.8) / (maxRange * 2), 
+      (contentHeight * 0.8) / (maxRange * 2)
     );
     
-    // Ensure minimum grid spacing for readability
-    const finalGridSpacing = Math.max(gridSpacing, 15);
+    // Ensure minimum grid spacing for readability but allow it to be smaller for large ranges
+    const finalGridSpacing = Math.max(gridSpacing, Math.min(15, contentWidth / (maxRange * 3)));
     
     const group = renderer.mainGroup.append('g').attr('class', 'coordinate-grid');
     
     // Draw grid lines aligned with coordinate system
-    const minX = allowNegatives ? -range : 0;
-    const maxX = range;
-    const minY = allowNegatives ? -range : 0;
-    const maxY = range;
+    const minX = xRange[0];
+    const maxX = xRange[1];
+    const minY = yRange[0];
+    const maxY = yRange[1];
     
     // Vertical grid lines (aligned with x-coordinates)
     for (let x = minX; x <= maxX; x++) {
@@ -609,8 +964,9 @@ export class DiagramRenderer {
       const pointX = centerX + (point.x * finalGridSpacing);
       const pointY = centerY - (point.y * finalGridSpacing);
       
-      // Only render point if it's within bounds
-      if (pointX >= 0 && pointX <= contentWidth && pointY >= 0 && pointY <= contentHeight) {
+      // Points should now be within bounds due to range expansion, but add safety check
+      const margin = 20; // Allow some margin for labels
+      if (pointX >= -margin && pointX <= contentWidth + margin && pointY >= -margin && pointY <= contentHeight + margin) {
         group.append('circle')
           .attr('cx', pointX)
           .attr('cy', pointY)
@@ -631,6 +987,746 @@ export class DiagramRenderer {
           .text(pointLabel);
       }
     }
+
+    // Add problem-type specific rendering
+    this.renderCoordinateProblemType(group, problemType, points, config, centerX, centerY, finalGridSpacing, theme);
+  }
+
+  renderCoordinateProblemType(group, problemType, points, config, centerX, centerY, gridSpacing, theme) {
+    if (!points || points.length === 0) return;
+
+    // Helper function to convert coordinate to screen position with bounds checking
+    const toScreen = (point) => {
+      const screenX = centerX + (point.x * gridSpacing);
+      const screenY = centerY - (point.y * gridSpacing);  // Flip Y axis
+      return { x: screenX, y: screenY, isVisible: true }; // All points should be visible now due to range expansion
+    };
+
+    switch (problemType) {
+      case 'distance':
+        this.renderDistanceVisualization(group, points, toScreen, theme);
+        break;
+      case 'midpoint':
+        this.renderMidpointVisualization(group, points, toScreen, theme);
+        break;
+      case 'slope':
+        this.renderSlopeVisualization(group, points, toScreen, theme);
+        break;
+      case 'line':
+        this.renderLineVisualization(group, points, toScreen, theme, config);
+        break;
+      case 'polygon':
+        this.renderPolygonVisualization(group, points, toScreen, theme);
+        break;
+      case 'plotPoints':
+        // For plot points, show the points (this is the answer)
+        this.renderPointsVisualization(group, points, toScreen, theme);
+        break;
+      case 'graphLine':
+      case 'findIntersection':
+        // These should show empty grids for student work
+        break;
+      case 'intersection':
+        this.renderIntersectionVisualization(group, points, toScreen, theme, config);
+        break;
+      default:
+        // Default: just show the points
+        this.renderPointsVisualization(group, points, toScreen, theme);
+    }
+  }
+
+  renderDistanceVisualization(group, points, toScreen, theme) {
+    if (points.length < 2) return;
+    
+    const point1 = toScreen(points[0]);
+    const point2 = toScreen(points[1]);
+    
+    // Draw line between points
+    group.append('line')
+      .attr('x1', point1.x)
+      .attr('y1', point1.y)
+      .attr('x2', point2.x)
+      .attr('y2', point2.y)
+      .attr('stroke', theme.accentColor)
+      .attr('stroke-width', 2)
+      .attr('stroke-dasharray', '5,5');
+    
+    // Draw points
+    [point1, point2].forEach((point, i) => {
+      group.append('circle')
+        .attr('cx', point.x)
+        .attr('cy', point.y)
+        .attr('r', 4)
+        .attr('fill', theme.primaryColor)
+        .attr('stroke', '#ffffff')
+        .attr('stroke-width', 2);
+      
+      // Add point labels
+      const label = String.fromCharCode(65 + i); // A, B
+      group.append('text')
+        .attr('x', point.x + 8)
+        .attr('y', point.y - 8)
+        .attr('font-size', '12px')
+        .attr('font-weight', 'bold')
+        .attr('fill', theme.strokeColor)
+        .text(label);
+    });
+  }
+
+  renderMidpointVisualization(group, points, toScreen, theme) {
+    if (points.length < 3) return;
+    
+    const point1 = toScreen(points[0]);
+    const point2 = toScreen(points[1]);
+    const midpoint = toScreen(points[2]);
+    
+    // Draw line between endpoints
+    group.append('line')
+      .attr('x1', point1.x)
+      .attr('y1', point1.y)
+      .attr('x2', point2.x)
+      .attr('y2', point2.y)
+      .attr('stroke', theme.strokeColor)
+      .attr('stroke-width', 2);
+    
+    // Draw endpoints
+    [point1, point2].forEach((point, i) => {
+      group.append('circle')
+        .attr('cx', point.x)
+        .attr('cy', point.y)
+        .attr('r', 4)
+        .attr('fill', theme.primaryColor)
+        .attr('stroke', '#ffffff')
+        .attr('stroke-width', 2);
+      
+      const label = String.fromCharCode(65 + i); // A, B
+      group.append('text')
+        .attr('x', point.x + 8)
+        .attr('y', point.y - 8)
+        .attr('font-size', '12px')
+        .attr('font-weight', 'bold')
+        .attr('fill', theme.strokeColor)
+        .text(label);
+    });
+    
+    // Draw midpoint (highlighted)
+    group.append('circle')
+      .attr('cx', midpoint.x)
+      .attr('cy', midpoint.y)
+      .attr('r', 5)
+      .attr('fill', theme.accentColor)
+      .attr('stroke', '#ffffff')
+      .attr('stroke-width', 2);
+    
+    group.append('text')
+      .attr('x', midpoint.x + 8)
+      .attr('y', midpoint.y - 8)
+      .attr('font-size', '12px')
+      .attr('font-weight', 'bold')
+      .attr('fill', theme.accentColor)
+      .text('M');
+  }
+
+  renderSlopeVisualization(group, points, toScreen, theme) {
+    if (points.length < 2) return;
+    
+    const point1 = toScreen(points[0]);
+    const point2 = toScreen(points[1]);
+    
+    // Draw line between points
+    group.append('line')
+      .attr('x1', point1.x)
+      .attr('y1', point1.y)
+      .attr('x2', point2.x)
+      .attr('y2', point2.y)
+      .attr('stroke', theme.accentColor)
+      .attr('stroke-width', 3);
+    
+    // Draw slope triangle (rise/run visualization)
+    const dx = point2.x - point1.x;
+    const dy = point2.y - point1.y;
+    
+    if (Math.abs(dx) > 5 && Math.abs(dy) > 5) {
+      // Draw right triangle to show rise and run
+      group.append('path')
+        .attr('d', `M ${point1.x} ${point1.y} L ${point2.x} ${point1.y} L ${point2.x} ${point2.y}`)
+        .attr('fill', 'none')
+        .attr('stroke', theme.strokeColor)
+        .attr('stroke-width', 1)
+        .attr('stroke-dasharray', '3,3');
+      
+      // Add rise and run labels
+      if (Math.abs(dx) > 20) {
+        group.append('text')
+          .attr('x', (point1.x + point2.x) / 2)
+          .attr('y', point1.y - 8)
+          .attr('text-anchor', 'middle')
+          .attr('font-size', '10px')
+          .attr('fill', theme.strokeColor)
+          .text('run');
+      }
+      
+      if (Math.abs(dy) > 20) {
+        group.append('text')
+          .attr('x', point2.x + 8)
+          .attr('y', (point1.y + point2.y) / 2)
+          .attr('text-anchor', 'middle')
+          .attr('font-size', '10px')
+          .attr('fill', theme.strokeColor)
+          .text('rise');
+      }
+    }
+    
+    // Draw points
+    [point1, point2].forEach((point, i) => {
+      group.append('circle')
+        .attr('cx', point.x)
+        .attr('cy', point.y)
+        .attr('r', 4)
+        .attr('fill', theme.primaryColor)
+        .attr('stroke', '#ffffff')
+        .attr('stroke-width', 2);
+      
+      const label = String.fromCharCode(65 + i); // A, B
+      group.append('text')
+        .attr('x', point.x + 8)
+        .attr('y', point.y - 8)
+        .attr('font-size', '12px')
+        .attr('font-weight', 'bold')
+        .attr('fill', theme.strokeColor)
+        .text(label);
+    });
+  }
+
+  renderLineVisualization(group, points, toScreen, theme, config) {
+    if (points.length < 2) return;
+    
+    // Extend line beyond just the two points
+    const point1 = toScreen(points[0]);
+    const point2 = toScreen(points[1]);
+    
+    const dx = point2.x - point1.x;
+    const dy = point2.y - point1.y;
+    const length = Math.sqrt(dx * dx + dy * dy);
+    
+    if (length > 0) {
+      const unitX = dx / length;
+      const unitY = dy / length;
+      
+      // Extend line in both directions
+      const extension = 100;
+      const startX = point1.x - unitX * extension;
+      const startY = point1.y - unitY * extension;
+      const endX = point2.x + unitX * extension;
+      const endY = point2.y + unitY * extension;
+      
+      // Draw extended line
+      group.append('line')
+        .attr('x1', startX)
+        .attr('y1', startY)
+        .attr('x2', endX)
+        .attr('y2', endY)
+        .attr('stroke', theme.accentColor)
+        .attr('stroke-width', 2);
+    }
+    
+    // Draw the original points
+    [point1, point2].forEach((point, i) => {
+      group.append('circle')
+        .attr('cx', point.x)
+        .attr('cy', point.y)
+        .attr('r', 4)
+        .attr('fill', theme.primaryColor)
+        .attr('stroke', '#ffffff')
+        .attr('stroke-width', 2);
+      
+      const label = String.fromCharCode(65 + i); // A, B
+      group.append('text')
+        .attr('x', point.x + 8)
+        .attr('y', point.y - 8)
+        .attr('font-size', '12px')
+        .attr('font-weight', 'bold')
+        .attr('fill', theme.strokeColor)
+        .text(label);
+    });
+  }
+
+  renderPolygonVisualization(group, points, toScreen, theme) {
+    if (points.length < 3) return;
+    
+    const screenPoints = points.map(toScreen);
+    
+    // Draw polygon
+    const pathData = screenPoints.map((point, i) => 
+      `${i === 0 ? 'M' : 'L'} ${point.x} ${point.y}`
+    ).join(' ') + ' Z';
+    
+    group.append('path')
+      .attr('d', pathData)
+      .attr('fill', theme.primaryColor)
+      .attr('fill-opacity', 0.3)
+      .attr('stroke', theme.accentColor)
+      .attr('stroke-width', 2);
+    
+    // Draw vertices
+    screenPoints.forEach((point, i) => {
+      group.append('circle')
+        .attr('cx', point.x)
+        .attr('cy', point.y)
+        .attr('r', 4)
+        .attr('fill', theme.primaryColor)
+        .attr('stroke', '#ffffff')
+        .attr('stroke-width', 2);
+      
+      const label = String.fromCharCode(65 + i); // A, B, C, etc.
+      group.append('text')
+        .attr('x', point.x + 8)
+        .attr('y', point.y - 8)
+        .attr('font-size', '12px')
+        .attr('font-weight', 'bold')
+        .attr('fill', theme.strokeColor)
+        .text(label);
+    });
+  }
+
+  renderPointsVisualization(group, points, toScreen, theme) {
+    points.forEach((point, i) => {
+      const screenPoint = toScreen(point);
+      
+      group.append('circle')
+        .attr('cx', screenPoint.x)
+        .attr('cy', screenPoint.y)
+        .attr('r', 4)
+        .attr('fill', theme.primaryColor)
+        .attr('stroke', '#ffffff')
+        .attr('stroke-width', 2);
+      
+      const label = String.fromCharCode(65 + i); // A, B, C, etc.
+      group.append('text')
+        .attr('x', screenPoint.x + 8)
+        .attr('y', screenPoint.y - 8)
+        .attr('font-size', '12px')
+        .attr('font-weight', 'bold')
+        .attr('fill', theme.strokeColor)
+        .text(label);
+    });
+  }
+
+  renderIntersectionVisualization(group, points, toScreen, theme, config) {
+    // This would need intersection data from metadata, but for now just show the point
+    if (points.length > 0) {
+      const intersectionPoint = toScreen(points[0]);
+      
+      group.append('circle')
+        .attr('cx', intersectionPoint.x)
+        .attr('cy', intersectionPoint.y)
+        .attr('r', 5)
+        .attr('fill', theme.accentColor)
+        .attr('stroke', '#ffffff')
+        .attr('stroke-width', 2);
+      
+      group.append('text')
+        .attr('x', intersectionPoint.x + 8)
+        .attr('y', intersectionPoint.y - 8)
+        .attr('font-size', '12px')
+        .attr('font-weight', 'bold')
+        .attr('fill', theme.accentColor)
+        .text('I');
+    }
+  }
+
+  renderTransformation(renderer, measurements, unit, theme, config) {
+    // Extract shapes from measurements object
+    const originalShape = measurements?.originalShape;
+    const transformedShape = measurements?.transformedShape;
+    
+    // Defensive checks
+    if (!originalShape || !transformedShape) {
+      console.warn('Missing shape data for transformation:', measurements);
+      return;
+    }
+    
+    if (!originalShape.vertices || !transformedShape.vertices) {
+      console.warn('Shape objects missing vertices:', { originalShape, transformedShape });
+      return;
+    }
+    
+    // Set up coordinate system
+    const contentWidth = renderer.getContentWidth();
+    const contentHeight = renderer.getContentHeight();
+    const centerX = contentWidth / 2;
+    const centerY = contentHeight / 2;
+    
+    // Determine coordinate range based on all points
+    const allPoints = [...originalShape.vertices, ...transformedShape.vertices];
+    const pointXs = allPoints.map(p => p.x);
+    const pointYs = allPoints.map(p => p.y);
+    const minX = Math.min(...pointXs) - 1;
+    const maxX = Math.max(...pointXs) + 1;
+    const minY = Math.min(...pointYs) - 1;
+    const maxY = Math.max(...pointYs) + 1;
+    const rangeX = Math.max(Math.abs(minX), Math.abs(maxX));
+    const rangeY = Math.max(Math.abs(minY), Math.abs(maxY));
+    const maxRange = Math.max(rangeX, rangeY);
+    
+    // Calculate grid spacing
+    const gridSpacing = Math.min(
+      (contentWidth * 0.8) / (maxRange * 2),
+      (contentHeight * 0.8) / (maxRange * 2)
+    );
+    const finalGridSpacing = Math.max(gridSpacing, Math.min(15, contentWidth / (maxRange * 3)));
+    
+    const group = renderer.mainGroup.append('g').attr('class', 'transformation-diagram');
+    
+    // Draw coordinate grid if enabled
+    if (config.showGrid) {
+      this.renderCoordinateGrid(group, centerX, centerY, finalGridSpacing, minX, maxX, minY, maxY, theme);
+    }
+    
+    // Helper function to convert coordinates to screen position
+    const toScreen = (point) => ({
+      x: centerX + (point.x * finalGridSpacing),
+      y: centerY - (point.y * finalGridSpacing)
+    });
+    
+    // Debug logging
+    console.log('About to render shapes:', { originalShape, transformedShape, config });
+    
+    // Convert Vue proxies to plain objects using a more robust approach
+    const toPlainObject = (obj) => {
+      if (obj && typeof obj === 'object') {
+        const plain = {};
+        for (const key in obj) {
+          if (obj.hasOwnProperty(key)) {
+            const value = obj[key];
+            if (Array.isArray(value)) {
+              plain[key] = value.map(item => toPlainObject(item));
+            } else if (value && typeof value === 'object') {
+              plain[key] = toPlainObject(value);
+            } else {
+              plain[key] = value;
+            }
+          }
+        }
+        return plain;
+      }
+      return obj;
+    };
+
+    const plainOriginalShape = toPlainObject(originalShape);
+    const plainTransformedShape = toPlainObject(transformedShape);
+
+    // Render original shape (pre-image) if enabled
+    if (config.showPreImage || config.showBothImages) {
+      console.log('Rendering original shape with theme:', theme);
+      this.renderShape(group, plainOriginalShape, toScreen, theme.strokeColor, theme.primaryColor, 0.3, false);
+    }
+    
+    // Render transformed shape (image) - always show this as it's the answer
+    console.log('Rendering transformed shape with theme:', theme);
+    this.renderShape(group, plainTransformedShape, toScreen, theme.accentColor, theme.accentColor, 0.5, true);
+    
+    // Add transformation indicators based on type
+    if (config.transformationType) {
+      this.addTransformationIndicators(group, config.transformationType, originalShape, transformedShape, toScreen, theme);
+    }
+  }
+
+  renderCompositeTransformation(renderer, measurements, unit, theme, config) {
+    // Extract shapes from measurements object
+    const originalShape = measurements?.originalShape;
+    const intermediateShape = measurements?.intermediateShape;
+    const finalShape = measurements?.finalShape;
+    
+    // Defensive checks
+    if (!originalShape || !intermediateShape || !finalShape) {
+      console.warn('Missing shape data for composite transformation:', measurements);
+      return;
+    }
+    
+    if (!originalShape.vertices || !intermediateShape.vertices || !finalShape.vertices) {
+      console.warn('Shape objects missing vertices in composite transformation:', { originalShape, intermediateShape, finalShape });
+      return;
+    }
+    
+    // Set up coordinate system
+    const contentWidth = renderer.getContentWidth();
+    const contentHeight = renderer.getContentHeight();
+    const centerX = contentWidth / 2;
+    const centerY = contentHeight / 2;
+    
+    // Determine coordinate range based on all points
+    const allPoints = [...originalShape.vertices, ...intermediateShape.vertices, ...finalShape.vertices];
+    const pointXs = allPoints.map(p => p.x);
+    const pointYs = allPoints.map(p => p.y);
+    const minX = Math.min(...pointXs) - 1;
+    const maxX = Math.max(...pointXs) + 1;
+    const minY = Math.min(...pointYs) - 1;
+    const maxY = Math.max(...pointYs) + 1;
+    const rangeX = Math.max(Math.abs(minX), Math.abs(maxX));
+    const rangeY = Math.max(Math.abs(minY), Math.abs(maxY));
+    const maxRange = Math.max(rangeX, rangeY);
+    
+    // Calculate grid spacing
+    const gridSpacing = Math.min(
+      (contentWidth * 0.8) / (maxRange * 2),
+      (contentHeight * 0.8) / (maxRange * 2)
+    );
+    const finalGridSpacing = Math.max(gridSpacing, Math.min(15, contentWidth / (maxRange * 3)));
+    
+    const group = renderer.mainGroup.append('g').attr('class', 'composite-transformation-diagram');
+    
+    // Draw coordinate grid if enabled
+    if (config.showGrid) {
+      this.renderCoordinateGrid(group, centerX, centerY, finalGridSpacing, minX, maxX, minY, maxY, theme);
+    }
+    
+    // Helper function to convert coordinates to screen position
+    const toScreen = (point) => ({
+      x: centerX + (point.x * finalGridSpacing),
+      y: centerY - (point.y * finalGridSpacing)
+    });
+    
+    // Convert Vue proxies to plain objects using a more robust approach
+    const toPlainObject = (obj) => {
+      if (obj && typeof obj === 'object') {
+        const plain = {};
+        for (const key in obj) {
+          if (obj.hasOwnProperty(key)) {
+            const value = obj[key];
+            if (Array.isArray(value)) {
+              plain[key] = value.map(item => toPlainObject(item));
+            } else if (value && typeof value === 'object') {
+              plain[key] = toPlainObject(value);
+            } else {
+              plain[key] = value;
+            }
+          }
+        }
+        return plain;
+      }
+      return obj;
+    };
+
+    const plainOriginalShape = toPlainObject(originalShape);
+    const plainIntermediateShape = toPlainObject(intermediateShape);
+    const plainFinalShape = toPlainObject(finalShape);
+    
+    // Render original shape (lightest) if enabled
+    if (config.showPreImage || config.showBothImages) {
+      this.renderShape(group, plainOriginalShape, toScreen, theme.strokeColor, theme.primaryColor, 0.2, false);
+    }
+    
+    // Render intermediate shape (medium opacity) if showing both images
+    if (config.showBothImages) {
+      this.renderShape(group, plainIntermediateShape, toScreen, theme.accentColor, theme.accentColor, 0.4, false);
+    }
+    
+    // Render final shape (most prominent) - always show this as it's the answer
+    this.renderShape(group, plainFinalShape, toScreen, theme.accentColor, theme.accentColor, 0.7, true);
+  }
+
+  renderShape(group, shape, toScreen, strokeColor, fillColor, opacity, isPrime) {
+    console.log('renderShape called with:', { shape, strokeColor, fillColor, opacity, isPrime });
+    
+    // Defensive check for shape and vertices
+    if (!shape || !shape.vertices || !Array.isArray(shape.vertices)) {
+      console.warn('Invalid shape object:', shape);
+      return;
+    }
+    
+    console.log('Shape is valid, vertices:', shape.vertices);
+    const screenPoints = shape.vertices.map(toScreen);
+    console.log('Screen points calculated:', screenPoints);
+    
+    // Draw polygon
+    const pathData = screenPoints.map((point, i) => 
+      `${i === 0 ? 'M' : 'L'} ${point.x} ${point.y}`
+    ).join(' ') + ' Z';
+    
+    group.append('path')
+      .attr('d', pathData)
+      .attr('fill', fillColor)
+      .attr('fill-opacity', opacity)
+      .attr('stroke', strokeColor)
+      .attr('stroke-width', isPrime ? 2 : 1)
+      .attr('stroke-dasharray', isPrime ? 'none' : '3,3');
+    
+    // Draw vertices
+    screenPoints.forEach((point, i) => {
+      group.append('circle')
+        .attr('cx', point.x)
+        .attr('cy', point.y)
+        .attr('r', isPrime ? 4 : 3)
+        .attr('fill', strokeColor)
+        .attr('stroke', '#ffffff')
+        .attr('stroke-width', 1);
+      
+      // Add vertex labels
+      const label = String.fromCharCode(65 + i) + (isPrime ? "'" : '');
+      group.append('text')
+        .attr('x', point.x + 8)
+        .attr('y', point.y - 8)
+        .attr('font-size', '12px')
+        .attr('font-weight', 'bold')
+        .attr('fill', strokeColor)
+        .text(label);
+    });
+  }
+
+  renderCoordinateGrid(group, centerX, centerY, gridSpacing, minX, maxX, minY, maxY, theme) {
+    // Draw grid lines
+    for (let x = minX; x <= maxX; x++) {
+      const screenX = centerX + (x * gridSpacing);
+      const isAxis = x === 0;
+      group.append('line')
+        .attr('x1', screenX)
+        .attr('y1', centerY + (minY * gridSpacing))
+        .attr('x2', screenX)
+        .attr('y2', centerY + (maxY * gridSpacing))
+        .attr('stroke', isAxis ? theme.strokeColor : theme.strokeColor)
+        .attr('stroke-width', isAxis ? 2 : 0.5)
+        .attr('opacity', isAxis ? 1 : 0.3);
+    }
+    
+    for (let y = minY; y <= maxY; y++) {
+      const screenY = centerY - (y * gridSpacing);
+      const isAxis = y === 0;
+      group.append('line')
+        .attr('x1', centerX + (minX * gridSpacing))
+        .attr('y1', screenY)
+        .attr('x2', centerX + (maxX * gridSpacing))
+        .attr('y2', screenY)
+        .attr('stroke', isAxis ? theme.strokeColor : theme.strokeColor)
+        .attr('stroke-width', isAxis ? 2 : 0.5)
+        .attr('opacity', isAxis ? 1 : 0.3);
+    }
+    
+    // Add coordinate labels
+    for (let x = minX; x <= maxX; x++) {
+      if (x === 0) continue;
+      const screenX = centerX + (x * gridSpacing);
+      group.append('text')
+        .attr('x', screenX)
+        .attr('y', centerY + 15)
+        .attr('text-anchor', 'middle')
+        .attr('font-size', '10px')
+        .attr('fill', theme.strokeColor)
+        .attr('opacity', 0.8)
+        .text(x);
+    }
+    
+    for (let y = minY; y <= maxY; y++) {
+      if (y === 0) continue;
+      const screenY = centerY - (y * gridSpacing);
+      group.append('text')
+        .attr('x', centerX - 15)
+        .attr('y', screenY + 4)
+        .attr('text-anchor', 'middle')
+        .attr('font-size', '10px')
+        .attr('fill', theme.strokeColor)
+        .attr('opacity', 0.8)
+        .text(y);
+    }
+  }
+
+  addTransformationIndicators(group, transformationType, originalShape, transformedShape, toScreen, theme) {
+    switch (transformationType) {
+      case 'translation':
+        // Draw translation vector
+        this.addTranslationVector(group, originalShape, transformedShape, toScreen, theme);
+        break;
+      case 'rotation':
+        // Add rotation center and arc indicator
+        this.addRotationIndicator(group, theme);
+        break;
+      case 'reflection':
+        // Add reflection line (this would need more info about which line)
+        this.addReflectionLine(group, theme);
+        break;
+      case 'dilation':
+        // Add lines from center to corresponding points
+        this.addDilationLines(group, originalShape, transformedShape, toScreen, theme);
+        break;
+    }
+  }
+
+  addTranslationVector(group, originalShape, transformedShape, toScreen, theme) {
+    // Defensive check
+    if (!originalShape.vertices?.[0] || !transformedShape.vertices?.[0]) {
+      return;
+    }
+    
+    // Draw an arrow from one vertex of original to corresponding vertex of transformed
+    const start = toScreen(originalShape.vertices[0]);
+    const end = toScreen(transformedShape.vertices[0]);
+    
+    group.append('line')
+      .attr('x1', start.x)
+      .attr('y1', start.y)
+      .attr('x2', end.x)
+      .attr('y2', end.y)
+      .attr('stroke', theme.accentColor)
+      .attr('stroke-width', 2)
+      .attr('marker-end', 'url(#arrowhead)');
+    
+    // Add arrowhead marker
+    const defs = group.append('defs');
+    defs.append('marker')
+      .attr('id', 'arrowhead')
+      .attr('markerWidth', 10)
+      .attr('markerHeight', 7)
+      .attr('refX', 9)
+      .attr('refY', 3.5)
+      .attr('orient', 'auto')
+      .append('polygon')
+      .attr('points', '0 0, 10 3.5, 0 7')
+      .attr('fill', theme.accentColor);
+  }
+
+  addRotationIndicator(group, theme) {
+    // Add a small rotation arc at origin to indicate rotation
+    const centerX = group.node().getBBox().x + group.node().getBBox().width / 2;
+    const centerY = group.node().getBBox().y + group.node().getBBox().height / 2;
+    
+    group.append('circle')
+      .attr('cx', centerX)
+      .attr('cy', centerY)
+      .attr('r', 3)
+      .attr('fill', theme.accentColor);
+  }
+
+  addReflectionLine(group, theme) {
+    // This would need more specific information about which reflection line was used
+    // For now, just add a general indicator
+  }
+
+  addDilationLines(group, originalShape, transformedShape, toScreen, theme) {
+    // Defensive check
+    if (!originalShape.vertices || !transformedShape.vertices) {
+      return;
+    }
+    
+    // Draw lines from origin to corresponding points to show dilation
+    const origin = toScreen({ x: 0, y: 0 });
+    
+    originalShape.vertices.forEach((vertex, i) => {
+      if (!vertex || !transformedShape.vertices[i]) return;
+      
+      const originalPoint = toScreen(vertex);
+      const transformedPoint = toScreen(transformedShape.vertices[i]);
+      
+      // Line through origin and both points
+      group.append('line')
+        .attr('x1', origin.x)
+        .attr('y1', origin.y)
+        .attr('x2', transformedPoint.x)
+        .attr('y2', transformedPoint.y)
+        .attr('stroke', theme.accentColor)
+        .attr('stroke-width', 1)
+        .attr('stroke-dasharray', '2,2')
+        .attr('opacity', 0.6);
+    });
   }
 
   renderAngle(renderer, measurements, theme, config) {
@@ -1770,6 +2866,698 @@ export class DiagramRenderer {
     // For now, just add a subtle glow effect
     group.selectAll('polygon, rect, circle')
       .attr('filter', 'url(#glow)');
+  }
+
+  // 3D Shape Rendering Methods
+  renderRectangularPrism(renderer, measurements, unit, theme, config) {
+    const { length = 6, width = 4, height = 5 } = measurements;
+    
+    // Calculate scale and center position
+    const availableSize = Math.min(renderer.getContentWidth(), renderer.getContentHeight()) * 0.8;
+    const maxDimension = Math.max(length, width, height);
+    const scale = Math.min(availableSize / (maxDimension * 1.5), 60);
+    const centerX = renderer.getContentWidth() / 2;
+    const centerY = renderer.getContentHeight() / 2;
+    
+    const group = renderer.mainGroup.append('g').attr('class', 'rectangular-prism-3d');
+    
+    // Scaled dimensions
+    const scaledLength = length * scale;
+    const scaledWidth = width * scale;
+    const scaledHeight = height * scale;
+    
+    // Isometric offset for 3D effect
+    const isoX = scaledWidth * 0.5;
+    const isoY = scaledHeight * 0.3;
+    
+    // Draw the three visible faces
+    // Front face
+    group.append('rect')
+      .attr('x', centerX - scaledLength/2)
+      .attr('y', centerY - scaledHeight/2)
+      .attr('width', scaledLength)
+      .attr('height', scaledHeight)
+      .attr('fill', theme.primaryColor)
+      .attr('fill-opacity', theme.fillOpacity)
+      .attr('stroke', theme.strokeColor)
+      .attr('stroke-width', theme.strokeWidth);
+    
+    // Top face (parallelogram)
+    const topPoints = [
+      `${centerX - scaledLength/2},${centerY - scaledHeight/2}`,
+      `${centerX + scaledLength/2},${centerY - scaledHeight/2}`,
+      `${centerX + scaledLength/2 + isoX},${centerY - scaledHeight/2 - isoY}`,
+      `${centerX - scaledLength/2 + isoX},${centerY - scaledHeight/2 - isoY}`
+    ].join(' ');
+    
+    group.append('polygon')
+      .attr('points', topPoints)
+      .attr('fill', theme.accentColor)
+      .attr('fill-opacity', theme.fillOpacity * 1.2)
+      .attr('stroke', theme.strokeColor)
+      .attr('stroke-width', theme.strokeWidth);
+    
+    // Right face (parallelogram)
+    const rightPoints = [
+      `${centerX + scaledLength/2},${centerY - scaledHeight/2}`,
+      `${centerX + scaledLength/2 + isoX},${centerY - scaledHeight/2 - isoY}`,
+      `${centerX + scaledLength/2 + isoX},${centerY + scaledHeight/2 - isoY}`,
+      `${centerX + scaledLength/2},${centerY + scaledHeight/2}`
+    ].join(' ');
+    
+    group.append('polygon')
+      .attr('points', rightPoints)
+      .attr('fill', theme.secondaryColor)
+      .attr('fill-opacity', theme.fillOpacity * 0.8)
+      .attr('stroke', theme.strokeColor)
+      .attr('stroke-width', theme.strokeWidth);
+    
+    if (config.showMeasurements) {
+      // Length measurement
+      group.append('text')
+        .attr('x', centerX)
+        .attr('y', centerY + scaledHeight/2 + 25)
+        .attr('text-anchor', 'middle')
+        .attr('font-size', '12px')
+        .attr('fill', theme.strokeColor)
+        .text(`${length} ${unit}`);
+      
+      // Height measurement
+      group.append('text')
+        .attr('x', centerX - scaledLength/2 - 25)
+        .attr('y', centerY)
+        .attr('text-anchor', 'middle')
+        .attr('font-size', '12px')
+        .attr('fill', theme.strokeColor)
+        .text(`${height} ${unit}`);
+      
+      // Width measurement (on the side face)
+      group.append('text')
+        .attr('x', centerX + scaledLength/2 + isoX/2 + 15)
+        .attr('y', centerY - isoY/2)
+        .attr('text-anchor', 'middle')
+        .attr('font-size', '12px')
+        .attr('fill', theme.strokeColor)
+        .text(`${width} ${unit}`);
+    }
+  }
+
+  renderCylinder(renderer, measurements, unit, theme, config) {
+    const { radius = 3, height = 6 } = measurements;
+    
+    // Calculate scale and center position
+    const availableSize = Math.min(renderer.getContentWidth(), renderer.getContentHeight()) * 0.8;
+    const maxDimension = Math.max(radius * 2, height);
+    const scale = Math.min(availableSize / (maxDimension * 1.2), 60);
+    const centerX = renderer.getContentWidth() / 2;
+    const centerY = renderer.getContentHeight() / 2;
+    
+    const group = renderer.mainGroup.append('g').attr('class', 'cylinder-3d');
+    
+    const scaledRadius = radius * scale;
+    const scaledHeight = height * scale;
+    
+    // Draw bottom ellipse (full)
+    group.append('ellipse')
+      .attr('cx', centerX)
+      .attr('cy', centerY + scaledHeight/2)
+      .attr('rx', scaledRadius)
+      .attr('ry', scaledRadius * 0.3)
+      .attr('fill', theme.primaryColor)
+      .attr('fill-opacity', theme.fillOpacity)
+      .attr('stroke', theme.strokeColor)
+      .attr('stroke-width', theme.strokeWidth);
+    
+    // Draw sides (rectangle)
+    group.append('rect')
+      .attr('x', centerX - scaledRadius)
+      .attr('y', centerY - scaledHeight/2)
+      .attr('width', scaledRadius * 2)
+      .attr('height', scaledHeight)
+      .attr('fill', theme.secondaryColor)
+      .attr('fill-opacity', theme.fillOpacity)
+      .attr('stroke', theme.strokeColor)
+      .attr('stroke-width', theme.strokeWidth);
+    
+    // Draw top ellipse (partial arc for 3D effect)
+    const arcPath = `M ${centerX - scaledRadius} ${centerY - scaledHeight/2} 
+                     A ${scaledRadius} ${scaledRadius * 0.3} 0 0 1 ${centerX + scaledRadius} ${centerY - scaledHeight/2}`;
+    
+    group.append('path')
+      .attr('d', arcPath)
+      .attr('fill', 'none')
+      .attr('stroke', theme.strokeColor)
+      .attr('stroke-width', theme.strokeWidth);
+    
+    if (config.showMeasurements) {
+      // Radius measurement
+      group.append('line')
+        .attr('x1', centerX)
+        .attr('y1', centerY + scaledHeight/2)
+        .attr('x2', centerX + scaledRadius)
+        .attr('y2', centerY + scaledHeight/2)
+        .attr('stroke', theme.strokeColor)
+        .attr('stroke-width', 1);
+      
+      group.append('text')
+        .attr('x', centerX + scaledRadius/2)
+        .attr('y', centerY + scaledHeight/2 + 15)
+        .attr('text-anchor', 'middle')
+        .attr('font-size', '12px')
+        .attr('fill', theme.strokeColor)
+        .text(`r = ${radius} ${unit}`);
+      
+      // Height measurement
+      group.append('text')
+        .attr('x', centerX - scaledRadius - 25)
+        .attr('y', centerY)
+        .attr('text-anchor', 'middle')
+        .attr('font-size', '12px')
+        .attr('fill', theme.strokeColor)
+        .text(`h = ${height} ${unit}`);
+    }
+  }
+
+  renderCone(renderer, measurements, unit, theme, config) {
+    const { radius = 3, height = 6 } = measurements;
+    
+    // Calculate scale and center position
+    const availableSize = Math.min(renderer.getContentWidth(), renderer.getContentHeight()) * 0.8;
+    const maxDimension = Math.max(radius * 2, height);
+    const scale = Math.min(availableSize / (maxDimension * 1.2), 60);
+    const centerX = renderer.getContentWidth() / 2;
+    const centerY = renderer.getContentHeight() / 2;
+    
+    const group = renderer.mainGroup.append('g').attr('class', 'cone-3d');
+    
+    const scaledRadius = radius * scale;
+    const scaledHeight = height * scale;
+    
+    // Draw base ellipse
+    group.append('ellipse')
+      .attr('cx', centerX)
+      .attr('cy', centerY + scaledHeight/2)
+      .attr('rx', scaledRadius)
+      .attr('ry', scaledRadius * 0.3)
+      .attr('fill', theme.primaryColor)
+      .attr('fill-opacity', theme.fillOpacity)
+      .attr('stroke', theme.strokeColor)
+      .attr('stroke-width', theme.strokeWidth);
+    
+    // Draw visible part of side (triangle sectors)
+    const leftEdgeX = centerX - scaledRadius;
+    const rightEdgeX = centerX + scaledRadius;
+    const baseY = centerY + scaledHeight/2;
+    const apexX = centerX;
+    const apexY = centerY - scaledHeight/2;
+    
+    // Left side
+    const leftPath = `M ${leftEdgeX} ${baseY} L ${apexX} ${apexY} L ${rightEdgeX} ${baseY}`;
+    group.append('path')
+      .attr('d', leftPath)
+      .attr('fill', theme.secondaryColor)
+      .attr('fill-opacity', theme.fillOpacity)
+      .attr('stroke', theme.strokeColor)
+      .attr('stroke-width', theme.strokeWidth);
+    
+    if (config.showMeasurements) {
+      // Radius measurement
+      group.append('line')
+        .attr('x1', centerX)
+        .attr('y1', baseY)
+        .attr('x2', rightEdgeX)
+        .attr('y2', baseY)
+        .attr('stroke', theme.strokeColor)
+        .attr('stroke-width', 1);
+      
+      group.append('text')
+        .attr('x', centerX + scaledRadius/2)
+        .attr('y', baseY + 15)
+        .attr('text-anchor', 'middle')
+        .attr('font-size', '12px')
+        .attr('fill', theme.strokeColor)
+        .text(`r = ${radius} ${unit}`);
+      
+      // Height measurement
+      group.append('text')
+        .attr('x', centerX - scaledRadius - 25)
+        .attr('y', centerY)
+        .attr('text-anchor', 'middle')
+        .attr('font-size', '12px')
+        .attr('fill', theme.strokeColor)
+        .text(`h = ${height} ${unit}`);
+    }
+  }
+
+  renderSphere(renderer, measurements, unit, theme, config) {
+    const { radius = 4 } = measurements;
+    
+    // Calculate scale and center position
+    const availableSize = Math.min(renderer.getContentWidth(), renderer.getContentHeight()) * 0.8;
+    const scale = Math.min(availableSize / (radius * 2), 80);
+    const centerX = renderer.getContentWidth() / 2;
+    const centerY = renderer.getContentHeight() / 2;
+    
+    const group = renderer.mainGroup.append('g').attr('class', 'sphere-3d');
+    
+    const scaledRadius = radius * scale;
+    
+    // Create gradient for 3D effect
+    const gradientId = `sphere-gradient-${Date.now()}`;
+    const defs = group.append('defs');
+    const gradient = defs.append('radialGradient')
+      .attr('id', gradientId)
+      .attr('cx', '30%')
+      .attr('cy', '30%');
+    
+    gradient.append('stop')
+      .attr('offset', '0%')
+      .attr('stop-color', '#ffffff')
+      .attr('stop-opacity', 0.8);
+    
+    gradient.append('stop')
+      .attr('offset', '70%')
+      .attr('stop-color', theme.primaryColor)
+      .attr('stop-opacity', 0.6);
+    
+    gradient.append('stop')
+      .attr('offset', '100%')
+      .attr('stop-color', theme.strokeColor)
+      .attr('stop-opacity', 0.9);
+    
+    // Draw main sphere
+    group.append('circle')
+      .attr('cx', centerX)
+      .attr('cy', centerY)
+      .attr('r', scaledRadius)
+      .attr('fill', `url(#${gradientId})`)
+      .attr('stroke', theme.strokeColor)
+      .attr('stroke-width', theme.strokeWidth);
+    
+    // Add great circle for 3D effect
+    group.append('ellipse')
+      .attr('cx', centerX)
+      .attr('cy', centerY)
+      .attr('rx', scaledRadius)
+      .attr('ry', scaledRadius * 0.3)
+      .attr('fill', 'none')
+      .attr('stroke', theme.strokeColor)
+      .attr('stroke-width', 1)
+      .attr('opacity', 0.4);
+    
+    if (config.showMeasurements) {
+      // Radius measurement
+      group.append('line')
+        .attr('x1', centerX)
+        .attr('y1', centerY)
+        .attr('x2', centerX + scaledRadius)
+        .attr('y2', centerY)
+        .attr('stroke', theme.strokeColor)
+        .attr('stroke-width', 1);
+      
+      group.append('text')
+        .attr('x', centerX + scaledRadius/2)
+        .attr('y', centerY - 10)
+        .attr('text-anchor', 'middle')
+        .attr('font-size', '12px')
+        .attr('fill', theme.strokeColor)
+        .text(`r = ${radius} ${unit}`);
+    }
+  }
+
+  renderTriangularPrism(renderer, measurements, unit, theme, config) {
+    const { base = 6, height = 4, length = 8 } = measurements;
+    
+    // Calculate scale and center position
+    const availableSize = Math.min(renderer.getContentWidth(), renderer.getContentHeight()) * 0.8;
+    const maxDimension = Math.max(base, height, length);
+    const scale = Math.min(availableSize / (maxDimension * 1.5), 50);
+    const centerX = renderer.getContentWidth() / 2;
+    const centerY = renderer.getContentHeight() / 2;
+    
+    const group = renderer.mainGroup.append('g').attr('class', 'triangular-prism-3d');
+    
+    const scaledBase = base * scale;
+    const scaledHeight = height * scale;
+    const scaledLength = length * scale;
+    
+    // Isometric offset
+    const isoX = scaledLength * 0.5;
+    const isoY = scaledLength * 0.3;
+    
+    // Draw front triangular face
+    const frontTrianglePoints = [
+      `${centerX},${centerY - scaledHeight/2}`,
+      `${centerX - scaledBase/2},${centerY + scaledHeight/2}`,
+      `${centerX + scaledBase/2},${centerY + scaledHeight/2}`
+    ].join(' ');
+    
+    group.append('polygon')
+      .attr('points', frontTrianglePoints)
+      .attr('fill', theme.primaryColor)
+      .attr('fill-opacity', theme.fillOpacity)
+      .attr('stroke', theme.strokeColor)
+      .attr('stroke-width', theme.strokeWidth);
+    
+    // Draw back triangular face (offset)
+    const backTrianglePoints = [
+      `${centerX + isoX},${centerY - scaledHeight/2 - isoY}`,
+      `${centerX - scaledBase/2 + isoX},${centerY + scaledHeight/2 - isoY}`,
+      `${centerX + scaledBase/2 + isoX},${centerY + scaledHeight/2 - isoY}`
+    ].join(' ');
+    
+    group.append('polygon')
+      .attr('points', backTrianglePoints)
+      .attr('fill', theme.accentColor)
+      .attr('fill-opacity', theme.fillOpacity)
+      .attr('stroke', theme.strokeColor)
+      .attr('stroke-width', theme.strokeWidth);
+    
+    // Draw connecting edges
+    group.append('line')
+      .attr('x1', centerX).attr('y1', centerY - scaledHeight/2)
+      .attr('x2', centerX + isoX).attr('y2', centerY - scaledHeight/2 - isoY)
+      .attr('stroke', theme.strokeColor).attr('stroke-width', theme.strokeWidth);
+    
+    group.append('line')
+      .attr('x1', centerX - scaledBase/2).attr('y1', centerY + scaledHeight/2)
+      .attr('x2', centerX - scaledBase/2 + isoX).attr('y2', centerY + scaledHeight/2 - isoY)
+      .attr('stroke', theme.strokeColor).attr('stroke-width', theme.strokeWidth);
+    
+    group.append('line')
+      .attr('x1', centerX + scaledBase/2).attr('y1', centerY + scaledHeight/2)
+      .attr('x2', centerX + scaledBase/2 + isoX).attr('y2', centerY + scaledHeight/2 - isoY)
+      .attr('stroke', theme.strokeColor).attr('stroke-width', theme.strokeWidth);
+    
+    if (config.showMeasurements) {
+      group.append('text')
+        .attr('x', centerX)
+        .attr('y', centerY + scaledHeight/2 + 25)
+        .attr('text-anchor', 'middle')
+        .attr('font-size', '12px')
+        .attr('fill', theme.strokeColor)
+        .text(`${base} ${unit}`);
+    }
+  }
+
+  renderPyramid(renderer, measurements, unit, theme, config) {
+    const { baseLength = 6, baseWidth = 6, height = 8 } = measurements;
+    
+    // Calculate scale and center position
+    const availableSize = Math.min(renderer.getContentWidth(), renderer.getContentHeight()) * 0.8;
+    const maxDimension = Math.max(baseLength, baseWidth, height);
+    const scale = Math.min(availableSize / (maxDimension * 1.5), 50);
+    const centerX = renderer.getContentWidth() / 2;
+    const centerY = renderer.getContentHeight() / 2;
+    
+    const group = renderer.mainGroup.append('g').attr('class', 'pyramid-3d');
+    
+    const scaledLength = baseLength * scale;
+    const scaledWidth = baseWidth * scale;
+    const scaledHeight = height * scale;
+    
+    // Base corners
+    const frontLeft = { x: centerX - scaledLength/2, y: centerY + scaledHeight/3 };
+    const frontRight = { x: centerX + scaledLength/2, y: centerY + scaledHeight/3 };
+    const backLeft = { x: centerX - scaledLength/2 + scaledWidth/3, y: centerY + scaledHeight/3 - scaledWidth/3 };
+    const backRight = { x: centerX + scaledLength/2 + scaledWidth/3, y: centerY + scaledHeight/3 - scaledWidth/3 };
+    const apex = { x: centerX + scaledWidth/6, y: centerY - scaledHeight/2 };
+    
+    // Draw base (partial, visible edges only)
+    group.append('line')
+      .attr('x1', frontLeft.x).attr('y1', frontLeft.y)
+      .attr('x2', frontRight.x).attr('y2', frontRight.y)
+      .attr('stroke', theme.strokeColor).attr('stroke-width', theme.strokeWidth);
+    
+    group.append('line')
+      .attr('x1', frontLeft.x).attr('y1', frontLeft.y)
+      .attr('x2', backLeft.x).attr('y2', backLeft.y)
+      .attr('stroke', theme.strokeColor).attr('stroke-width', theme.strokeWidth);
+    
+    group.append('line')
+      .attr('x1', backLeft.x).attr('y1', backLeft.y)
+      .attr('x2', backRight.x).attr('y2', backRight.y)
+      .attr('stroke', theme.strokeColor).attr('stroke-width', theme.strokeWidth);
+    
+    // Draw triangular faces
+    // Front face
+    const frontFacePoints = [
+      `${frontLeft.x},${frontLeft.y}`,
+      `${frontRight.x},${frontRight.y}`,
+      `${apex.x},${apex.y}`
+    ].join(' ');
+    
+    group.append('polygon')
+      .attr('points', frontFacePoints)
+      .attr('fill', theme.primaryColor)
+      .attr('fill-opacity', theme.fillOpacity)
+      .attr('stroke', theme.strokeColor)
+      .attr('stroke-width', theme.strokeWidth);
+    
+    // Right face
+    const rightFacePoints = [
+      `${frontRight.x},${frontRight.y}`,
+      `${backRight.x},${backRight.y}`,
+      `${apex.x},${apex.y}`
+    ].join(' ');
+    
+    group.append('polygon')
+      .attr('points', rightFacePoints)
+      .attr('fill', theme.secondaryColor)
+      .attr('fill-opacity', theme.fillOpacity * 0.8)
+      .attr('stroke', theme.strokeColor)
+      .attr('stroke-width', theme.strokeWidth);
+    
+    if (config.showMeasurements) {
+      group.append('text')
+        .attr('x', centerX)
+        .attr('y', centerY + scaledHeight/3 + 25)
+        .attr('text-anchor', 'middle')
+        .attr('font-size', '12px')
+        .attr('fill', theme.strokeColor)
+        .text(`${baseLength} × ${baseWidth} ${unit}`);
+    }
+  }
+
+  renderComposite3D(renderer, measurements, unit, theme, config) {
+    // Render a simple composite shape (cylinder + hemisphere)
+    const { radius = 3, cylinderHeight = 4 } = measurements;
+    
+    // Render cylinder first
+    this.renderCylinder(renderer, { radius, height: cylinderHeight }, unit, theme, config);
+    
+    // Add hemisphere on top
+    const availableSize = Math.min(renderer.getContentWidth(), renderer.getContentHeight()) * 0.8;
+    const maxDimension = Math.max(radius * 2, cylinderHeight);
+    const scale = Math.min(availableSize / (maxDimension * 1.2), 60);
+    const centerX = renderer.getContentWidth() / 2;
+    const centerY = renderer.getContentHeight() / 2;
+    
+    const scaledRadius = radius * scale;
+    const scaledHeight = cylinderHeight * scale;
+    
+    // Draw hemisphere (upper half circle)
+    const group = renderer.mainGroup.append('g').attr('class', 'composite-hemisphere');
+    
+    const arcPath = `M ${centerX - scaledRadius} ${centerY - scaledHeight/2} 
+                     A ${scaledRadius} ${scaledRadius} 0 0 1 ${centerX + scaledRadius} ${centerY - scaledHeight/2}`;
+    
+    group.append('path')
+      .attr('d', arcPath)
+      .attr('fill', theme.accentColor)
+      .attr('fill-opacity', theme.fillOpacity)
+      .attr('stroke', theme.strokeColor)
+      .attr('stroke-width', theme.strokeWidth);
+  }
+
+  renderRightTriangle(renderer, measurements, unit, theme, config) {
+    const { sides } = measurements;
+    const { a, b, c, missing } = sides;
+    
+    // Calculate scale based on largest side with 20% padding
+    const maxSide = Math.max(a, b, c || Math.sqrt(a*a + b*b));
+    const availableSize = Math.min(renderer.getContentWidth(), renderer.getContentHeight()) * 0.8;
+    const scale = Math.min(availableSize / maxSide, 80);
+    
+    const centerX = renderer.getContentWidth() / 2;
+    const centerY = renderer.getContentHeight() / 2;
+    
+    // Scale the sides
+    const scaledA = a * scale;
+    const scaledB = b * scale;
+    
+    // Position the right triangle with right angle at bottom left
+    const startX = centerX - scaledA / 2;
+    const startY = centerY + scaledB / 2;
+    
+    const group = renderer.mainGroup.append('g').attr('class', 'right-triangle-shape');
+    
+    // Draw the triangle
+    const points = [
+      `${startX},${startY}`,                    // Bottom left (right angle)
+      `${startX + scaledA},${startY}`,          // Bottom right
+      `${startX},${startY - scaledB}`           // Top left
+    ];
+    
+    group.append('polygon')
+      .attr('points', points.join(' '))
+      .attr('fill', theme.primaryColor)
+      .attr('fill-opacity', theme.fillOpacity)
+      .attr('stroke', theme.strokeColor)
+      .attr('stroke-width', theme.strokeWidth)
+      .attr('class', 'shape right-triangle');
+    
+    // Add right angle indicator
+    const cornerSize = 15;
+    group.append('polygon')
+      .attr('points', `${startX},${startY} ${startX + cornerSize},${startY} ${startX + cornerSize},${startY - cornerSize} ${startX},${startY - cornerSize}`)
+      .attr('fill', 'none')
+      .attr('stroke', theme.strokeColor)
+      .attr('stroke-width', 1);
+    
+    // Add measurements if enabled
+    if (config.showMeasurements) {
+      // Side a (bottom)
+      group.append('text')
+        .attr('x', startX + scaledA / 2)
+        .attr('y', startY + 20)
+        .attr('text-anchor', 'middle')
+        .attr('font-size', '12px')
+        .attr('fill', missing === 'a' ? theme.accentColor : theme.strokeColor)
+        .attr('font-weight', missing === 'a' ? 'bold' : 'normal')
+        .text(missing === 'a' ? `? ${unit}` : `${a} ${unit}`);
+      
+      // Side b (left)
+      group.append('text')
+        .attr('x', startX - 25)
+        .attr('y', startY - scaledB / 2)
+        .attr('text-anchor', 'middle')
+        .attr('font-size', '12px')
+        .attr('fill', missing === 'b' ? theme.accentColor : theme.strokeColor)
+        .attr('font-weight', missing === 'b' ? 'bold' : 'normal')
+        .attr('transform', `rotate(-90, ${startX - 25}, ${startY - scaledB / 2})`)
+        .text(missing === 'b' ? `? ${unit}` : `${b} ${unit}`);
+      
+      // Side c (hypotenuse)
+      const hypX = startX + scaledA / 2;
+      const hypY = startY - scaledB / 2;
+      const angle = Math.atan2(-scaledB, scaledA) * 180 / Math.PI;
+      
+      group.append('text')
+        .attr('x', hypX)
+        .attr('y', hypY - 10)
+        .attr('text-anchor', 'middle')
+        .attr('font-size', '12px')
+        .attr('fill', missing === 'c' ? theme.accentColor : theme.strokeColor)
+        .attr('font-weight', missing === 'c' ? 'bold' : 'normal')
+        .attr('transform', `rotate(${angle}, ${hypX}, ${hypY - 10})`)
+        .text(missing === 'c' ? `? ${unit}` : `${c ? c.toFixed(1) : Math.sqrt(a*a + b*b).toFixed(1)} ${unit}`);
+    }
+  }
+
+  renderDistancePoints(renderer, measurements, unit, theme, config) {
+    const { points } = measurements;
+    const { x1, y1, x2, y2, distance } = points;
+    
+    // Set up coordinate system
+    const centerX = renderer.getContentWidth() / 2;
+    const centerY = renderer.getContentHeight() / 2;
+    const gridSize = 20; // pixels per unit
+    
+    const group = renderer.mainGroup.append('g').attr('class', 'distance-points-shape');
+    
+    // Draw coordinate grid if enabled
+    if (config.showGrid) {
+      // Determine grid range based on points
+      const maxX = Math.max(Math.abs(x1), Math.abs(x2)) + 2;
+      const maxY = Math.max(Math.abs(y1), Math.abs(y2)) + 2;
+      
+      // Draw grid lines
+      for (let x = -maxX; x <= maxX; x++) {
+        group.append('line')
+          .attr('x1', centerX + x * gridSize)
+          .attr('y1', centerY - maxY * gridSize)
+          .attr('x2', centerX + x * gridSize)
+          .attr('y2', centerY + maxY * gridSize)
+          .attr('stroke', x === 0 ? theme.strokeColor : '#ddd')
+          .attr('stroke-width', x === 0 ? 2 : 0.5);
+      }
+      
+      for (let y = -maxY; y <= maxY; y++) {
+        group.append('line')
+          .attr('x1', centerX - maxX * gridSize)
+          .attr('y1', centerY - y * gridSize)
+          .attr('x2', centerX + maxX * gridSize)
+          .attr('y2', centerY - y * gridSize)
+          .attr('stroke', y === 0 ? theme.strokeColor : '#ddd')
+          .attr('stroke-width', y === 0 ? 2 : 0.5);
+      }
+    }
+    
+    // Convert coordinates to screen positions
+    const point1X = centerX + x1 * gridSize;
+    const point1Y = centerY - y1 * gridSize; // Flip Y axis
+    const point2X = centerX + x2 * gridSize;
+    const point2Y = centerY - y2 * gridSize; // Flip Y axis
+    
+    // Draw distance line
+    group.append('line')
+      .attr('x1', point1X)
+      .attr('y1', point1Y)
+      .attr('x2', point2X)
+      .attr('y2', point2Y)
+      .attr('stroke', theme.accentColor)
+      .attr('stroke-width', 2)
+      .attr('stroke-dasharray', '5,5');
+    
+    // Draw points
+    group.append('circle')
+      .attr('cx', point1X)
+      .attr('cy', point1Y)
+      .attr('r', 4)
+      .attr('fill', theme.primaryColor)
+      .attr('stroke', theme.strokeColor)
+      .attr('stroke-width', 2);
+    
+    group.append('circle')
+      .attr('cx', point2X)
+      .attr('cy', point2Y)
+      .attr('r', 4)
+      .attr('fill', theme.primaryColor)
+      .attr('stroke', theme.strokeColor)
+      .attr('stroke-width', 2);
+    
+    // Add point labels if enabled
+    if (config.showLabels) {
+      group.append('text')
+        .attr('x', point1X + 8)
+        .attr('y', point1Y - 8)
+        .attr('font-size', '12px')
+        .attr('fill', theme.strokeColor)
+        .text(`(${x1}, ${y1})`);
+      
+      group.append('text')
+        .attr('x', point2X + 8)
+        .attr('y', point2Y - 8)
+        .attr('font-size', '12px')
+        .attr('fill', theme.strokeColor)
+        .text(`(${x2}, ${y2})`);
+    }
+    
+    // Add distance measurement if enabled
+    if (config.showMeasurements) {
+      const midX = (point1X + point2X) / 2;
+      const midY = (point1Y + point2Y) / 2;
+      
+      group.append('text')
+        .attr('x', midX)
+        .attr('y', midY - 10)
+        .attr('text-anchor', 'middle')
+        .attr('font-size', '12px')
+        .attr('fill', theme.accentColor)
+        .attr('font-weight', 'bold')
+        .text(`${distance.toFixed(1)} ${unit}`);
+    }
   }
 
   createErrorSVG(width, height) {

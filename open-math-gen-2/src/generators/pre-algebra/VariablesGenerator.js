@@ -22,7 +22,7 @@ export class VariablesGenerator extends BaseGenerator {
       estimatedTime: '50 seconds',
       exampleProblem: {
         question: 'If x represents a number, write an expression for "5 more than twice the number"',
-        questionLaTeX: '\\text{If x represents a number, write an expression for "5 more than twice the number"}',
+        questionLaTeX: '\\text{If x represents a number,} \\\\\\\\ \\text{write an expression for "5 more than twice the number"},',
         answer: '2x + 5',
         answerLaTeX: '2x + 5'
       },
@@ -42,7 +42,6 @@ export class VariablesGenerator extends BaseGenerator {
         maxCoefficient: 10,
         maxConstant: 15,
         maxVariableValue: 8,
-        showSteps: true,
         complexityLevel: 'basic'
       },
       
@@ -222,24 +221,6 @@ export class VariablesGenerator extends BaseGenerator {
                 order: 4
               })
             }
-          }),
-          
-          presentation: schemaV2.createCategory({
-            id: 'presentation',
-            label: 'Presentation & Format',
-            description: 'Control how problems are displayed',
-            icon: 'palette',
-            color: 'teal',
-            order: 5,
-            parameters: {
-              showSteps: schemaV2.createParameter({
-                type: 'boolean',
-                label: 'Show Solution Steps',
-                description: 'Include step-by-step explanations',
-                helpText: 'Shows reasoning and translation steps',
-                order: 1
-              })
-            }
           })
         },
         
@@ -265,7 +246,6 @@ export class VariablesGenerator extends BaseGenerator {
               maxCoefficient: 6,
               maxConstant: 10,
               maxVariableValue: 5,
-              showSteps: true,
               complexityLevel: 'basic'
             }
           }),
@@ -290,7 +270,6 @@ export class VariablesGenerator extends BaseGenerator {
               maxCoefficient: 8,
               maxConstant: 12,
               maxVariableValue: 6,
-              showSteps: true,
               complexityLevel: 'intermediate'
             }
           }),
@@ -315,7 +294,6 @@ export class VariablesGenerator extends BaseGenerator {
               maxCoefficient: 8,
               maxConstant: 15,
               maxVariableValue: 8,
-              showSteps: true,
               complexityLevel: 'intermediate'
             }
           }),
@@ -340,7 +318,6 @@ export class VariablesGenerator extends BaseGenerator {
               maxCoefficient: 6,
               maxConstant: 10,
               maxVariableValue: 6,
-              showSteps: true,
               complexityLevel: 'basic'
             }
           }),
@@ -365,7 +342,6 @@ export class VariablesGenerator extends BaseGenerator {
               maxCoefficient: 12,
               maxConstant: 20,
               maxVariableValue: 10,
-              showSteps: true,
               complexityLevel: 'advanced'
             }
           }),
@@ -390,7 +366,6 @@ export class VariablesGenerator extends BaseGenerator {
               maxCoefficient: 10,
               maxConstant: 15,
               maxVariableValue: 8,
-              showSteps: true,
               complexityLevel: 'intermediate'
             }
           })
@@ -500,17 +475,16 @@ export class VariablesGenerator extends BaseGenerator {
         expression = `${coefficient}${variable}`
     }
     
-    const steps = []
-    if (params.showSteps) {
-      steps.push(`\\text{Let } ${variable} = \\text{the unknown number}`)
-      steps.push(`\\text{Translate each part of the phrase}`)
-      steps.push(`\\text{\"${operation}\" indicates the operation}`)
-      steps.push(`\\text{Expression: } ${expression}`)
-    }
+    const steps = [
+      `\\text{Let } ${variable} = \\text{the unknown number}`,
+      `\\text{Translate each part of the phrase}`,
+      `\\text{\\"${operation}\\" indicates the operation}`,
+      `\\text{Expression: } ${expression}`
+    ]
     
     return {
-      question: `Write an algebraic expression for: "${description}". Use ${variable} for the number.`,
-      questionLaTeX: `\\text{Write an algebraic expression for: "${description}".} \\\\\\\\ \\text{Use } ${variable} \\text{ for the number.}`,
+      question: `Write an algebraic expression for: ${description}. Use ${variable} for the number.`,
+      questionLaTeX: `\\text{Write an algebraic expression for: ${description}.} \\\\\\\\ \\text{Use } ${variable} \\text{ for the number.}`,
       answer: expression,
       answerLaTeX: expression,
       steps: steps,
@@ -530,9 +504,9 @@ export class VariablesGenerator extends BaseGenerator {
       {
         context: 'age',
         variable: 'a',
-        description: 'Let a represent a person\'s age in years',
+        description: "Let a represent a person's age in years",
         expression: 'a + 5',
-        meaning: 'the person\'s age in 5 years'
+        meaning: "the person's age in 5 years"
       },
       {
         context: 'money',
@@ -559,16 +533,15 @@ export class VariablesGenerator extends BaseGenerator {
     
     const scenario = this.getRandomElement(scenarios)
     
-    const steps = []
-    if (params.showSteps) {
-      steps.push(`\\text{${scenario.description}}`)
-      steps.push(`\\text{Analyze the expression } ${scenario.expression}`)
-      steps.push(`\\text{This represents: ${scenario.meaning}}`)
-    }
+    const steps = [
+      `\\text{${scenario.description}}`,
+      `\\text{Analyze the expression } ${scenario.expression}`,
+      `\\text{This represents: ${scenario.meaning}}`
+    ]
     
     return {
       question: `${scenario.description}. What does the expression ${scenario.expression} represent?`,
-      questionLaTeX: `\\text{${scenario.description}. What does the expression } ${scenario.expression} \\text{ represent?}`,
+      questionLaTeX: `\\text{${scenario.description}.} \\\\\\\\ \\text{What does the expression } ${scenario.expression} \\text{ represent?}`,
       answer: scenario.meaning,
       answerLaTeX: `\\text{${scenario.meaning}}`,
       steps: steps,
@@ -599,16 +572,15 @@ export class VariablesGenerator extends BaseGenerator {
       const expression = constant >= 0 ? `${coefficient}${variable} + ${constant}` : `${coefficient}${variable} - ${Math.abs(constant)}`
       const result = coefficient * value + constant
       
-      const steps = []
-      if (params.showSteps) {
-        steps.push(`\\text{Substitute } ${variable} = ${value} \\text{ into } ${expression}`)
-        steps.push(`${coefficient}(${value}) ${constant >= 0 ? '+' : '-'} ${Math.abs(constant)}`)
-        steps.push(`${coefficient * value} ${constant >= 0 ? '+' : '-'} ${Math.abs(constant)} = ${result}`)
-      }
+      const steps = [
+        `\\text{Substitute } ${variable} = ${value} \\text{ into } ${expression}`,
+        `${coefficient}(${value}) ${constant >= 0 ? '+' : '-'} ${Math.abs(constant)}`,
+        `${coefficient * value} ${constant >= 0 ? '+' : '-'} ${Math.abs(constant)} = ${result}`
+      ]
       
       return {
         question: `Evaluate ${expression} when ${variable} = ${value}`,
-        questionLaTeX: `\\text{Evaluate } ${expression} \\text{ when } ${variable} = ${value}`,
+        questionLaTeX: `\\text{Evaluate } ${expression} \\\\\\\\ \\text{when } ${variable} = ${value}`,
         answer: result.toString(),
         answerLaTeX: result.toString(),
         steps: steps,
@@ -633,16 +605,15 @@ export class VariablesGenerator extends BaseGenerator {
       const expression = `${coeff1}${var1} + ${coeff2}${var2}`
       const result = coeff1 * value1 + coeff2 * value2
       
-      const steps = []
-      if (params.showSteps) {
-        steps.push(`\\text{Substitute } ${var1} = ${value1} \\text{ and } ${var2} = ${value2}`)
-        steps.push(`${coeff1}(${value1}) + ${coeff2}(${value2})`)
-        steps.push(`${coeff1 * value1} + ${coeff2 * value2} = ${result}`)
-      }
+      const steps = [
+        `\\text{Substitute } ${var1} = ${value1} \\text{ and } ${var2} = ${value2}`,
+        `${coeff1}(${value1}) + ${coeff2}(${value2})`,
+        `${coeff1 * value1} + ${coeff2 * value2} = ${result}`
+      ]
       
       return {
         question: `Evaluate ${expression} when ${var1} = ${value1} and ${var2} = ${value2}`,
-        questionLaTeX: `\\text{Evaluate } ${expression} \\text{ when } ${var1} = ${value1} \\text{ and } ${var2} = ${value2}`,
+        questionLaTeX: `\\text{Evaluate } ${expression} \\\\\\\\ \\text{when } ${var1} = ${value1} \\text{ and } ${var2} = ${value2}`,
         answer: result.toString(),
         answerLaTeX: result.toString(),
         steps: steps,
@@ -670,14 +641,13 @@ export class VariablesGenerator extends BaseGenerator {
     
     const expression = `${coefficient}${variable} + ${constant}`
     
-    const steps = []
-    if (params.showSteps) {
-      steps.push(`\\text{Look for a pattern in the table}`)
-      steps.push(`\\text{When } ${variable} \\text{ increases by 1, output increases by } ${coefficient}`)
-      steps.push(`\\text{When } ${variable} = 1, \\text{output} = ${outputs[0]}`)
-      steps.push(`\\text{Pattern: multiply by } ${coefficient}, \\text{then add } ${constant}`)
-      steps.push(`\\text{Expression: } ${expression}`)
-    }
+    const steps = [
+      `\\text{Look for a pattern in the table}`,
+      `\\text{When } ${variable} \\text{ increases by 1, output increases by } ${coefficient}`,
+      `\\text{When } ${variable} = 1, \\text{output} = ${outputs[0]}`,
+      `\\text{Pattern: multiply by } ${coefficient}, \\text{then add } ${constant}`,
+      `\\text{Expression: } ${expression}`
+    ]
     
     const tableStr = inputs.map((input, i) => `${input} → ${outputs[i]}`).join(', ')
     
@@ -705,48 +675,47 @@ export class VariablesGenerator extends BaseGenerator {
       {
         phrase: 'the sum of a number and 7',
         expression: 'x + 7',
-        explanation: '"sum" means addition'
+        explanation: '\\"sum\\" means addition'
       },
       {
         phrase: 'twice a number minus 4',
         expression: '2x - 4',
-        explanation: '"twice" means multiply by 2, "minus" means subtract'
+        explanation: '\\"twice\\" means multiply by 2, \\"minus\\" means subtract'
       },
       {
         phrase: '5 less than a number',
         expression: 'x - 5',
-        explanation: '"less than" means subtract from the number'
+        explanation: '\\"less than\\" means subtract from the number'
       },
       {
         phrase: 'the product of 3 and a number',
         expression: '3x',
-        explanation: '"product" means multiplication'
+        explanation: '\\"product\\" means multiplication'
       },
       {
         phrase: 'a number divided by 4',
         expression: 'x/4',
-        explanation: '"divided by" indicates division'
+        explanation: '\\"divided by\\" indicates division'
       },
       {
         phrase: '8 more than half a number',
         expression: 'x/2 + 8',
-        explanation: '"half" means divide by 2, "more than" means add'
+        explanation: '\\"half\\" means divide by 2, \\"more than\\" means add'
       }
     ]
     
     const selected = this.getRandomElement(phrases)
     
-    const steps = []
-    if (params.showSteps) {
-      steps.push(`\\text{Let } x = \\text{the unknown number}`)
-      steps.push(`\\text{Key phrase: "${selected.phrase}"}`)
-      steps.push(`\\text{Translation: } ${selected.explanation}`)
-      steps.push(`\\text{Expression: } ${selected.expression}`)
-    }
+    const steps = [
+      `\\text{Let } x = \\text{the unknown number}`,
+      `\\text{Key phrase: \\"${selected.phrase}\\"}`,
+      `\\text{Translation: } ${selected.explanation}`,
+      `\\text{Expression: } ${selected.expression}`
+    ]
     
     return {
-      question: `Write an algebraic expression for "${selected.phrase}". Use x for the number.`,
-      questionLaTeX: `\\text{Write an algebraic expression for "${selected.phrase}".} \\\\\\\\ \\text{Use x for the number.}`,
+      question: `Write an algebraic expression for ${selected.phrase}. Use x for the number.`,
+      questionLaTeX: `\\text{Write an algebraic expression for ${selected.phrase}.} \\\\\\\\ \\text{Use x for the number.}`,
       answer: selected.expression,
       answerLaTeX: selected.expression,
       steps: steps,
@@ -792,16 +761,15 @@ export class VariablesGenerator extends BaseGenerator {
     
     const selected = this.getRandomElement(expressions)
     
-    const steps = []
-    if (params.showSteps) {
-      steps.push(`\\text{Analyze the expression: } ${selected.expression}`)
-      steps.push(`\\text{Identify the operations and their order}`)
-      steps.push(`\\text{Translate to words: ${selected.description}}`)
-    }
+    const steps = [
+      `\\text{Analyze the expression: } ${selected.expression}`,
+      `\\text{Identify the operations and their order}`,
+      `\\text{Translate to words: ${selected.description}}`
+    ]
     
     return {
       question: `Describe the expression ${selected.expression} in words.`,
-      questionLaTeX: `\\text{Describe the expression } ${selected.expression} \\text{ in words.}`,
+      questionLaTeX: `\\text{Describe the expression } ${selected.expression} \\\\\\\\ \\text{in words.}`,
       answer: selected.description,
       answerLaTeX: `\\text{${selected.description}}`,
       steps: steps,
@@ -822,13 +790,13 @@ export class VariablesGenerator extends BaseGenerator {
         property: 'Commutative Property of Addition',
         example1: 'x + 5',
         example2: '5 + x',
-        explanation: 'Addition is commutative: order doesn\'t matter'
+        explanation: "Addition is commutative: order doesn't matter"
       },
       {
         property: 'Commutative Property of Multiplication',
         example1: '3x',
         example2: 'x × 3',
-        explanation: 'Multiplication is commutative: order doesn\'t matter'
+        explanation: "Multiplication is commutative: order doesn't matter"
       },
       {
         property: 'Distributive Property',
@@ -840,16 +808,15 @@ export class VariablesGenerator extends BaseGenerator {
     
     const selected = this.getRandomElement(properties)
     
-    const steps = []
-    if (params.showSteps) {
-      steps.push(`\\text{This demonstrates the } ${selected.property}`)
-      steps.push(`\\text{${selected.explanation}}`)
-      steps.push(`\\text{${selected.example1} = ${selected.example2}}`)
-    }
+    const steps = [
+      `\\text{This demonstrates the } ${selected.property}`,
+      `\\text{${selected.explanation}}`,
+      `\\text{${selected.example1} = ${selected.example2}}`
+    ]
     
     return {
       question: `Which property shows that ${selected.example1} = ${selected.example2}?`,
-      questionLaTeX: `\\text{Which property shows that } ${selected.example1} = ${selected.example2}\\text{?}`,
+      questionLaTeX: `\\text{Which property shows that } ${selected.example1} = ${selected.example2} \\\\\\\\ \\text{?}`,
       answer: selected.property,
       answerLaTeX: `\\text{${selected.property}}`,
       steps: steps,

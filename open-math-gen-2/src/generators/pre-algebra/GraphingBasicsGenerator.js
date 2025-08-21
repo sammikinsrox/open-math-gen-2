@@ -492,7 +492,7 @@ export class GraphingBasicsGenerator extends BaseGenerator {
     
     return {
       question: `A point is plotted ${Math.abs(point.x)} units ${point.x >= 0 ? 'right' : 'left'} and ${Math.abs(point.y)} units ${point.y >= 0 ? 'up' : 'down'} from the origin. What are its coordinates?`,
-      questionLaTeX: `\\text{A point is plotted ${Math.abs(point.x)} units ${point.x >= 0 ? 'right' : 'left'} and ${Math.abs(point.y)} units ${point.y >= 0 ? 'up' : 'down'}} \\\\\\\\ \\text{from the origin. What are its coordinates?}`,
+      questionLaTeX: `\\text{A point is plotted ${Math.abs(point.x)} units ${point.x >= 0 ? 'right' : 'left'} and} \\\\\\\\ \\text{${Math.abs(point.y)} units ${point.y >= 0 ? 'up' : 'down'} from the origin.} \\\\\\\\ \\text{What are its coordinates?}`,
       answer: `(${point.x}, ${point.y})`,
       answerLaTeX: `(${point.x}, ${point.y})`,
       steps: steps,
@@ -553,7 +553,7 @@ export class GraphingBasicsGenerator extends BaseGenerator {
     
     return {
       question: `Find the distance between points (${point1.x}, ${point1.y}) and (${point2.x}, ${point2.y}).`,
-      questionLaTeX: `\\text{Find the distance between points } (${point1.x}, ${point1.y}) \\text{ and } (${point2.x}, ${point2.y}).`,
+      questionLaTeX: `\\text{Find the distance between points } (${point1.x}, ${point1.y}) \\\\\\\\ \\text{and } (${point2.x}, ${point2.y}).`,
       answer: roundedDistance.toString(),
       answerLaTeX: roundedDistance.toString(),
       steps: steps,
@@ -586,7 +586,7 @@ export class GraphingBasicsGenerator extends BaseGenerator {
     
     return {
       question: `Find the midpoint between (${point1.x}, ${point1.y}) and (${point2.x}, ${point2.y}).`,
-      questionLaTeX: `\\text{Find the midpoint between } (${point1.x}, ${point1.y}) \\text{ and } (${point2.x}, ${point2.y}).`,
+      questionLaTeX: `\\text{Find the midpoint between } (${point1.x}, ${point1.y}) \\\\\\\\ \\text{and } (${point2.x}, ${point2.y}).`,
       answer: `(${midpointX}, ${midpointY})`,
       answerLaTeX: `(${midpointX}, ${midpointY})`,
       steps: steps,
@@ -669,7 +669,7 @@ export class GraphingBasicsGenerator extends BaseGenerator {
     
     return {
       question: `Given the table: ${tableStr}. What points should be plotted?`,
-      questionLaTeX: `\\text{Given the table: } ${tableStr}. \\text{ What points should be plotted?}`,
+      questionLaTeX: `\\text{Given the table: } ${tableStr}. \\\\\\\\ \\text{What points should be plotted?}`,
       answer: pointsList,
       answerLaTeX: pointsList,
       steps: steps,
@@ -707,7 +707,7 @@ export class GraphingBasicsGenerator extends BaseGenerator {
     
     return {
       question: `A graph shows the points: ${pointsList}. What is the y-value when x = ${questionPoint.x}?`,
-      questionLaTeX: `\\text{A graph shows the points: } ${pointsList}. \\text{ What is the y-value when x = } ${questionPoint.x}\\text{?}`,
+      questionLaTeX: `\\text{A graph shows the points: } ${pointsList}. \\\\\\\\ \\text{What is the y-value when x = } ${questionPoint.x}\\text{?}`,
       answer: questionPoint.y.toString(),
       answerLaTeX: questionPoint.y.toString(),
       steps: steps,

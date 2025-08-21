@@ -404,7 +404,7 @@ export class RatiosGenerator extends BaseGenerator {
     
     return {
       question: `Find the unit rate: $${totalCost} for ${quantity} items`,
-      questionLaTeX: `\\text{Find the unit rate: $${totalCost} for ${quantity} items}`,
+      questionLaTeX: `\\text{Find the unit rate: \\$${totalCost} for ${quantity} items}`,
       answer: `$${unitRate} per item`,
       answerLaTeX: `\\$${unitRate} \\text{ per item}`,
       steps: steps,
@@ -568,7 +568,7 @@ export class RatiosGenerator extends BaseGenerator {
       scenarios.push({
         type: 'shopping',
         question: `${items} apples cost $${cost}. What is the cost per apple?`,
-        questionLaTeX: `\\text{${items} apples cost $${cost}. What is the cost per apple?}`,
+        questionLaTeX: `\\text{${items} apples cost \\$${cost}. What is the cost per apple?}`,
         answer: `$${unitCost}`,
         answerLaTeX: `\\$${unitCost}`,
         explanation: 'Unit cost is total cost divided by quantity',
@@ -589,7 +589,7 @@ export class RatiosGenerator extends BaseGenerator {
       scenarios.push({
         type: 'unit-price',
         question: `Brand A: ${brand1Oz} oz for $${brand1Cost}. Brand B: ${brand2Oz} oz for $${brand2Cost}. Which is the better deal?`,
-        questionLaTeX: `\\text{Brand A: ${brand1Oz} oz for $${brand1Cost}. Brand B: ${brand2Oz} oz for $${brand2Cost}.} \\\\\\\\ \\text{Which is the better deal?}`,
+        questionLaTeX: `\\text{Brand A: ${brand1Oz} oz for \\$${brand1Cost}. Brand B: ${brand2Oz} oz for \\$${brand2Cost}.} \\\\\\\\ \\text{Which is the better deal?}`,
         answer: better,
         answerLaTeX: `\\text{${better}}`,
         explanation: 'Compare unit prices (cost per ounce)',

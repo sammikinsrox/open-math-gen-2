@@ -582,7 +582,7 @@ export class ProportionsGenerator extends BaseGenerator {
     
     return {
       question: `If ${items} items cost $${cost}, how much do ${newItems} items cost?`,
-      questionLaTeX: `\\text{If ${items} items cost $${cost}, how much do ${newItems} items cost?}`,
+      questionLaTeX: `\\text{If ${items} items cost \\$${cost}, how much do ${newItems} items cost?}`,
       answer: `$${newCost}`,
       answerLaTeX: `\\$${newCost}`,
       steps: steps,
