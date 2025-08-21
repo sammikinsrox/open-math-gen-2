@@ -1123,15 +1123,15 @@ export const TEMPLATE_CONFIGURATIONS = [
     difficulty: 'standard',
     estimatedTime: '30 minutes',
     problemCount: '22 problems',
-    generators: ['statistics', 'probability'],
+    generators: ['ratios', 'proportions'],
     parameters: {
-      'statistics': { 
-        measures: ['mean', 'median', 'mode', 'range'], 
-        dataTypes: ['list', 'frequency'], maxDataSize: 12, problemCount: 12
+      'ratios': { 
+        includeEquivalent: true, includeWordProblems: true, 
+        includeScale: true, problemCount: 12
       },
-      'probability': { 
-        types: ['simple', 'compound'], includeExperimental: true,
-        contexts: ['coins', 'dice', 'spinners', 'cards'], problemCount: 10
+      'proportions': { 
+        includeCrossMult: true, includeWordProblems: true, 
+        includeScale: true, problemCount: 10
       }
     },
     tags: ['grade-7', 'probability', 'statistics', 'mean', 'median', 'experimental'],
@@ -1376,12 +1376,13 @@ export const TEMPLATE_CONFIGURATIONS = [
     difficulty: 'standard',
     estimatedTime: '45 minutes',
     problemCount: '30 problems',
-    generators: ['fraction-operations', 'decimal-operations', 'ratios', 'basic-geometry'],
+    generators: ['fraction-operations', 'decimal-operations', 'ratios', 'area', 'perimeter'],
     parameters: {
       'fraction-operations': { operations: ['add', 'subtract'], mixedNumbers: true, problemCount: 8 },
       'decimal-operations': { decimalPlaces: 2, operations: ['add', 'subtract', 'multiply'], problemCount: 8 },
       'ratios': { simple: true, includeWordProblems: true, maxValue: 12, problemCount: 8 },
-      'basic-geometry': { includeArea: true, includePerimeter: true, basicShapes: true, problemCount: 6 }
+      'area': { shapes: ['rectangle', 'triangle'], includeWordProblems: true, problemCount: 3 },
+      'perimeter': { shapes: ['rectangle', 'triangle'], includeWordProblems: true, problemCount: 3 }
     },
     tags: ['transition', 'bridge', 'elementary-to-middle', 'readiness', 'summer-prep'],
     standardsAlignment: ['5.NF.A.1', '5.NBT.B.7', '6.RP.A.1'],
@@ -1964,13 +1965,12 @@ export const TEMPLATE_CONFIGURATIONS = [
     difficulty: 'standard',
     estimatedTime: '80 minutes',
     problemCount: '58 problems',
-    generators: ['linear-equations', 'quadratic-equations', 'coordinate-geometry', 'trigonometry', 'statistics'],
+    generators: ['linear-equations', 'quadratic-equations', 'coordinate-geometry', 'functions'],
     parameters: {
       'linear-equations': { satFormat: true, includeWordProblems: true, noCalculator: true, problemCount: 15 },
       'quadratic-equations': { satFormat: true, includeWordProblems: true, problemCount: 12 },
-      'coordinate-geometry': { satFormat: true, includeCircles: true, problemCount: 10 },
-      'trigonometry': { satFormat: true, unitCircle: true, basicIdentities: true, problemCount: 8 },
-      'statistics': { satFormat: true, dataAnalysis: true, probability: true, problemCount: 13 }
+      'coordinate-geometry': { satFormat: true, includeCircles: true, problemCount: 18 },
+      'functions': { satFormat: true, includeGraphAnalysis: true, includeTransformations: true, problemCount: 13 }
     },
     tags: ['SAT', 'test-prep', 'standardized-test', 'college-prep', 'comprehensive'],
     standardsAlignment: ['A-REI.B.3', 'F-TF.A.1', 'S-ID.B.6'],
@@ -1991,12 +1991,11 @@ export const TEMPLATE_CONFIGURATIONS = [
     difficulty: 'advanced',
     estimatedTime: '90 minutes',
     problemCount: '35 problems',
-    generators: ['functions', 'trigonometry', 'limits-intro', 'derivatives-intro'],
+    generators: ['functions', 'polynomials', 'exponents-radicals'],
     parameters: {
-      'functions': { composition: true, inverses: true, continuity: true, problemCount: 12 },
-      'trigonometry': { unitCircle: true, identities: true, derivatives: true, problemCount: 8 },
-      'limits-intro': { graphical: true, algebraic: true, infinity: true, problemCount: 8 },
-      'derivatives-intro': { powerRule: true, productRule: true, chainRule: true, problemCount: 7 }
+      'functions': { includeComposition: true, includeInverse: true, includeAdvanced: true, problemCount: 15 },
+      'polynomials': { operations: ['add', 'subtract', 'multiply', 'divide'], includeFactoring: true, problemCount: 12 },
+      'exponents-radicals': { includeRationalExponents: true, includeRadicals: true, includeSimplification: true, problemCount: 8 }
     },
     tags: ['AP-Calculus', 'pre-calculus-review', 'limits', 'derivatives', 'college-level'],
     standardsAlignment: ['F-TF.B.5', 'F-IF.C.9'],
@@ -2045,7 +2044,7 @@ export const TEMPLATE_CONFIGURATIONS = [
     difficulty: 'advanced',
     estimatedTime: '90 minutes',
     problemCount: '45 problems',
-    generators: ['functions', 'trigonometry', 'polynomials', 'exponential-functions'],
+    generators: ['functions', 'polynomials', 'exponents-radicals'],
     parameters: {
       'functions': { composition: true, inverses: true, transformations: true, problemCount: 15 },
       'trigonometry': { unitCircle: true, graphing: true, identities: true, problemCount: 12 },
@@ -2071,7 +2070,7 @@ export const TEMPLATE_CONFIGURATIONS = [
     difficulty: 'advanced',
     estimatedTime: '100 minutes',
     problemCount: '15 problems',
-    generators: ['mathematical-modeling', 'statistics', 'functions', 'optimization'],
+    generators: ['functions', 'coordinate-geometry', 'polynomials'],
     parameters: {
       'mathematical-modeling': { realWorld: true, multiStep: true, openEnded: true, problemCount: 6 },
       'statistics': { dataAnalysis: true, regression: true, correlation: true, problemCount: 4 },
@@ -2305,7 +2304,7 @@ export const TEMPLATE_CONFIGURATIONS = [
     difficulty: 'advanced',
     estimatedTime: '75 minutes',
     problemCount: '30 problems',
-    generators: ['functions', 'transformations'],
+    generators: ['functions', 'coordinate-geometry'],
     parameters: {
       'functions': { 
         includeComposition: true, includeInverse: true, includeDomain: true,
@@ -2313,9 +2312,9 @@ export const TEMPLATE_CONFIGURATIONS = [
         functionTypes: ['linear', 'quadratic', 'polynomial', 'rational'],
         problemCount: 20
       },
-      'transformations': { 
-        includeTranslations: true, includeReflections: true, includeStretching: true,
-        combinedTransformations: true, graphicalAnalysis: true,
+      'coordinate-geometry': { 
+        includeTransformations: true, includeDistance: true, includeMidpoint: true,
+        includeCircles: true, includeGraphicalAnalysis: true,
         problemCount: 10
       }
     },
@@ -2335,24 +2334,20 @@ export const TEMPLATE_CONFIGURATIONS = [
     difficulty: 'advanced',
     estimatedTime: '80 minutes',
     problemCount: '58 problems',
-    generators: ['linear-equations', 'quadratics', 'functions', 'statistics'],
+    generators: ['linear-equations', 'quadratic-equations', 'functions'],
     parameters: {
       'linear-equations': { 
         includeWordProblems: true, includeSystemsGraphically: true,
         realWorldContexts: true, problemCount: 14
       },
-      'quadratics': { 
+      'quadratic-equations': { 
         includeWordProblems: true, includeGraphing: true, includeVertex: true,
         includeFactoring: true, includeQuadraticFormula: true,
-        problemCount: 16
+        problemCount: 22
       },
       'functions': { 
         includeInterpretation: true, includeGraphAnalysis: true,
-        includeModelingProblems: true, problemCount: 18
-      },
-      'statistics': { 
-        includeDataAnalysis: true, includeScatterPlots: true,
-        includeCorrelation: true, problemCount: 10
+        includeModelingProblems: true, problemCount: 22
       }
     },
     tags: ['SAT-prep', 'standardized-test', 'college-entrance', 'comprehensive'],
@@ -2371,27 +2366,432 @@ export const TEMPLATE_CONFIGURATIONS = [
     difficulty: 'advanced',
     estimatedTime: '3-5 class periods',
     problemCount: '5 major scenarios',
-    generators: ['word-problems', 'functions', 'statistics'],
+    generators: ['functions', 'linear-equations', 'coordinate-geometry'],
     parameters: {
-      'word-problems': { 
-        includeMultiStep: true, realWorldContexts: true,
-        requireModelSelection: true, openEnded: true,
-        problemCount: 2
-      },
       'functions': { 
-        includeModeling: true, includeOptimization: true,
-        includeDataFitting: true, includeExponential: true,
+        includeModeling: true, includeComposition: true,
+        includeAdvanced: true, includeGraphAnalysis: true,
         problemCount: 2
       },
-      'statistics': { 
-        includeDataCollection: true, includeAnalysis: true,
-        includePrediction: true, includeJustification: true,
-        problemCount: 1
+      'linear-equations': { 
+        includeWordProblems: true, includeSystemsModeling: true,
+        includeRealWorldContexts: true, problemCount: 2
+      },
+      'coordinate-geometry': { 
+        includeModeling: true, includeAdvanced: true,
+        includeOptimization: true, problemCount: 1
       }
     },
     tags: ['mathematical-modeling', 'capstone', 'real-world-applications', 'project-based'],
     standardsAlignment: ['A-CED.A.3', 'F-LE.A.2', 'S-ID.B.6', 'MP.1', 'MP.4'],
     teacherNotes: 'Extended project requiring research, mathematical analysis, and presentation of findings. Assess process and communication.'
+  },
+
+  // GED PREPARATION TEMPLATES
+  {
+    id: 'ged-math-practice-basic',
+    name: 'GED Math Practice: Basic Skills Foundation',
+    description: 'Essential mathematical skills for GED preparation covering arithmetic, fractions, decimals, and percentages.',
+    category: 'high-assessment',
+    gradeLevel: '9-12',
+    subject: 'mixed',
+    purpose: 'practice',
+    difficulty: 'standard',
+    estimatedTime: '75 minutes',
+    problemCount: '35 problems',
+    generators: ['addition', 'subtraction', 'multiplication', 'division', 'fraction-operations', 'decimal-operations', 'percentages'],
+    parameters: {
+      'addition': { 
+        minAddend: 1, maxAddend: 1000, 
+        includeWordProblems: true, problemCount: 3
+      },
+      'subtraction': { 
+        minMinuend: 1, maxMinuend: 1000, 
+        includeWordProblems: true, problemCount: 3
+      },
+      'multiplication': { 
+        minFactor: 1, maxFactor: 25, 
+        includeWordProblems: true, problemCount: 2
+      },
+      'division': { 
+        minDividend: 10, maxDividend: 100, 
+        includeWordProblems: true, problemCount: 2
+      },
+      'fraction-operations': { 
+        operations: ['add', 'subtract', 'multiply', 'divide'],
+        includeImproper: true, includeMixed: true, includeWordProblems: true,
+        maxDenominator: 12, problemCount: 8
+      },
+      'decimal-operations': { 
+        operations: ['add', 'subtract', 'multiply', 'divide'],
+        includeWordProblems: true, maxDecimalPlaces: 3,
+        problemCount: 8
+      },
+      'percentages': { 
+        includePercentOf: true, includePercentIncrease: true,
+        includePercentDecrease: true, includeWordProblems: true,
+        problemCount: 9
+      }
+    },
+    tags: ['GED-prep', 'basic-skills', 'arithmetic', 'adult-education'],
+    standardsAlignment: ['6.NS.B.3', '7.NS.A.2', '7.RP.A.3'],
+    teacherNotes: 'Foundation skills essential for GED success. Focus on real-world application and calculator use.'
+  },
+
+  {
+    id: 'ged-algebra-geometry',
+    name: 'GED Math Practice: Algebra & Geometry',
+    description: 'Intermediate GED math covering linear equations, basic geometry, area, perimeter, and coordinate graphing.',
+    category: 'high-assessment',
+    gradeLevel: '9-12',
+    subject: 'mixed',
+    purpose: 'practice',
+    difficulty: 'standard',
+    estimatedTime: '90 minutes',
+    problemCount: '40 problems',
+    generators: ['linear-equations', 'graphing-basics', 'area', 'perimeter', 'angles', 'pythagorean-theorem'],
+    parameters: {
+      'linear-equations': { 
+        includeOneStep: true, includeTwoStep: true, includeMultiStep: true,
+        includeWordProblems: true, fractionalCoefficients: false,
+        problemCount: 12
+      },
+      'graphing-basics': { 
+        includePlotting: true, includeSlope: true, includeIntercepts: true,
+        problemCount: 8
+      },
+      'area': { 
+        shapes: ['rectangle', 'triangle', 'circle', 'parallelogram'],
+        includeComposite: true, includeWordProblems: true,
+        problemCount: 6
+      },
+      'perimeter': { 
+        shapes: ['rectangle', 'triangle', 'parallelogram'],
+        includeWordProblems: true, problemCount: 6
+      },
+      'angles': { 
+        includeAngles: true, includeTriangles: true,
+        problemCount: 4
+      },
+      'pythagorean-theorem': { 
+        includePythagorean: true, problemCount: 4
+      }
+    },
+    tags: ['GED-prep', 'algebra', 'geometry', 'coordinate-plane'],
+    standardsAlignment: ['8.EE.B.5', '8.G.B.7', '8.G.C.9'],
+    teacherNotes: 'Mid-level GED preparation. Emphasize formula usage and graphical interpretation.'
+  },
+
+  {
+    id: 'ged-full-practice-test',
+    name: 'GED Math Practice Test (Complete)',
+    description: 'Full-length GED mathematics practice test covering all topics tested on the actual GED exam.',
+    category: 'high-assessment',
+    gradeLevel: '9-12',
+    subject: 'mixed',
+    purpose: 'assessment',
+    difficulty: 'advanced',
+    estimatedTime: '115 minutes',
+    problemCount: '46 problems',
+    generators: ['addition', 'subtraction', 'multiplication', 'division', 'fraction-operations', 'decimal-operations', 'percentages', 'linear-equations', 'quadratic-equations', 'graphing', 'area', 'perimeter'],
+    parameters: {
+      'addition': { 
+        minAddend: 1, maxAddend: 100, 
+        includeWordProblems: true, problemCount: 2
+      },
+      'subtraction': { 
+        minMinuend: 1, maxMinuend: 100, 
+        includeWordProblems: true, problemCount: 2
+      },
+      'multiplication': { 
+        minFactor: 1, maxFactor: 12, 
+        problemCount: 1
+      },
+      'division': { 
+        minDividend: 10, maxDividend: 144, 
+        problemCount: 1
+      },
+      'fraction-operations': { 
+        operations: ['add', 'subtract', 'multiply', 'divide'],
+        includeWordProblems: true, includeMixed: true,
+        problemCount: 4
+      },
+      'decimal-operations': { 
+        operations: ['add', 'subtract', 'multiply', 'divide'],
+        includeWordProblems: true, problemCount: 4
+      },
+      'percentages': { 
+        includePercentOf: true, includePercentChange: true,
+        includeWordProblems: true, problemCount: 5
+      },
+      'linear-equations': { 
+        includeOneStep: true, includeTwoStep: true, includeMultiStep: true,
+        includeWordProblems: true, problemCount: 8
+      },
+      'quadratic-equations': { 
+        includeFactoring: true, includeQuadraticFormula: true,
+        includeWordProblems: true, problemCount: 6
+      },
+      'graphing': { 
+        includePlotting: true, includeSlope: true, includeLinearGraphing: true,
+        problemCount: 5
+      },
+      'area': { 
+        shapes: ['rectangle', 'triangle', 'circle'],
+        includeWordProblems: true, problemCount: 3
+      },
+      'perimeter': { 
+        shapes: ['rectangle', 'triangle'],
+        includeWordProblems: true, problemCount: 2
+      }
+    },
+    tags: ['GED-prep', 'full-test', 'comprehensive', 'timed-assessment'],
+    standardsAlignment: ['GED Math Standards'],
+    teacherNotes: 'Timed practice test. Use calculator for second half. Include formula sheet reference.'
+  },
+
+  {
+    id: 'ged-word-problems-intensive',
+    name: 'GED Math: Word Problems Intensive',
+    description: 'Focused practice on word problem solving strategies essential for GED mathematics success.',
+    category: 'high-practice',
+    gradeLevel: '9-12',
+    subject: 'mixed',
+    purpose: 'practice',
+    difficulty: 'advanced',
+    estimatedTime: '60 minutes',
+    problemCount: '25 problems',
+    generators: ['percentages', 'linear-equations', 'area', 'perimeter', 'money-operations'],
+    parameters: {
+      'percentages': { 
+        includeWordProblems: true, includeMarkup: true, includeDiscount: true,
+        includeTax: true, includeInterest: true, problemCount: 8
+      },
+      'linear-equations': { 
+        includeWordProblems: true, includeAge: true, includeDistance: true,
+        includeMixture: true, problemCount: 8
+      },
+      'area': { 
+        includeWordProblems: true, includeConstructionProblems: true,
+        includeCostProblems: true, problemCount: 4
+      },
+      'perimeter': { 
+        includeWordProblems: true, problemCount: 3
+      },
+      'money-operations': { 
+        includeMultiStep: true, realWorldContexts: true,
+        includeMoney: true, problemCount: 2
+      }
+    },
+    tags: ['GED-prep', 'word-problems', 'real-world-applications', 'problem-solving'],
+    standardsAlignment: ['Mathematical Practices', 'Problem Solving'],
+    teacherNotes: 'Focus on reading comprehension and problem-solving strategies. Teach students to identify key information.'
+  },
+
+  // COMPREHENSIVE EVALUATION TEMPLATE
+  {
+    id: 'comprehensive-math-evaluation',
+    name: 'Comprehensive Mathematics Assessment (K-12)',
+    description: 'Extensive evaluation covering the complete spectrum of K-12 mathematics from basic arithmetic through advanced algebra and geometry.',
+    category: 'special-purpose',
+    gradeLevel: 'K-12',
+    subject: 'mixed',
+    purpose: 'assessment',
+    difficulty: 'mixed',
+    estimatedTime: '180-240 minutes (multi-session)',
+    problemCount: '120 problems',
+    generators: [
+      'addition', 'subtraction', 'multiplication', 'division', 'fraction-operations', 'decimal-operations', 'percentages', 'place-value', 'rounding',
+      'integers', 'order-of-operations', 'algebraic-expressions', 'linear-equations', 
+      'systems-of-equations', 'quadratic-equations', 'polynomials', 'factoring', 'functions',
+      'graphing', 'area', 'perimeter', 'volume-surface-area'
+    ],
+    parameters: {
+      // Elementary Level (Grades K-5)
+      'addition': { 
+        minAddend: 1, maxAddend: 1000, 
+        includeWordProblems: true, problemCount: 3
+      },
+      'subtraction': { 
+        minMinuend: 1, maxMinuend: 1000, 
+        includeWordProblems: true, problemCount: 3
+      },
+      'multiplication': { 
+        minFactor: 1, maxFactor: 12, 
+        includeWordProblems: true, problemCount: 2
+      },
+      'division': { 
+        minDividend: 10, maxDividend: 144, 
+        includeWordProblems: true, problemCount: 2
+      },
+      'fraction-operations': { 
+        operations: ['add', 'subtract', 'multiply', 'divide'],
+        includeImproper: true, includeMixed: true, includeWordProblems: true,
+        problemCount: 6
+      },
+      'decimal-operations': { 
+        operations: ['add', 'subtract', 'multiply', 'divide'],
+        includeWordProblems: true, maxDecimalPlaces: 3,
+        problemCount: 5
+      },
+      'percentages': { 
+        includePercentOf: true, includePercentChange: true,
+        includeWordProblems: true, problemCount: 5
+      },
+      'place-value': { 
+        maxNumber: 100000, includeExpanded: true, includeRounding: true,
+        problemCount: 4
+      },
+      'rounding': { 
+        maxNumber: 10000, roundTo: 'mixed', includeWordProblems: true,
+        problemCount: 4
+      },
+      
+      // Middle School Level (Grades 6-8)
+      'integers': { 
+        operations: ['add', 'subtract', 'multiply', 'divide'],
+        includeOrderOfOperations: true, includeWordProblems: true,
+        problemCount: 6
+      },
+      'order-of-operations': { 
+        includeParentheses: true, includeExponents: true, includeDecimals: true,
+        problemCount: 5
+      },
+      'algebraic-expressions': { 
+        includeTranslation: true, includeSimplification: true, includeEvaluation: true,
+        maxTerms: 4, problemCount: 6
+      },
+      'linear-equations': { 
+        includeOneStep: true, includeTwoStep: true, includeMultiStep: true,
+        includeWordProblems: true, fractionalCoefficients: true,
+        problemCount: 8
+      },
+      
+      // High School Level (Grades 9-12)
+      'systems-of-equations': { 
+        methods: ['substitution', 'elimination', 'graphing'], 
+        includeWordProblems: true, problemCount: 6
+      },
+      'quadratic-equations': { 
+        includeStandardForm: true, includeFactoring: true, 
+        includeQuadraticFormula: true, includeGraphing: true,
+        includeWordProblems: true, problemCount: 8
+      },
+      'polynomials': { 
+        operations: ['add', 'subtract', 'multiply'], maxDegree: 4,
+        includeFactoring: true, includeSpecialProducts: true,
+        problemCount: 6
+      },
+      'factoring': { 
+        types: ['gcf', 'trinomials', 'difference-squares', 'sum-difference-cubes'],
+        problemCount: 5
+      },
+      'functions': { 
+        includeEvaluation: true, includeDomain: true, includeRange: true,
+        includeComposition: true, includeInverse: true,
+        problemCount: 6
+      },
+      
+      // Geometry & Measurement
+      'graphing': { 
+        includePlotting: true, includeSlope: true, includeIntercepts: true,
+        includeDistanceFormula: true, problemCount: 6
+      },
+      'area': { 
+        shapes: ['rectangle', 'triangle', 'circle', 'parallelogram', 'trapezoid'],
+        includeWordProblems: true, problemCount: 4
+      },
+      'perimeter': { 
+        shapes: ['rectangle', 'triangle', 'parallelogram'],
+        includeWordProblems: true, problemCount: 2
+      },
+      'volume-surface-area': { 
+        solids: ['cube', 'rectangular-prism', 'cylinder', 'sphere', 'cone', 'pyramid'],
+        includeWordProblems: true, problemCount: 5
+      }
+    },
+    tags: ['comprehensive', 'diagnostic', 'placement-test', 'K-12-math', 'multi-level', 'extensive'],
+    standardsAlignment: ['K.CC', '1.OA', '2.NBT', '3.NF', '4.MD', '5.G', '6.NS', '6.EE', '7.RP', '8.F', 'A-APR', 'A-REI', 'G-CO', 'S-ID'],
+    teacherNotes: 'Multi-session comprehensive assessment. Can be used for placement, diagnostic, or end-of-year evaluation. Problems progress from elementary through high school level. Allow calculator for appropriate sections.'
+  },
+
+  {
+    id: 'adult-basic-education-diagnostic',
+    name: 'Adult Basic Education: Mathematics Diagnostic',
+    description: 'Comprehensive diagnostic assessment for adult learners covering foundational through intermediate mathematics skills.',
+    category: 'special-purpose',
+    gradeLevel: '6-12',
+    subject: 'mixed',
+    purpose: 'diagnostic',
+    difficulty: 'mixed',
+    estimatedTime: '120 minutes',
+    problemCount: '80 problems',
+    generators: [
+      'addition', 'subtraction', 'multiplication', 'division', 'fraction-operations', 'decimal-operations', 'percentages', 'integers',
+      'algebraic-expressions', 'linear-equations', 'graphing-basics',
+      'area', 'perimeter'
+    ],
+    parameters: {
+      'addition': { 
+        minAddend: 1, maxAddend: 999, 
+        includeWordProblems: true, problemCount: 2
+      },
+      'subtraction': { 
+        minMinuend: 1, maxMinuend: 999, 
+        includeWordProblems: true, problemCount: 2
+      },
+      'multiplication': { 
+        minFactor: 1, maxFactor: 12, 
+        includeWordProblems: true, problemCount: 2
+      },
+      'division': { 
+        minDividend: 10, maxDividend: 144, 
+        includeWordProblems: true, problemCount: 2
+      },
+      'fraction-operations': { 
+        operations: ['add', 'subtract', 'multiply', 'divide'],
+        includeImproper: true, includeMixed: true, includeWordProblems: true,
+        problemCount: 8
+      },
+      'decimal-operations': { 
+        operations: ['add', 'subtract', 'multiply', 'divide'],
+        includeWordProblems: true, includeMoneyProblems: true,
+        problemCount: 8
+      },
+      'percentages': { 
+        includePercentOf: true, includePercentChange: true, includeTax: true,
+        includeDiscount: true, includeInterest: true, problemCount: 8
+      },
+      'integers': { 
+        operations: ['add', 'subtract', 'multiply', 'divide'],
+        includeOrderOfOperations: true, includeWordProblems: true,
+        problemCount: 6
+      },
+      'algebraic-expressions': { 
+        includeTranslation: true, includeEvaluation: true, includeSimplification: true,
+        maxTerms: 3, problemCount: 6
+      },
+      'linear-equations': { 
+        includeOneStep: true, includeTwoStep: true, includeWordProblems: true,
+        problemCount: 8
+      },
+      'graphing-basics': { 
+        includePlotting: true, includeSlope: true, includeBasicGraphing: true,
+        problemCount: 6
+      },
+      'area': { 
+        shapes: ['rectangle', 'triangle', 'circle'],
+        includeWordProblems: true, includeRealWorldContexts: true,
+        problemCount: 6
+      },
+      'perimeter': { 
+        shapes: ['rectangle', 'triangle'],
+        includeWordProblems: true, problemCount: 4
+      }
+    },
+    tags: ['adult-education', 'diagnostic', 'placement', 'comprehensive', 'basic-skills'],
+    standardsAlignment: ['Adult Education Math Standards'],
+    teacherNotes: 'Designed for adult learners returning to education. Real-world contexts focus on work, family, and daily life situations. Use results to place students in appropriate level courses.'
   }
 ]
 

@@ -493,95 +493,94 @@ onMounted(() => {
         </div>
       </div>
 
-      <!-- Templates Grid -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <!-- Templates List -->
+      <div class="space-y-4">
         <div 
           v-for="template in filteredTemplates" 
           :key="template.id"
-          class="bg-slate-800/50 backdrop-blur-sm rounded-xl border border-slate-700/50 overflow-hidden hover:border-orange-500/50 transition-all duration-300 hover:transform hover:scale-105"
+          class="bg-slate-800/50 backdrop-blur-sm rounded-xl border border-slate-700/50 p-4 hover:border-orange-500/50 transition-all duration-200 hover:bg-slate-800/70"
         >
-          <!-- Template Thumbnail -->
-          <div class="h-48 bg-gradient-to-br from-slate-700 to-slate-800 flex items-center justify-center">
-            <div class="text-6xl text-slate-400">📊</div>
-          </div>
+          <div class="flex items-start justify-between gap-4">
+            <!-- Main Content -->
+            <div class="flex-1 min-w-0">
+              <!-- Header Row -->
+              <div class="flex items-start justify-between mb-2">
+                <div class="flex items-center gap-3">
+                  <h3 class="text-lg font-semibold text-white truncate">{{ template.name }}</h3>
+                  <button 
+                    @click="toggleFavorite(template.id)"
+                    class="p-1 rounded-lg hover:bg-slate-700 transition-colors flex-shrink-0"
+                    :class="isFavorite(template.id) ? 'text-yellow-400' : 'text-slate-400 hover:text-yellow-400'"
+                  >
+                    <svg class="w-4 h-4" :fill="isFavorite(template.id) ? 'currentColor' : 'none'" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path>
+                    </svg>
+                  </button>
+                </div>
+                <div class="flex items-center gap-2 flex-shrink-0">
+                  <span :class="getDifficultyColor(template.difficulty)" class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium text-white">
+                    {{ template.difficulty }}
+                  </span>
+                  <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-slate-700 text-slate-300">
+                    {{ template.gradeLevel }}
+                  </span>
+                </div>
+              </div>
 
-          <!-- Template Content -->
-          <div class="p-6">
-            <!-- Header -->
-            <div class="flex items-start justify-between mb-3">
-              <h3 class="text-lg font-semibold text-white leading-tight">{{ template.name }}</h3>
-              <div class="flex items-center space-x-2 ml-2">
-                <button 
-                  @click="toggleFavorite(template.id)"
-                  class="p-1 rounded-lg hover:bg-slate-700 transition-colors"
-                  :class="isFavorite(template.id) ? 'text-yellow-400' : 'text-slate-400 hover:text-yellow-400'"
-                >
-                  <svg class="w-5 h-5" :fill="isFavorite(template.id) ? 'currentColor' : 'none'" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path>
+              <!-- Description -->
+              <p class="text-slate-300 text-sm mb-3 line-clamp-2">{{ template.description }}</p>
+
+              <!-- Metadata Row -->
+              <div class="flex items-center gap-6 text-xs text-slate-400 mb-3">
+                <div class="flex items-center gap-1">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
                   </svg>
-                </button>
-                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-slate-700 text-slate-300">
-                  {{ template.gradeLevel }}
+                  {{ getSubjectLabel(template.subject) }}
+                </div>
+                <div class="flex items-center gap-1">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                  </svg>
+                  {{ template.problemCount }}
+                </div>
+                <div class="flex items-center gap-1">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                  </svg>
+                  {{ template.estimatedTime }}
+                </div>
+                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-orange-500/20 text-orange-300">
+                  {{ template.purpose }}
                 </span>
               </div>
-            </div>
 
-            <!-- Description -->
-            <p class="text-slate-300 text-sm mb-4 leading-relaxed">{{ template.description }}</p>
-
-            <!-- Metadata -->
-            <div class="space-y-2 mb-4">
-              <div class="flex items-center text-xs text-slate-400">
-                <span class="material-icons text-sm mr-1">subject</span>
-                {{ getSubjectLabel(template.subject) }}
-              </div>
-              <div class="flex items-center text-xs text-slate-400">
-                <span class="material-icons text-sm mr-1">quiz</span>
-                {{ template.problemCount }}
-              </div>
-              <div class="flex items-center text-xs text-slate-400">
-                <span class="material-icons text-sm mr-1">schedule</span>
-                {{ template.estimatedTime }}
-              </div>
-            </div>
-
-            <!-- Tags -->
-            <div v-if="template.tags && template.tags.length > 0" class="mb-4">
-              <div class="flex flex-wrap gap-1">
+              <!-- Tags -->
+              <div v-if="template.tags && template.tags.length > 0" class="flex flex-wrap gap-1">
                 <span 
-                  v-for="tag in template.tags.slice(0, 3)" 
+                  v-for="tag in template.tags.slice(0, 4)" 
                   :key="tag"
-                  class="inline-flex items-center px-2 py-1 rounded text-xs bg-slate-700/50 text-slate-300 border border-slate-600"
+                  class="inline-flex items-center px-2 py-1 rounded text-xs bg-slate-700/30 text-slate-400 border border-slate-600/50"
                 >
                   {{ tag }}
                 </span>
-                <span v-if="template.tags.length > 3" class="text-xs text-slate-400">
-                  +{{ template.tags.length - 3 }} more
+                <span v-if="template.tags.length > 4" class="text-xs text-slate-500">
+                  +{{ template.tags.length - 4 }}
                 </span>
               </div>
             </div>
 
-            <!-- Badges -->
-            <div class="flex items-center space-x-2 mb-4">
-              <span :class="getDifficultyColor(template.difficulty)" class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium text-white">
-                {{ template.difficulty }}
-              </span>
-              <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-orange-500/20 text-orange-300">
-                {{ template.purpose }}
-              </span>
-            </div>
-
             <!-- Action Buttons -->
-            <div class="flex space-x-2">
+            <div class="flex flex-col gap-2 flex-shrink-0">
               <button 
                 @click="useTemplate(template)"
-                class="flex-1 bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg font-medium transition-colors text-sm"
+                class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg font-medium transition-colors text-sm whitespace-nowrap"
               >
                 Use Template
               </button>
               <button 
                 @click="previewTemplate(template)"
-                class="px-4 py-2 border border-slate-600 text-slate-300 hover:text-white hover:border-slate-500 rounded-lg transition-colors text-sm"
+                class="px-4 py-2 border border-slate-600 text-slate-300 hover:text-white hover:border-slate-500 rounded-lg transition-colors text-sm whitespace-nowrap"
               >
                 Preview
               </button>
