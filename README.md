@@ -1,5 +1,7 @@
 # Open Math Gen 2
 
+## [Use it here](https://sammikinsrox.github.io/open-math-gen/)
+
 A modern, web-based mathematics worksheet generator built with Vue 3 and Vite. Create professional, customizable math worksheets with 60+ problem types across 9 mathematical categories.
 
 ## ✨ Features
