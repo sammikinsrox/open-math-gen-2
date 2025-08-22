@@ -631,6 +631,13 @@ export class PerimeterGenerator extends BaseGenerator {
    */
   generateWordProblem(shape, unit, params) {
     const scenarios = this.getWordProblemScenarios(shape, unit, params)
+    
+    // Safety check: if no scenarios available for this shape, fall back to basic problem
+    if (!scenarios || scenarios.length === 0) {
+      console.warn(`No word problem scenarios available for shape: ${shape}. Falling back to basic problem.`)
+      return this.generateBasicProblem(shape, unit, params)
+    }
+    
     const scenario = this.getRandomElement(scenarios)
     
     const steps = []
@@ -703,6 +710,26 @@ export class PerimeterGenerator extends BaseGenerator {
         given: `Side length = ${side} ${unit}`,
         formula: 'P = 4s',
         solution: `P = 4 × ${side} = ${perimeter} ${unit}`
+      })
+    }
+    
+    if (shape === 'triangle') {
+      const side1 = this.generateMeasurement(params)
+      const side2 = this.generateMeasurement(params)
+      const side3 = this.generateMeasurement(params)
+      const perimeter = side1 + side2 + side3
+      
+      scenarios.push({
+        type: 'field',
+        question: `A triangular field has sides of ${this.formatNumber(side1)} ${unit}, ${this.formatNumber(side2)} ${unit}, and ${this.formatNumber(side3)} ${unit}. What is the perimeter of the field?`,
+        questionLaTeX: `\\text{A triangular field has sides of ${this.formatNumber(side1)} ${unit}, ${this.formatNumber(side2)} ${unit}, and ${this.formatNumber(side3)} ${unit}.} \\\\\\\\ \\text{What is the perimeter of the field?}`,
+        answer: `${this.formatNumber(perimeter)} ${unit}`,
+        answerLaTeX: `${this.formatNumber(perimeter)} \\text{ ${unit}}`,
+        measurements: { side1, side2, side3 },
+        perimeter: perimeter,
+        given: `Side 1 = ${side1} ${unit}, Side 2 = ${side2} ${unit}, Side 3 = ${side3} ${unit}`,
+        formula: 'P = a + b + c',
+        solution: `P = ${side1} + ${side2} + ${side3} = ${perimeter} ${unit}`
       })
     }
     
